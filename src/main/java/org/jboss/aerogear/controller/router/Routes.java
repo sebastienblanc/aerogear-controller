@@ -1,6 +1,7 @@
 package org.jboss.aerogear.controller.router;
 
 import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteBuilder;
 import org.jboss.aerogear.controller.router.RouteBuilderImpl;
@@ -34,7 +35,7 @@ public class Routes {
     }
 
     public boolean hasRouteFor(RequestMethod method, String requestURI) {
-        System.out.println(method+requestURI);
+        AeroGearLogger.LOGGER.requestedRoute(method, requestURI);
         for (Route route : routes) {
             if (route.getMethods().contains(method) && route.getPath().equals(requestURI)) {
                 return true;
@@ -49,6 +50,6 @@ public class Routes {
                 return route;
             }
         }
-        throw new RuntimeException("route not found");
+        throw AeroGearLogger.LOGGER.routeNotFound(method, requestURI);
     }
 }

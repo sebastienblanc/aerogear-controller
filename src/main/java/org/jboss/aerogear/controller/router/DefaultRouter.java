@@ -6,6 +6,7 @@ import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
 import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.view.ViewResolver;
 import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.util.StringUtils;
@@ -77,7 +78,7 @@ public class DefaultRouter implements Router {
             if (value.length == 1) {
                 parameters.add(new Parameter(entry.getKey(), value[0]));
             } else {
-                System.out.println("oops, multivalued params not supported yet");
+                AeroGearLogger.LOGGER.multivaluedParamsUnsupported();
                 continue;
             }
         }
