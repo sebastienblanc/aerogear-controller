@@ -13,9 +13,7 @@ import javax.servlet.ServletException;
 public interface AeroGearLogger extends BasicLogger {
     AeroGearLogger LOGGER = Logger.getMessageLogger(AeroGearLogger.class, AeroGearLogger.class.getPackage().getName());
 
-    @LogMessage(level = Logger.Level.FATAL)
-    @Message(id = 1, value = "must be run inside a Servlet container")
-    ServletException mustRunInsideAContainer();
+
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 2, value = "oops, multivalued params not supported yet")
@@ -25,7 +23,5 @@ public interface AeroGearLogger extends BasicLogger {
     @Message(id = 3, value = "method: '%s', requested URI: '%s'")
     void requestedRoute(RequestMethod method, String requestURI);
 
-    @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 4, value = "method: '%s', requested URI: '%s'")
-    RuntimeException routeNotFound(RequestMethod method, String requestURI);
+
 }
