@@ -1,8 +1,8 @@
 package org.jboss.aerogear.controller.demo;
 
-import org.jboss.aerogear.controller.AbstractRoutingModule;
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.demo.model.Car;
+import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 
 public class Routes extends AbstractRoutingModule {
 
