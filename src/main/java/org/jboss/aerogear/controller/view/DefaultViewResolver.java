@@ -1,4 +1,7 @@
-package org.jboss.aerogear.controller;
+package org.jboss.aerogear.controller.view;
+
+import org.jboss.aerogear.controller.view.ViewResolver;
+import org.jboss.aerogear.controller.router.Route;
 
 public class DefaultViewResolver implements ViewResolver {
 

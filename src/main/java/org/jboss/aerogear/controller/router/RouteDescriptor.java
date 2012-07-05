@@ -1,8 +1,9 @@
-package org.jboss.aerogear.controller;
+package org.jboss.aerogear.controller.router;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.jboss.aerogear.controller.RequestMethod;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

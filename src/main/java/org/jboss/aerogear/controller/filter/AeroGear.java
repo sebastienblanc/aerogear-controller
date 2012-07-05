@@ -1,6 +1,6 @@
 package org.jboss.aerogear.controller.filter;
 
-import org.jboss.aerogear.controller.Router;
+import org.jboss.aerogear.controller.router.Router;
 
 import javax.inject.Inject;
 import javax.servlet.*;

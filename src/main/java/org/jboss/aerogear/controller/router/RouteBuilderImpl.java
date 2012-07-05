@@ -1,4 +1,4 @@
-package org.jboss.aerogear.controller;
+package org.jboss.aerogear.controller.router;
 
 public class RouteBuilderImpl implements RouteBuilder {
 
