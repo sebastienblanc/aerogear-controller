@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>aerogear-controller</name>
-    <url>http://maven.apache.org</url>
+    <url>http://aerogear.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
