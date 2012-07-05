@@ -1,10 +1,12 @@
-package org.jboss.aerogear.controller;
+package org.jboss.aerogear.controller.router;
 
 import br.com.caelum.iogi.Iogi;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
+import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.view.ViewResolver;
 import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.util.StringUtils;
 import org.jboss.aerogear.controller.view.View;

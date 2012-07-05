@@ -1,4 +1,4 @@
-package org.jboss.aerogear.controller;
+package org.jboss.aerogear.controller.router;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

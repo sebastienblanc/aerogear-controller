@@ -1,5 +1,6 @@
-package org.jboss.aerogear.controller;
+package org.jboss.aerogear.controller.router;
 
+import org.jboss.aerogear.controller.RequestMethod;
 
 public interface RouteBuilder {
 

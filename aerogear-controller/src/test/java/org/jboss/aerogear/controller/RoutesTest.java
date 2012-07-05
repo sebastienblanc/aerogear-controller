@@ -1,5 +1,6 @@
 package org.jboss.aerogear.controller;
 
+import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 import org.jboss.aerogear.controller.router.Routes;
 import org.junit.Test;
 

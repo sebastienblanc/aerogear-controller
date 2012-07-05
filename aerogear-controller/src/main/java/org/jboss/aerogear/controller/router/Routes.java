@@ -1,9 +1,9 @@
 package org.jboss.aerogear.controller.router;
 
 import org.jboss.aerogear.controller.RequestMethod;
-import org.jboss.aerogear.controller.Route;
-import org.jboss.aerogear.controller.RouteBuilder;
-import org.jboss.aerogear.controller.RouteBuilderImpl;
+import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.RouteBuilder;
+import org.jboss.aerogear.controller.router.RouteBuilderImpl;
 
 import java.util.ArrayList;
 import java.util.List;
