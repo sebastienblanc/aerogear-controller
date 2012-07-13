@@ -56,8 +56,14 @@ public class DefaultRouter implements Router {
     @Override
     public void dispatch(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException {
         try {
-            Route route = routes.routeFor(extractMethod(request), extractPath(request));
-            Object[] params = extractParameters(request, route);
+            final String requestPath = extractPath(request);
+            Route route = routes.routeFor(extractMethod(request), requestPath);
+            Object[] params;
+            if (route.isParameterized()) {
+                params = extractPathParameters(requestPath, route);
+            } else {
+                params = extractParameters(request, route);
+            }
             Object result = route.getTargetMethod().invoke(getController(route), params);
             String viewPath = viewResolver.resolveViewPathFor(route);
             View view = new View(viewPath, result);
@@ -68,6 +74,13 @@ public class DefaultRouter implements Router {
         } catch (Exception e) {
             throw new ServletException(e);
         }
+    }
+
+    private Object[] extractPathParameters(String requestPath, Route route) {
+        // TODO: extract this from resteasy
+        final int paramOffset = route.getPath().indexOf('{');
+        final CharSequence param = requestPath.subSequence(paramOffset, requestPath.length());
+        return new Object[]{param.toString()};
     }
 
     private Object[] extractParameters(HttpServletRequest request, Route route) {
