@@ -1,6 +1,4 @@
-# aerogear-controller PoC
-
-**NOTE:** as this is a poc, it isn't production ready, missing validations, null checks, corner cases - so please don't be picky, **focus on the concepts**:
+# aerogear-controller - very lean mvc controller
 
 ## how to create a new project
 
@@ -73,4 +71,4 @@ The car object will be automatically populated with the provided values - note t
 All the intermediate objects are created automatically.
 
 ---
-you can find a slightly better example at <https://github.com/aerogear/aerogear-controller/tree/routes/aerogear-controller-demo> 
+you can find a slightly better example at <https://github.com/aerogear/aerogear-controller-demo> 
