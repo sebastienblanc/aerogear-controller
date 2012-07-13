@@ -35,7 +35,7 @@ public class Routes {
     public boolean hasRouteFor(RequestMethod method, String requestURI) {
         AeroGearLogger.LOGGER.requestedRoute(method, requestURI);
         for (Route route : routes) {
-            if (route.getMethods().contains(method) && route.getPath().equals(requestURI)) {
+            if (route.matches(method, requestURI)) {
                 return true;
             }
         }
