@@ -14,4 +14,6 @@ public interface Route {
     Method getTargetMethod();
 
     Class<?> getTargetClass();
+
+    boolean matches(RequestMethod method, String path);
 }

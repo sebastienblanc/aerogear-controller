@@ -1,7 +1,5 @@
 package org.jboss.aerogear.controller.router;
 
-import org.jboss.aerogear.controller.router.Routes;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,5 +26,9 @@ public abstract class AbstractRoutingModule implements RoutingModule {
 
     public static <T> T param() {
         return null;
+    }
+
+    public static String pathParam(String id) {
+        return id;
     }
 }

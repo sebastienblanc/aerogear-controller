@@ -3,9 +3,6 @@ package org.jboss.aerogear.controller.router;
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.log.LoggerMessages;
-import org.jboss.aerogear.controller.router.Route;
-import org.jboss.aerogear.controller.router.RouteBuilder;
-import org.jboss.aerogear.controller.router.RouteBuilderImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +44,7 @@ public class Routes {
 
     public Route routeFor(RequestMethod method, String requestURI) {
         for (Route route : routes) {
-            if (route.getMethods().contains(method) && route.getPath().equals(requestURI)) {
+            if (route.matches(method, requestURI)) {
                 return route;
             }
         }
