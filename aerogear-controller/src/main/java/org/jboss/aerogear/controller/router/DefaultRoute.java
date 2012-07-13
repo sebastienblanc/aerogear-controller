@@ -53,6 +53,7 @@ public class DefaultRoute implements Route {
         return targetMethod;
     }
 
+    @Override
     public boolean isParameterized() {
         return path.contains("{");
     }

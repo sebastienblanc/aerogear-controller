@@ -16,4 +16,6 @@ public interface Route {
     Class<?> getTargetClass();
 
     boolean matches(RequestMethod method, String path);
+
+    boolean isParameterized();
 }
