@@ -7,12 +7,10 @@ import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.log.AeroGearLogger;
-import org.jboss.aerogear.controller.view.ViewResolver;
-import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.util.StringUtils;
 import org.jboss.aerogear.controller.view.View;
+import org.jboss.aerogear.controller.view.ViewResolver;
 
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
@@ -29,12 +27,14 @@ public class DefaultRouter implements Router {
     private final BeanManager beanManager;
     private ViewResolver viewResolver;
     private Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
+    private ControllerFactory controllerFactory;
 
     @Inject
-    public DefaultRouter(RoutingModule routes, BeanManager beanManager, ViewResolver viewResolver) {
+    public DefaultRouter(RoutingModule routes, BeanManager beanManager, ViewResolver viewResolver, ControllerFactory controllerFactory) {
         this.routes = routes.build();
         this.beanManager = beanManager;
         this.viewResolver = viewResolver;
+        this.controllerFactory = controllerFactory;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class DefaultRouter implements Router {
     }
 
     private Object getController(Route route) {
-        Bean next = beanManager.getBeans(route.getTargetClass()).iterator().next();
-        return next.create(beanManager.createCreationalContext(next));
+        return controllerFactory.createController(route.getTargetClass(), beanManager);
     }
+
 }

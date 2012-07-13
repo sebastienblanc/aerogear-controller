@@ -36,7 +36,24 @@ public class DefaultRoute implements Route {
     }
 
     @Override
+    public boolean matches(RequestMethod method, String path) {
+        return this.methods.contains(method) && isPathCompatible(path);
+    }
+
+    private boolean isPathCompatible(String path) {
+        if (isParameterized()) {
+            final int paramStart = this.path.indexOf('{');
+            return this.path.subSequence(0, paramStart).equals(path.subSequence(0, paramStart));
+        }
+        return this.path.equals(path);
+    }
+
+    @Override
     public Method getTargetMethod() {
         return targetMethod;
+    }
+
+    public boolean isParameterized() {
+        return path.contains("{");
     }
 }

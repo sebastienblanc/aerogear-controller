@@ -47,20 +47,18 @@ public class RoutesTest {
         assertThat(routes.hasRouteFor(POST, "/cars")).isTrue();
     }
 
-    public static class SampleController {
-
-        public void index() {
-        }
-
-        public void client(String name) {
-        }
-
-        public void lol() {
-        }
-
-        public void save(Car car) {
-
-        }
+    @Test
+    public void routesWithPathParameters() {
+        Routes routes = new AbstractRoutingModule(){
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}")
+                        .on(GET)
+                        .to(SampleController.class).find(pathParam("id"));
+            }
+        }.build();
+        assertThat(routes.hasRouteFor(GET, "/car/1")).isTrue();
     }
 
     public static class Car {
