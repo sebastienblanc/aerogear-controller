@@ -18,6 +18,15 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>qmx</id>
+            <name>Douglas Campos</name>
+            <url>http://qmx.me</url>
+            <email>qmx@qmx.me</email>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
