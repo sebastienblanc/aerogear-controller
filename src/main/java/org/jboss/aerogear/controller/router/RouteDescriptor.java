@@ -14,6 +14,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private Object[] args;
     private RequestMethod[] methods;
     private Class<?> targetClass;
+    private String[] roles;
 
     public RouteDescriptor(String path) {
         this.path = path;
@@ -22,6 +23,12 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     @Override
     public RouteBuilder.TargetEndpoint on(RequestMethod... methods) {
         this.methods = methods;
+        return this;
+    }
+
+    @Override
+    public RouteBuilder.OnMethods roles(String... roles) {
+        this.roles = roles;
         return this;
     }
 

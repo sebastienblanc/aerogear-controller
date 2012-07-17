@@ -8,6 +8,7 @@ public interface RouteBuilder {
 
     public static interface OnMethods {
         TargetEndpoint on(RequestMethod... methods);
+        OnMethods roles(String... roles);
     }
 
     public static interface TargetEndpoint {

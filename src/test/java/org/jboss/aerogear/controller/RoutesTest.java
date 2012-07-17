@@ -48,6 +48,20 @@ public class RoutesTest {
     }
 
     @Test
+    public void routesWithRoles() {
+        Routes routes = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/admin").roles("manager")
+                        .on(GET)
+                        .to(SampleController.class).admin();
+            }
+        }.build();
+        assertThat(routes.hasRouteFor(GET, "/admin")).isTrue();
+    }
+
+    @Test
     public void routesWithPathParameters() {
         Routes routes = new AbstractRoutingModule(){
             @Override

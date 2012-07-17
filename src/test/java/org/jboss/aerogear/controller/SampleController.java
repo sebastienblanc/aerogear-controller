@@ -17,4 +17,7 @@ public class SampleController {
 
     public void find(String id) {
     }
+
+    public void admin() {
+    }
 }
