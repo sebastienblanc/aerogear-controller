@@ -59,6 +59,10 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
         return targetClass;
     }
 
+    public String[] getRoles() {
+        return roles;
+    }
+
     private static class MyMethodInterceptor implements MethodInterceptor {
         private final RouteDescriptor routeDescriptor;
 

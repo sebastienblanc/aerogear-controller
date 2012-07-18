@@ -12,12 +12,22 @@ public class DefaultRoute implements Route {
     private final Class<?> targetClass;
     private final Method targetMethod;
     private Set<RequestMethod> methods;
+    private String[] roles;
 
     public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod) {
         this.path = path;
         this.methods = new HashSet<RequestMethod>(Arrays.asList(methods));
         this.targetClass = targetClass;
         this.targetMethod = targetMethod;
+    }
+
+    public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod,
+                        String[] roles) {
+        this.path = path;
+        this.methods = new HashSet<RequestMethod>(Arrays.asList(methods));
+        this.targetClass = targetClass;
+        this.targetMethod = targetMethod;
+        this.roles = roles;
     }
 
     @Override
@@ -56,5 +66,13 @@ public class DefaultRoute implements Route {
     @Override
     public boolean isParameterized() {
         return path.contains("{");
+    }
+
+    @Override
+    public boolean isSecured() {
+        if(roles != null){
+            return true;
+        }
+        return false;
     }
 }

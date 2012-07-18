@@ -18,4 +18,6 @@ public interface Route {
     boolean matches(RequestMethod method, String path);
 
     boolean isParameterized();
+
+    boolean isSecured();
 }

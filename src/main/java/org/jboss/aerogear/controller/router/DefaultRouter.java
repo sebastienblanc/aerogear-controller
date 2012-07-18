@@ -59,6 +59,11 @@ public class DefaultRouter implements Router {
             final String requestPath = extractPath(request);
             Route route = routes.routeFor(extractMethod(request), requestPath);
             Object[] params;
+
+            if(route.isSecured()) {
+                //TODO Call the security spi services
+            }
+
             if (route.isParameterized()) {
                 params = extractPathParameters(requestPath, route);
             } else {
