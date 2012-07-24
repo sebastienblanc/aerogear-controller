@@ -75,4 +75,9 @@ public class DefaultRoute implements Route {
         }
         return false;
     }
+
+    @Override
+    public String[] getRoles() {
+        return roles;
+    }
 }
