@@ -2,6 +2,8 @@ package org.jboss.aerogear.controller.router;
 
 import org.jboss.aerogear.controller.RequestMethod;
 
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -70,7 +72,7 @@ public class DefaultRoute implements Route {
 
     @Override
     public boolean isSecured() {
-        if(roles != null){
+        if (roles != null) {
             return true;
         }
         return false;
