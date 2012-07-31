@@ -34,11 +34,13 @@ public class DefaultRouter implements Router {
     private SecurityProvider securityProvider;
 
     @Inject
-    public DefaultRouter(RoutingModule routes, BeanManager beanManager, ViewResolver viewResolver, ControllerFactory controllerFactory) {
+    public DefaultRouter(RoutingModule routes, BeanManager beanManager, ViewResolver viewResolver, ControllerFactory controllerFactory,
+                         SecurityProvider securityProvider) {
         this.routes = routes.build();
         this.beanManager = beanManager;
         this.viewResolver = viewResolver;
         this.controllerFactory = controllerFactory;
+        this.securityProvider = securityProvider;
     }
 
     @Override
