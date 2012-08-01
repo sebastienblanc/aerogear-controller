@@ -7,6 +7,7 @@ import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.log.AeroGearLogger;
+import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.util.StringUtils;
 import org.jboss.aerogear.controller.view.View;
 import org.jboss.aerogear.controller.view.ViewResolver;
@@ -30,11 +31,16 @@ public class DefaultRouter implements Router {
     private ControllerFactory controllerFactory;
 
     @Inject
-    public DefaultRouter(RoutingModule routes, BeanManager beanManager, ViewResolver viewResolver, ControllerFactory controllerFactory) {
+    private SecurityProvider securityProvider;
+
+    @Inject
+    public DefaultRouter(RoutingModule routes, BeanManager beanManager, ViewResolver viewResolver, ControllerFactory controllerFactory,
+                         SecurityProvider securityProvider) {
         this.routes = routes.build();
         this.beanManager = beanManager;
         this.viewResolver = viewResolver;
         this.controllerFactory = controllerFactory;
+        this.securityProvider = securityProvider;
     }
 
     @Override
@@ -59,6 +65,11 @@ public class DefaultRouter implements Router {
             final String requestPath = extractPath(request);
             Route route = routes.routeFor(extractMethod(request), requestPath);
             Object[] params;
+
+            if(route.isSecured() && securityProvider.isRouteAllowed(route)) {
+                //TODO Call the security spi services
+            }
+
             if (route.isParameterized()) {
                 params = extractPathParameters(requestPath, route);
             } else {

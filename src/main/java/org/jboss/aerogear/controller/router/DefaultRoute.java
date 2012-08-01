@@ -2,6 +2,8 @@ package org.jboss.aerogear.controller.router;
 
 import org.jboss.aerogear.controller.RequestMethod;
 
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,12 +14,22 @@ public class DefaultRoute implements Route {
     private final Class<?> targetClass;
     private final Method targetMethod;
     private Set<RequestMethod> methods;
+    private String[] roles;
 
     public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod) {
         this.path = path;
         this.methods = new HashSet<RequestMethod>(Arrays.asList(methods));
         this.targetClass = targetClass;
         this.targetMethod = targetMethod;
+    }
+
+    public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod,
+                        String[] roles) {
+        this.path = path;
+        this.methods = new HashSet<RequestMethod>(Arrays.asList(methods));
+        this.targetClass = targetClass;
+        this.targetMethod = targetMethod;
+        this.roles = roles;
     }
 
     @Override
@@ -56,5 +68,18 @@ public class DefaultRoute implements Route {
     @Override
     public boolean isParameterized() {
         return path.contains("{");
+    }
+
+    @Override
+    public boolean isSecured() {
+        if (roles != null) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String[] getRoles() {
+        return roles;
     }
 }

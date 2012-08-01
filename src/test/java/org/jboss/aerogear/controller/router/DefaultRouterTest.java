@@ -2,6 +2,7 @@ package org.jboss.aerogear.controller.router;
 
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.view.ViewResolver;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.SecurityContext;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -39,6 +41,8 @@ public class DefaultRouterTest {
     private ServletContext servletContext;
     @Mock
     private RequestDispatcher requestDispatcher;
+    @Mock
+    private SecurityProvider securityProvider;
 
     private DefaultRouter router;
 
@@ -50,12 +54,12 @@ public class DefaultRouterTest {
             @Override
             public void configuration() {
                 route()
-                        .from("/car/{id}")
+                        .from("/car/{id}").roles("manager")
                         .on(RequestMethod.GET)
                         .to(SampleController.class).find(pathParam("id"));
             }
         };
-        router = new DefaultRouter(routingModule, beanManager, viewResolver, controllerFactory);
+        router = new DefaultRouter(routingModule, beanManager, viewResolver, controllerFactory, securityProvider);
     }
 
     @Test
