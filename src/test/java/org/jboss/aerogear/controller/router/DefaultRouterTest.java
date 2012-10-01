@@ -3,6 +3,7 @@ package org.jboss.aerogear.controller.router;
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
+import org.jboss.aerogear.controller.spi.SecurityServletException;
 import org.jboss.aerogear.controller.view.ViewResolver;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,8 @@ public class DefaultRouterTest {
 
     @Mock
     private SecurityProvider securityProvider;
+    @Mock
+    private SecurityServletException securityServletException;
     @Mock
     private Route route;
     @Mock
@@ -95,10 +98,10 @@ public class DefaultRouterTest {
         verify(controller).find(eq("3"));
     }
 
-    @Test(expected = ServletException.class)
+    @Test(expected = SecurityServletException.class)
     public void testRouteForbbiden() throws Exception {
         final SampleController controller = spy(new SampleController());
-        doThrow(new ServletException()).when(securityProvider).isRouteAllowed(route);
+        doThrow(securityServletException).when(securityProvider).isRouteAllowed(route);
 
         when(route.isSecured()).thenReturn(true);
         verify(securityProvider.isRouteAllowed(route));
