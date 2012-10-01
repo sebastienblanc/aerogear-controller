@@ -108,8 +108,36 @@
                 </executions>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                <groupId>org.eclipse.m2e</groupId>
+                <artifactId>lifecycle-mapping</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <lifecycleMappingMetadata>
+                        <pluginExecutions>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.jboss.jandex</groupId>
+                                    <artifactId>jandex-maven-plugin</artifactId>
+                                    <versionRange>[1.0.1,)</versionRange>
+                                    <goals>
+                                        <goal>jandex</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <ignore/>
+                                </action>
+                            </pluginExecution>
+                        </pluginExecutions>
+                    </lifecycleMappingMetadata>
+                </configuration>
+            </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
+            
     <dependencies>
         <dependency>
             <groupId>org.jboss.spec</groupId>
