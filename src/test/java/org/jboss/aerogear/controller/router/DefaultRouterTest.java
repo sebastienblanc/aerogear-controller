@@ -16,15 +16,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.SecurityContext;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DefaultRouterTest {
+
+    @Mock
+    private SecurityProvider securityProvider;
+    @Mock
+    private Route route;
     @Mock
     private BeanManager beanManager;
     @Mock
@@ -41,20 +46,19 @@ public class DefaultRouterTest {
     private ServletContext servletContext;
     @Mock
     private RequestDispatcher requestDispatcher;
-    @Mock
-    private SecurityProvider securityProvider;
 
     private DefaultRouter router;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
         final RoutingModule routingModule = new AbstractRoutingModule() {
 
             @Override
             public void configuration() {
                 route()
-                        .from("/car/{id}").roles("manager")
+                        .from("/car/{id}").roles("admin")
                         .on(RequestMethod.GET)
                         .to(SampleController.class).find(pathParam("id"));
             }
@@ -65,6 +69,40 @@ public class DefaultRouterTest {
     @Test
     public void testIt() throws ServletException {
         final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/car/3");
+        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        router.dispatch(request, response, chain);
+        verify(controller).find(eq("3"));
+    }
+
+    @Test
+    public void testRouteAllowed() throws Exception {
+        final SampleController controller = spy(new SampleController());
+        when(route.isSecured()).thenReturn(true);
+        when(securityProvider.isRouteAllowed(route)).thenReturn(true);
+
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/car/3");
+        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        router.dispatch(request, response, chain);
+        verify(controller).find(eq("3"));
+    }
+
+    @Test(expected = ServletException.class)
+    public void testRouteForbbiden() throws Exception {
+        final SampleController controller = spy(new SampleController());
+        doThrow(new ServletException()).when(securityProvider).isRouteAllowed(route);
+
+        when(route.isSecured()).thenReturn(true);
+        verify(securityProvider.isRouteAllowed(route));
+
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
