@@ -2,6 +2,14 @@ package org.jboss.aerogear.controller.view;
 
 import org.jboss.aerogear.controller.util.TypeNameExtractor;
 
+/**
+ * A view in AeroGear consists of a path to a resource and optionally a model.
+ * </p>
+ * The path could be to a jsp page, or any other type of template language file.
+ * </p> 
+ * 
+ * @see ViewResolver
+ */
 public class View {
     private final String viewPath;
     private final Object model;

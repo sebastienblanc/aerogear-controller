@@ -9,6 +9,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
 
+/**
+ * Describes/configures a single route in AeroGear controller.
+ */
 public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.TargetEndpoint {
     private String path;
     private Method targetMethod;
@@ -21,6 +24,13 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     public RouteDescriptor() {
     }
     
+    /**
+     * Set the path for this instance. 
+     * </p>
+     * A RouteDescriptor may have an empty path if it is an error route. 
+     * 
+     * @param path the from path for this route.
+     */
     public void setPath(String path) {
         this.path = path;
     }
@@ -92,8 +102,8 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
                 '}';
     }
 
-    public void setThrowables(Set<Class<? extends Throwable>> throwable) {
-        this.throwables = throwable;
+    public void setThrowables(Set<Class<? extends Throwable>> throwables) {
+        this.throwables = throwables;
     }
     
     public Set<Class<? extends Throwable>> getThrowables() {

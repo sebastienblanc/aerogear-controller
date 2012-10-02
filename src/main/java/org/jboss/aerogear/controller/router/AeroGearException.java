@@ -19,7 +19,7 @@ package org.jboss.aerogear.controller.router;
 
 public class AeroGearException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4174431310012179642L;
 
     public AeroGearException() {
         super();
@@ -28,7 +28,7 @@ public class AeroGearException extends RuntimeException {
     public AeroGearException(String message, Throwable cause) {
         super(message, cause);
     }
-
+    
     public AeroGearException(String message) {
         super(message);
     }
@@ -36,7 +36,6 @@ public class AeroGearException extends RuntimeException {
     public AeroGearException(Throwable cause) {
         super(cause);
     }
-    
     
 
 }

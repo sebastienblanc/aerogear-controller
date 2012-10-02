@@ -9,6 +9,11 @@ import org.jboss.logging.Messages;
 
 import javax.servlet.ServletException;
 
+/**
+ * A JBoss-Logging MessgeBundle containing translated Strings, Exceptions etc.
+ * </p>
+ * Contains no methods that perform logging. Refer to {@link AeroGearLogger} for that.
+ */
 @MessageBundle(projectCode = "AG_CONTROLLER")
 public interface LoggerMessages {
     LoggerMessages MESSAGES = Messages.getBundle(LoggerMessages.class);

@@ -9,13 +9,12 @@ import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
 import org.jboss.logging.MessageLogger;
 
-import javax.servlet.ServletException;
-
+/**
+ * A JBoss-Logging typed logger for AeroGear.
+ */
 @MessageLogger(projectCode = "AG_CONTROLLER")
 public interface AeroGearLogger extends BasicLogger {
     AeroGearLogger LOGGER = Logger.getMessageLogger(AeroGearLogger.class, AeroGearLogger.class.getPackage().getName());
-
-
 
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 2, value = "oops, multivalued params not supported yet")

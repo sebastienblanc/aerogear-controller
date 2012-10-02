@@ -5,6 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Concrete implementation of {@link RouteBuilder}.
+ * 
+ * @see RouteBuilder
+ */
 public class RouteBuilderImpl implements RouteBuilder {
 
     private RouteDescriptor routeDescriptor = new RouteDescriptor();

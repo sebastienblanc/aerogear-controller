@@ -34,16 +34,9 @@ public class ErrorViewResolver implements ViewResolver {
 
     private final ViewResolver delegate;
 
-    /**
-     * Sole constructor that takes the delegate as an argument.
-     * 
-     * @param delegate the {@link ViewResolver} to delegate to if the Route to be resolved is 
-     * not the default error route.
-     */
     public ErrorViewResolver(final ViewResolver delegate) {
         checkNotNull(delegate, "'delegate' ViewResolver must not be null");
         this.delegate = delegate;
-        
     }
 
     /**
@@ -51,7 +44,7 @@ public class ErrorViewResolver implements ViewResolver {
      * if not, will let the delegate handle resolving the path for the Route
      * 
      * @param route the route for which to resolve the view.
-     * @param {{@code String} the view for the passed in Route.
+     * @return {@code String} the view for the passed in Route.
      */
     @Override
     public String resolveViewPathFor(final Route route) {

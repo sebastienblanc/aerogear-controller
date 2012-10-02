@@ -3,7 +3,11 @@ package org.jboss.aerogear.controller.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class containing methods used for processing Strings.
+ */
 public class StringUtils {
+    //TODO: Should perhaps have a private constructor?
     public static String decapitalize(String name) {
         if (name.length() == 1) {
             return name.toLowerCase();

@@ -13,7 +13,6 @@ import org.jboss.aerogear.controller.RequestMethod;
 
 /**
  * An immutable implementation of {@link Route}.
- * 
  */
 public class DefaultRoute implements Route {
     private final String path;
