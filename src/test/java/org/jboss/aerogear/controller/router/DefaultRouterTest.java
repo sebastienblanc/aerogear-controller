@@ -28,6 +28,7 @@ public class DefaultRouterTest {
 
     @Mock
     private SecurityProvider securityProvider;
+
     @Mock
     private Route route;
     @Mock

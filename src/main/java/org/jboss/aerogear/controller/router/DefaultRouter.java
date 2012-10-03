@@ -7,6 +7,7 @@ import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.log.AeroGearLogger;
+import org.jboss.aerogear.controller.spi.HttpStatusAwareException;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.util.StringUtils;
 import org.jboss.aerogear.controller.view.View;
@@ -83,6 +84,9 @@ public class DefaultRouter implements Router {
             }
             request.getRequestDispatcher(view.getViewPath()).forward(request, response);
         } catch (Exception e) {
+            if (e instanceof HttpStatusAwareException) {
+                response.setStatus(((HttpStatusAwareException) e).getStatus());
+            }
             throw new ServletException(e);
         }
     }
