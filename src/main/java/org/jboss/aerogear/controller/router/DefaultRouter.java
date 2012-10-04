@@ -13,6 +13,8 @@ import org.jboss.aerogear.controller.util.StringUtils;
 import org.jboss.aerogear.controller.view.View;
 import org.jboss.aerogear.controller.view.ViewResolver;
 
+import com.google.common.base.Throwables;
+
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
@@ -20,10 +22,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.Map;
 
 public class DefaultRouter implements Router {
+    
+    public static final String EXCEPTION_ATTRIBUTE_NAME = "org.jboss.aerogear.controller.exception";
 
     private Routes routes;
     private final BeanManager beanManager;
@@ -87,10 +94,39 @@ public class DefaultRouter implements Router {
             if (e instanceof HttpStatusAwareException) {
                 response.setStatus(((HttpStatusAwareException) e).getStatus());
             }
-            throw new ServletException(e);
+            final Throwable rootCause = Throwables.getRootCause(e);
+            final Route errorRoute = routes.routeFor(rootCause);
+            if (errorRoute != null) {
+                invokeErrorTarget(errorRoute, rootCause);
+                forwardError(new View(viewResolver.resolveViewPathFor(errorRoute), rootCause), request, response);
+            } else {
+                throw new ServletException(e);
+            }
         }
     }
-
+    
+    private void invokeErrorTarget(final Route errorRoute, final Throwable t) throws ServletException {
+        try {
+            final Method targetMethod = errorRoute.getTargetMethod();
+            if (targetMethod.getParameterTypes().length == 0) {
+                targetMethod.invoke(getController(errorRoute));
+            } else {
+                targetMethod.invoke(getController(errorRoute), t);
+            }
+        } catch (final Exception e) {
+            throw new ServletException(e.getMessage(), e);
+        }
+    }
+    
+    private void forwardError(final View view, final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
+        try {
+            request.setAttribute(EXCEPTION_ATTRIBUTE_NAME, view.getModel());
+            request.getRequestDispatcher(view.getViewPath()).forward(request, response);
+        } catch (IOException e) {
+            throw new ServletException(e.getMessage(), e);
+        }
+    }
+    
     private Object[] extractPathParameters(String requestPath, Route route) {
         // TODO: extract this from resteasy
         final int paramOffset = route.getPath().indexOf('{');

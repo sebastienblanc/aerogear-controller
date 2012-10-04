@@ -5,8 +5,8 @@ import java.util.List;
 
 public abstract class AbstractRoutingModule implements RoutingModule {
     private List<RouteBuilder> routes = new LinkedList<RouteBuilder>();
-
-    public abstract void configuration();
+    
+    public abstract void configuration() throws Exception;
 
     public RouteBuilder route() {
         RouteBuilder route = Routes.route();
@@ -16,7 +16,11 @@ public abstract class AbstractRoutingModule implements RoutingModule {
 
     @Override
     public Routes build() {
-        configuration();
+        try {
+            configuration();
+        } catch (final Exception e) {
+            throw new AeroGearException(e);
+        }
         return Routes.from(routes);
     }
 
@@ -31,4 +35,5 @@ public abstract class AbstractRoutingModule implements RoutingModule {
     public static String pathParam(String id) {
         return id;
     }
+    
 }

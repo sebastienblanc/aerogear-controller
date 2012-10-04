@@ -50,4 +50,13 @@ public class Routes {
         }
         throw LoggerMessages.MESSAGES.routeNotFound(method, requestURI);
     }
+    
+    public Route routeFor(Throwable throwable) {
+        for (Route route : routes) {
+            if (route.canHandle(throwable)) {
+                return route;
+            }
+        }
+        return null;
+    }
 }
