@@ -4,6 +4,8 @@ import org.jboss.aerogear.controller.RequestMethod;
 
 public interface RouteBuilder {
 
+    TargetEndpoint on(Class<? extends Throwable> exception, Class<?>... exceptions);
+    
     OnMethods from(String path);
 
     public static interface OnMethods {
