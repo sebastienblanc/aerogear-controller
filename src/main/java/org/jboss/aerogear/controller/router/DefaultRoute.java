@@ -32,7 +32,7 @@ public class DefaultRoute implements Route {
      * @param targetMethod the target method in the {@link #targetClass}. Must not be {@code null}
      */
     public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod) {
-        this(path, methods, targetClass, targetMethod, null, null);
+        this(path, methods, targetClass, targetMethod, new String[]{}, emptyThrowableSet());
     }
 
     /**
@@ -45,7 +45,7 @@ public class DefaultRoute implements Route {
      * @param roles the roles to associate with this Route. Can be {@code null}.
      */
     public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod, String[] roles) {
-        this(path, methods, targetClass, targetMethod, roles, null);
+        this(path, methods, targetClass, targetMethod, roles, emptyThrowableSet());
     }
     
     /**
@@ -67,7 +67,7 @@ public class DefaultRoute implements Route {
         this.targetClass = targetClass;
         this.targetMethod = targetMethod;
         this.roles = asSet(roles);
-        this.throwables = firstNonNull(throwables, emptySet());
+        this.throwables = firstNonNull(throwables, emptyThrowableSet());
     }
     
     @Override
@@ -141,7 +141,7 @@ public class DefaultRoute implements Route {
         return roles == null ? Collections.<String>emptySet() : new HashSet<String>(Arrays.asList(roles));
     }
 
-    private Set<Class<? extends Throwable>> emptySet() {
+    private static Set<Class<? extends Throwable>> emptyThrowableSet() {
         return Collections.<Class<? extends Throwable>>emptySet();
     }
 }
