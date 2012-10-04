@@ -26,19 +26,19 @@ import org.junit.Test;
 public class RouteBuilderImplTest {
     
     @Test
-    public void no_exceptions() {
+    public void testNoExceptions() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         assertThat(rb.build().hasExceptionsRoutes()).isFalse();
     }
     
     @Test (expected = IllegalArgumentException.class)
-    public void wrong_exception_type() {
+    public void testWrongException_type() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         rb.on(IllegalStateException.class, String.class);
     }
 
     @Test
-    public void on_one_exception() {
+    public void testOnOneException() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         rb.on(IllegalStateException.class);
         final Route route = rb.build();
@@ -48,7 +48,7 @@ public class RouteBuilderImplTest {
     }
     
     @Test
-    public void on_exception_subtype() {
+    public void testOnExceptionSubtype() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         rb.on(Exception.class);
         final Route route = rb.build();
@@ -58,7 +58,7 @@ public class RouteBuilderImplTest {
     }
     
     @Test
-    public void on_multiple_exceptions() {
+    public void testOnMultipleExceptions() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         rb.on(IllegalStateException.class, IllegalArgumentException.class, UnsupportedOperationException.class);
         assertCanHandle(rb.build(), new IllegalStateException(), new IllegalArgumentException(), new UnsupportedOperationException());
