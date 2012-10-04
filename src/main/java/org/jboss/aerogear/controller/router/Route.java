@@ -81,5 +81,5 @@ public interface Route {
      * @param throwable 
      * @return {@code true} if this Route can handle the Throwable, otherwise {@code false}.
      */
-    public boolean canHandle(Throwable throwable);
+    boolean canHandle(Throwable throwable);
 }
