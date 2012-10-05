@@ -10,6 +10,7 @@ import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.spi.HttpStatusAwareException;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.util.StringUtils;
+import org.jboss.aerogear.controller.view.ErrorViewResolver;
 import org.jboss.aerogear.controller.view.View;
 import org.jboss.aerogear.controller.view.ViewResolver;
 
@@ -37,6 +38,7 @@ public class DefaultRouter implements Router {
     private ViewResolver viewResolver;
     private Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     private ControllerFactory controllerFactory;
+    private final ViewResolver errorViewResolver;
 
     @Inject
     private SecurityProvider securityProvider;
@@ -49,6 +51,7 @@ public class DefaultRouter implements Router {
         this.viewResolver = viewResolver;
         this.controllerFactory = controllerFactory;
         this.securityProvider = securityProvider;
+        errorViewResolver = new ErrorViewResolver(viewResolver);
     }
 
     @Override
@@ -96,16 +99,12 @@ public class DefaultRouter implements Router {
             }
             final Throwable rootCause = Throwables.getRootCause(e);
             final Route errorRoute = routes.routeFor(rootCause);
-            if (errorRoute != null) {
-                invokeExceptionRoute(errorRoute, rootCause);
-                forwardExceptionToView(new View(viewResolver.resolveViewPathFor(errorRoute), rootCause), request, response);
-            } else {
-                throw new ServletException(e);
-            }
+            invokeErrorRoute(errorRoute, rootCause);
+            forwardErrorToView(errorRoute, rootCause, request, response);
         }
     }
     
-    private void invokeExceptionRoute(final Route errorRoute, final Throwable t) throws ServletException {
+    private void invokeErrorRoute(final Route errorRoute, final Throwable t) throws ServletException {
         try {
             final Method targetMethod = errorRoute.getTargetMethod();
             if (targetMethod.getParameterTypes().length == 0) {
@@ -118,9 +117,10 @@ public class DefaultRouter implements Router {
         }
     }
     
-    private void forwardExceptionToView(final View view, final HttpServletRequest request, final HttpServletResponse response) 
-            throws ServletException {
+    private void forwardErrorToView(final Route errorRoute, final Throwable rootCause, 
+            final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
         try {
+            final View view = new View(errorViewResolver.resolveViewPathFor(errorRoute), rootCause);
             request.setAttribute(EXCEPTION_ATTRIBUTE_NAME, view.getModel());
             request.getRequestDispatcher(view.getViewPath()).forward(request, response);
         } catch (IOException e) {

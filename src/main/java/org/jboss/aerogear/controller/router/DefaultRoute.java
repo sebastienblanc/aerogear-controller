@@ -49,6 +49,19 @@ public class DefaultRoute implements Route {
     }
     
     /**
+     * Constructs a Route with the specified exceptions accociated with it.
+     * 
+     * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.
+     * @param targetClass the target {@link Class} that is the target for this Route. Must not be {@code null}
+     * @param targetMethod the target method in the {@link #targetClass}. Must not be {@code null}
+     * @param throwables the exceptions that this Route can handle. Can be {@code null}.
+     */
+    public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod, 
+            Set<Class<? extends Throwable>> throwables ) {
+        this(path, methods, targetClass, targetMethod, new String[]{}, throwables);
+    }
+
+    /**
      * Constructs a Route with the specified roles and exceptions accociated with it.
      * 
      * @param path the path for this Route. Can be {@code null}.

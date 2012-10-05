@@ -49,13 +49,13 @@ public class DefaultRouteTest {
 
     @Test
     public void constructWithNullRoles() throws Exception {
-        final Route route = new DefaultRoute("/car/{id}", GET, TARGET_CLASS, TARGET_METHOD, null);
+        final Route route = new DefaultRoute("/car/{id}", GET, TARGET_CLASS, TARGET_METHOD, (String[]) null);
         assertThat(route.getRoles()).isEmpty();
     }
 
     @Test
     public void constructWithNullExceptions() throws Exception {
-        final Route route = new DefaultRoute("/car/{id}", GET, TARGET_CLASS, TARGET_METHOD, new String[]{"admin"}, null);
+        final Route route = new DefaultRoute("/home", GET, TARGET_CLASS, TARGET_METHOD, (Set<Class<? extends Throwable>>) null);
         assertThat(route.hasExceptionsRoutes()).isFalse();
     }
 
@@ -70,7 +70,7 @@ public class DefaultRouteTest {
     public void constructWithExceptions() throws Exception {
         @SuppressWarnings("unchecked")
         final Set<Class<? extends Throwable>> exceptions = exceptions(IllegalArgumentException.class);
-        final Route route = new DefaultRoute("/car/{id}", GET, TARGET_CLASS, TARGET_METHOD, null, exceptions);
+        final Route route = new DefaultRoute("/home", GET, TARGET_CLASS, TARGET_METHOD, exceptions);
         assertThat(route.hasExceptionsRoutes()).isTrue();
     }
     
