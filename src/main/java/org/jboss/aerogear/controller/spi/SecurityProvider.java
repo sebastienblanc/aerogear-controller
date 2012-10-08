@@ -5,5 +5,5 @@ import org.jboss.aerogear.controller.router.Route;
 import javax.servlet.ServletException;
 
 public interface SecurityProvider {
-    public boolean isRouteAllowed(Route route) throws ServletException;
+    boolean isRouteAllowed(Route route) throws ServletException;
 }
