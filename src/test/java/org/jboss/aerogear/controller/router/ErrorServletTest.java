@@ -21,20 +21,12 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class ErrorHandlerTest {
+public class ErrorServletTest {
 
-    @Test
-    public void defaultErrorRoute() {
-        final Route errorRoute = ErrorHandler.defaultErrorRoute();
-        assertThat(errorRoute.canHandle(new Throwable())).isTrue();
-        assertThat(errorRoute.getTargetClass()).isEqualTo(ErrorHandler.class);
-        assertThat(errorRoute.getTargetMethod().getName()).isEqualTo("error");
-    }
-    
     @Test
     public void readTempate() {
         final Exception e = new IllegalStateException("dummy");
-        final String template = ErrorHandler.readTemplate("/org/jboss/aerogrear/controller/router/error.html", e);
+        final String template = ErrorServlet.readTemplate("/org/jboss/aerogrear/controller/router/error.html", e);
         assertThat(template).isNotNull();
     }
 

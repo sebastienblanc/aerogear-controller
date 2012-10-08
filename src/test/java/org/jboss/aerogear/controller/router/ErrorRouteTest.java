@@ -17,21 +17,18 @@
 
 package org.jboss.aerogear.controller.router;
 
-import org.jboss.aerogear.controller.log.AeroGearLogger;
+import static org.fest.assertions.Assertions.assertThat;
 
-/**
- * ErrorHandler is used as default target for a {@link Route} when a route has not defined any 
- * explicit error route.
- */
-public class ErrorHandler {
-    
-    /**
-     * Simply logs the exception thown.
-     * 
-     * @param throwable the error to be logged.
-     */
-    public void error(final Throwable throwable) {
-        AeroGearLogger.LOGGER.routeCatchAllException(throwable);
+import org.junit.Test;
+
+public class ErrorRouteTest {
+
+    @Test
+    public void defaultErrorRoute() {
+        final Route errorRoute = ErrorRoute.DEFAULT.getRoute();
+        assertThat(errorRoute.canHandle(new Throwable())).isTrue();
+        assertThat(errorRoute.getTargetClass()).isEqualTo(ErrorHandler.class);
+        assertThat(errorRoute.getTargetMethod().getName()).isEqualTo("error");
     }
     
 }

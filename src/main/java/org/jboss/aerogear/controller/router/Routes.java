@@ -57,6 +57,6 @@ public class Routes {
                 return route;
             }
         }
-        return ErrorHandler.defaultErrorRoute();
+        return ErrorRoute.DEFAULT.getRoute();
     }
 }

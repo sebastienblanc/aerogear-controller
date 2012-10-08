@@ -18,7 +18,10 @@
 package org.jboss.aerogear.controller.router;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,9 +29,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.aerogear.controller.log.AeroGearLogger;
+import org.mvel2.templates.TemplateRuntime;
+
 /**
- * This Servlet is used as a default error handling servlet is a explicit error route was
- * not configured. 
+ * This Servlet is used as a default error handling servlet when an explicit error route has
+ * not been configured. 
  * </p>
  * 
  * @see ErrorHandler
@@ -44,10 +50,43 @@ public class ErrorServlet extends HttpServlet {
      */
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        @SuppressWarnings("resource")
         final PrintWriter writer = resp.getWriter();
         final Throwable t = (Throwable) req.getAttribute(DefaultRouter.EXCEPTION_ATTRIBUTE_NAME);
-        final String html = ErrorHandler.readTemplate(TEMPLATE, t);
+        final String html = ErrorServlet.readTemplate(TEMPLATE, t);
         writer.write(html);
+    }
+    
+    /**
+     * Reads the template and makes Throwable available as a variable named 'exception'. 
+     * </p>
+     * The template language used by this method is MVEL2 (http://http://mvel.codehaus.org/).
+     * 
+     * @param templatePath the path to the template used for displaying the exception.
+     * @param throwable the exception to be used in the target template.
+     * @return {@code String} the result of  processing the passed-in template.
+     */
+    @SuppressWarnings("resource")
+    public static String readTemplate(final String templatePath, final Throwable throwable) {
+        InputStream in = null;
+        try {
+            in = ErrorServlet.class.getResourceAsStream(templatePath);
+            final Map<String, Object> vars = new HashMap<String, Object>();
+            vars.put("exception", throwable);
+            return (String) TemplateRuntime.eval(in, vars);
+        } finally {
+            safeClose(in);
+        }
+    }
+
+    private static void safeClose(InputStream in) {
+        if (in != null) {
+            try {
+                in.close();
+            } catch (final IOException e) {
+                AeroGearLogger.LOGGER.closeInputStream(e);
+            }
+        }
     }
     
 }

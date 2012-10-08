@@ -24,7 +24,7 @@ import java.util.HashSet;
 
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.router.DefaultRoute;
-import org.jboss.aerogear.controller.router.ErrorHandler;
+import org.jboss.aerogear.controller.router.ErrorRoute;
 import org.jboss.aerogear.controller.router.Route;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ public class ErrorViewResolverTest {
     @Test
     public void resolveGlobalErrorPath() {
         final ErrorViewResolver evs = new ErrorViewResolver(new DefaultViewResolver());
-        final String resolvedPath = evs.resolveViewPathFor(ErrorHandler.defaultErrorRoute());
+        final String resolvedPath = evs.resolveViewPathFor(ErrorRoute.DEFAULT.getRoute());
         assertThat(resolvedPath).isEqualTo("/ErrorServlet");
     }
     
