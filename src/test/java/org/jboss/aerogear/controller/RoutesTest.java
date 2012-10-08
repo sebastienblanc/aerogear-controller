@@ -1,6 +1,8 @@
 package org.jboss.aerogear.controller;
 
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
+import org.jboss.aerogear.controller.router.ErrorHandler;
+import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.Routes;
 import org.junit.Test;
 
@@ -73,6 +75,24 @@ public class RoutesTest {
             }
         }.build();
         assertThat(routes.hasRouteFor(GET, "/car/1")).isTrue();
+    }
+    
+    @Test
+    public void routesWithDefaultExceptionRoute() {
+        Routes routes = new AbstractRoutingModule() {
+            @Override
+            public void configuration() throws Exception {
+                route()
+                        .from("/home")
+                        .on(GET)
+                        .to(SampleController.class).index();
+            }
+        }.build();
+        Route route = routes.routeFor(new IllegalStateException());
+        assertThat(route).isNotNull();
+        assertThat(route.canHandle(new IllegalStateException())).isTrue();
+        assertThat(route.canHandle(new Throwable())).isTrue();
+        assertThat(route.getTargetClass()).isEqualTo(ErrorHandler.class);
     }
 
     public static class Car {

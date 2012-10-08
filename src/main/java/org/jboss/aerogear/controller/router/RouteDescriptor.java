@@ -7,16 +7,21 @@ import org.jboss.aerogear.controller.RequestMethod;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Set;
 
 public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.TargetEndpoint {
-    private final String path;
+    private String path;
     private Method targetMethod;
     private Object[] args;
     private RequestMethod[] methods;
     private Class<?> targetClass;
     private String[] roles;
+    private Set<Class<? extends Throwable>> throwables;
 
-    public RouteDescriptor(String path) {
+    public RouteDescriptor() {
+    }
+    
+    public void setPath(String path) {
         this.path = path;
     }
 
@@ -85,5 +90,13 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
                 ", targetMethod=" + targetMethod +
                 ", args=" + (args == null ? null : Arrays.asList(args)) +
                 '}';
+    }
+
+    public void setThrowables(Set<Class<? extends Throwable>> throwable) {
+        this.throwables = throwable;
+    }
+    
+    public Set<Class<? extends Throwable>> getThrowables() {
+        return throwables;
     }
 }

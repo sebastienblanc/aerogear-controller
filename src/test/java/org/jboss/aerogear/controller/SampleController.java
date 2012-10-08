@@ -20,4 +20,18 @@ public class SampleController {
 
     public void admin() {
     }
+    
+    public void error(final Exception e) {
+    }
+
+    public void throwSampleControllerException() throws SampleControllerException {
+        throw new SampleControllerException("Bogus exception");
+    }
+    
+    public void throwIllegalStateException() {
+        throw new IllegalStateException("Bogus exception");
+    }
+
+    public void errorPage() {
+    }
 }
