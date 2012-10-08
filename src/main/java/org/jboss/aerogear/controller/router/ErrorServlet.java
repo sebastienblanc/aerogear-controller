@@ -60,7 +60,7 @@ public class ErrorServlet extends HttpServlet {
     /**
      * Reads the template and makes Throwable available as a variable named 'exception'. 
      * </p>
-     * The template language used by this method is MVEL2 (http://http://mvel.codehaus.org/).
+     * The template language used by this method is MVEL2 (http://mvel.codehaus.org/).
      * 
      * @param templatePath the path to the template used for displaying the exception.
      * @param throwable the exception to be used in the target template.
