@@ -87,7 +87,6 @@ public class DefaultRouterTest {
     public void testRouteAllowed() throws Exception {
         final SampleController controller = spy(new SampleController());
         when(route.isSecured()).thenReturn(true);
-        when(securityProvider.isRouteAllowed(route)).thenReturn(true);
 
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
@@ -105,7 +104,8 @@ public class DefaultRouterTest {
         doThrow(new ServletException()).when(securityProvider).isRouteAllowed(route);
 
         when(route.isSecured()).thenReturn(true);
-        verify(securityProvider.isRouteAllowed(route));
+        //TODO it must be fixed with mockito
+        securityProvider.isRouteAllowed(route);
 
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
