@@ -42,7 +42,7 @@ import org.mvel2.templates.TemplateRuntime;
 @WebServlet (value="/ErrorServlet")
 public class ErrorServlet extends HttpServlet {
 
-    private static final String TEMPLATE = "/org/jboss/aerogrear/controller/router/error.html";
+    private static final String TEMPLATE = "/org/jboss/aerogear/controller/router/error.html";
     private static final long serialVersionUID = 1L;
 
     /**

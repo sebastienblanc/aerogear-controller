@@ -26,7 +26,7 @@ public class ErrorServletTest {
     @Test
     public void readTempate() {
         final Exception e = new IllegalStateException("dummy");
-        final String template = ErrorServlet.readTemplate("/org/jboss/aerogrear/controller/router/error.html", e);
+        final String template = ErrorServlet.readTemplate("/org/jboss/aerogear/controller/router/error.html", e);
         assertThat(template).isNotNull();
     }
 
