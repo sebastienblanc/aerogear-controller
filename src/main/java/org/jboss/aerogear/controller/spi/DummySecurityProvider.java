@@ -5,7 +5,7 @@ import org.jboss.aerogear.controller.router.Route;
 import javax.enterprise.inject.Alternative;
 
 /**
- * Temporary SecurityProvider implementation.
+ * CDI Alternative SecurityProvider implementation.
  */
 @Alternative
 public class DummySecurityProvider implements SecurityProvider {
