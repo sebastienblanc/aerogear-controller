@@ -94,6 +94,36 @@ public class RoutesTest {
         assertThat(route.canHandle(new Throwable())).isTrue();
         assertThat(route.getTargetClass()).isEqualTo(ErrorHandler.class);
     }
+    
+    @Test
+    public void exceptionRoutesOrder() {
+        Routes routes = new AbstractRoutingModule() {
+            @Override
+            public void configuration() throws Exception {
+                route().on(SubException.class).to(SampleController.class).subException();
+                route().on(SuperException.class).to(SampleController.class).superException();
+                route().on(Exception.class).to(SampleController.class).error(param(Exception.class));
+                route()
+                        .from("/home")
+                        .on(GET)
+                        .to(SampleController.class).index();
+            }
+        }.build();
+        final Route superErrorRoute = routes.routeFor(new SuperException());
+        assertThat(superErrorRoute.canHandle(new SuperException())).isTrue();
+        assertThat(superErrorRoute.canHandle(new SubException())).isTrue();
+        assertThat(superErrorRoute.getTargetMethod().getName()).isEqualTo("superException");
+        
+        final Route subErrorRoute = routes.routeFor(new SubException());
+        assertThat(subErrorRoute.canHandle(new SubException())).isTrue();
+        assertThat(subErrorRoute.canHandle(new SuperException())).isFalse();
+        assertThat(subErrorRoute.getTargetMethod().getName()).isEqualTo("subException");
+        
+        final Route genErrorRoute = routes.routeFor(new Exception());
+        assertThat(genErrorRoute.canHandle(new SuperException())).isTrue();
+        assertThat(genErrorRoute.canHandle(new SubException())).isTrue();
+        assertThat(genErrorRoute.getTargetMethod().getName()).isEqualTo("error");
+    }
 
     public static class Car {
 
@@ -113,5 +143,12 @@ public class RoutesTest {
                     "name='" + name + '\'' +
                     '}';
         }
+    }
+    
+    public static class SuperException extends Exception {
+        private static final long serialVersionUID = 1L;
+    }
+    public static class SubException extends SuperException {
+        private static final long serialVersionUID = 1L;
     }
 }

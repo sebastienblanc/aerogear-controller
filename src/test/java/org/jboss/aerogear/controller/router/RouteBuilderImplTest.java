@@ -32,7 +32,7 @@ public class RouteBuilderImplTest {
     }
     
     @Test (expected = IllegalArgumentException.class)
-    public void testWrongException_type() {
+    public void testWrongExceptionType() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         rb.on(IllegalStateException.class, String.class);
     }
