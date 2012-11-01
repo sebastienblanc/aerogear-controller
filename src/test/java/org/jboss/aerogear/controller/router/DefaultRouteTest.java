@@ -97,6 +97,16 @@ public class DefaultRouteTest {
         final Route route = new DefaultRoute("/car/{id}", GET, TARGET_CLASS, TARGET_METHOD);
         assertThat(route.matches(RequestMethod.GET, "/car/3")).isTrue();
     }
+    
+    @Test
+    public void toStringTest() {
+        final Route route = new DefaultRoute("/car/{id}", GET, TARGET_CLASS, TARGET_METHOD);
+        final String expected = "DefaultRoute[path=/car/{id}, " +
+            "targetClass=class org.jboss.aerogear.controller.SampleController, " +
+            "targetMethod=public void org.jboss.aerogear.controller.SampleController.index(), " +
+            "roles=[], throwables=[]]";
+        assertThat(route.toString()).isEqualTo(expected);
+    }
 
     private static final Method indexMethod(final Class<?> targetClass, final String methodName) {
         Method m = null;

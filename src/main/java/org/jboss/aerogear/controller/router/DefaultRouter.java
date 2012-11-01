@@ -54,8 +54,6 @@ public class DefaultRouter implements Router {
     private Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     private ControllerFactory controllerFactory;
     private final ViewResolver errorViewResolver;
-
-    @Inject
     private SecurityProvider securityProvider;
 
     @Inject

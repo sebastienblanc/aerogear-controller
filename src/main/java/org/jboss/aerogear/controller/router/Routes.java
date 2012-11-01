@@ -18,7 +18,7 @@ public class Routes {
 
     private final List<Route> routes = new ArrayList<Route>();
 
-    public Routes(List<RouteBuilder> routeBuilders) {
+    private Routes(List<RouteBuilder> routeBuilders) {
         for (RouteBuilder routeBuilder : routeBuilders) {
             routes.add(routeBuilder.build());
         }

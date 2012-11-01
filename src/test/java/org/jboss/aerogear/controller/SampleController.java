@@ -34,4 +34,10 @@ public class SampleController {
 
     public void errorPage() {
     }
+    
+    public void superException() {
+    }
+    
+    public void subException() {
+    }
 }
