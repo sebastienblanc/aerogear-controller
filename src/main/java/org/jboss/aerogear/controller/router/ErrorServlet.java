@@ -44,19 +44,19 @@ public class ErrorServlet extends HttpServlet {
 
     private static final String TEMPLATE = "/org/jboss/aerogear/controller/router/error.html";
     private static final long serialVersionUID = 1L;
-
+    
     /**
      * Writes a general error page response to the client. 
      */
     @Override
-    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         @SuppressWarnings("resource")
         final PrintWriter writer = resp.getWriter();
         final Throwable t = (Throwable) req.getAttribute(DefaultRouter.EXCEPTION_ATTRIBUTE_NAME);
         final String html = ErrorServlet.readTemplate(TEMPLATE, t);
         writer.write(html);
     }
-    
+
     /**
      * Reads the template and makes Throwable available as a variable named 'exception'. 
      * </p>
