@@ -19,7 +19,9 @@ package org.jboss.aerogear.controller.router.decorators;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.servlet.ServletException;
 
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
@@ -43,9 +45,9 @@ public class SecurityHandler implements RouteProcessor {
      * @param securityProvider the security provider to be used.
      */
     @Inject
-    public SecurityHandler(final @Delegate RouteProcessor delegate, final SecurityProvider securityProvider) {
+    public SecurityHandler(final @Delegate RouteProcessor delegate, final Instance<SecurityProvider> securityProviders) {
         this.delegate = delegate;
-        this.securityProvider = securityProvider;
+        this.securityProvider = securityProviders.isUnsatisfied() ? defaultSecurityProvider(): securityProviders.get();
     }
 
     /**
@@ -60,6 +62,14 @@ public class SecurityHandler implements RouteProcessor {
             securityProvider.isRouteAllowed(route);
         }
         delegate.process(route, routeContext);
+    }
+    
+    private SecurityProvider defaultSecurityProvider() {
+        return new SecurityProvider() {
+            @Override
+            public void isRouteAllowed(Route route) throws ServletException {
+            }
+        };
     }
     
 }
