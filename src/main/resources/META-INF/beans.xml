@@ -22,4 +22,8 @@
     <alternatives>
         <class>org.jboss.aerogear.controller.spi.DummySecurityProvider</class>
     </alternatives>
+    <decorators>
+        <class>org.jboss.aerogear.controller.router.decorators.ErrorHandler</class>
+        <class>org.jboss.aerogear.controller.router.decorators.SecurityHandler</class>
+    </decorators>
 </beans>

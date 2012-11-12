@@ -33,8 +33,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 
 import org.jboss.aerogear.controller.log.AeroGearLogger;
-import org.jboss.aerogear.controller.router.DefaultRouter;
-import org.jboss.aerogear.controller.router.ErrorHandler;
+import org.jboss.aerogear.controller.router.decorators.ErrorHandler;
+import org.jboss.aerogear.controller.router.error.ErrorRoute;
 import org.mvel2.templates.TemplateRuntime;
 
 /**
@@ -57,7 +57,7 @@ public class ErrorFilter implements Filter {
      */
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-        final Throwable throwable = (Throwable) request.getAttribute(DefaultRouter.EXCEPTION_ATTRIBUTE_NAME);
+        final Throwable throwable = (Throwable) request.getAttribute(ErrorRoute.DEFAULT.getExceptionAttrName());
         final String html = ErrorFilter.readTemplate(TEMPLATE, throwable);
         response.getWriter().write(html);
     }

@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router;
+package org.jboss.aerogear.controller.router.error;
 
 import org.jboss.aerogear.controller.log.AeroGearLogger;
+import org.jboss.aerogear.controller.router.Route;
 
 /**
  * ErrorHandler is used as default target for a {@link Route} when a route has not defined any 
  * explicit error route.
  */
-public class ErrorHandler {
+public class ErrorTarget {
     
     /**
      * Simply logs the exception thown.

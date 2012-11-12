@@ -1,9 +1,9 @@
 package org.jboss.aerogear.controller;
 
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
-import org.jboss.aerogear.controller.router.ErrorHandler;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.Routes;
+import org.jboss.aerogear.controller.router.error.ErrorTarget;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -92,7 +92,7 @@ public class RoutesTest {
         assertThat(route).isNotNull();
         assertThat(route.canHandle(new IllegalStateException())).isTrue();
         assertThat(route.canHandle(new Throwable())).isTrue();
-        assertThat(route.getTargetClass()).isEqualTo(ErrorHandler.class);
+        assertThat(route.getTargetClass()).isEqualTo(ErrorTarget.class);
     }
     
     @Test

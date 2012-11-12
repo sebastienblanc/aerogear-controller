@@ -6,7 +6,7 @@ import javax.enterprise.inject.spi.BeanManager;
 /**
  * ControllerFactory is a factory for target endpoint classes in AeroGear.
  */
-class ControllerFactory {
+public class ControllerFactory {
 
     /**
      * Creates an instance of the passed-in type by delegating to CDI (beanManager).

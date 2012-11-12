@@ -3,6 +3,7 @@ package org.jboss.aerogear.controller.router;
 import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.router.error.ErrorRoute;
 
 import java.util.ArrayList;
 import java.util.List;

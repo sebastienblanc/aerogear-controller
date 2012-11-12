@@ -1,0 +1,85 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2012, Red Hat, Inc., and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.jboss.aerogear.controller.router;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.jboss.aerogear.controller.util.RequestUtils;
+
+/**
+ * RouteContext holds information related to processing of a Route.
+ */
+public class RouteContext {
+    
+    private final String requestPath;
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
+    private final Routes routes;
+    
+    /**
+     * Sole constructor.
+     * 
+     * @param request the {@link HttpServletRequest}.
+     * @param response the {@link HttpServletRequest}.
+     * @param routes the {@link Routes} to enables querying of information about configured routes.
+     */
+    public RouteContext(final HttpServletRequest request, final HttpServletResponse response, final Routes routes) {
+        this.requestPath = RequestUtils.extractPath(request);
+        this.request = request;
+        this.response = response;
+        this.routes = routes;
+    }
+
+    /**
+     * Returns the request path minus the context path (suffix) for the current request. 
+     * 
+     * @return {@code String} the request path minus the context path (suffix) for the current request.
+     */
+    public String getRequestPath() {
+        return requestPath;
+    }
+
+    /**
+     * Returns the current {@link HttpServletRequest}.
+     * 
+     * @return {@link HttpServletRequest} the current {@link HttpServletRequest}.
+     */
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    /**
+     * Returns the current {@link HttpServletResponse}.
+     * 
+     * @return {@link HttpServletResponse} the current {@link HttpServletResponse}.
+     */
+    public HttpServletResponse getResponse() {
+        return response;
+    }
+    
+    /**
+     * Returns the {@link Routes} instance for the current application.
+     * 
+     * @return {@link Routes} instance which contains all of the routes of the current application.
+     */
+    public Routes getRoutes() {
+        return routes;
+    }
+    
+}

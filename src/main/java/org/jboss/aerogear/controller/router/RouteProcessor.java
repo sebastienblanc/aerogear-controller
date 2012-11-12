@@ -17,20 +17,19 @@
 
 package org.jboss.aerogear.controller.router;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-import org.jboss.aerogear.controller.router.error.ErrorTarget;
-import org.jboss.aerogear.controller.router.error.ErrorRoute;
-import org.junit.Test;
-
-public class ErrorRouteTest {
-
-    @Test
-    public void defaultErrorRoute() {
-        final Route errorRoute = ErrorRoute.DEFAULT.getRoute();
-        assertThat(errorRoute.canHandle(new Throwable())).isTrue();
-        assertThat(errorRoute.getTargetClass()).isEqualTo(ErrorTarget.class);
-        assertThat(errorRoute.getTargetMethod().getName()).isEqualTo("error");
-    }
+/**
+ * A RouteProcessor processes/handles a single Route in AeroGear Controller.
+ * </p>
+ */
+public interface RouteProcessor {
     
+    /**
+     * Handles the actual invokation of the target or the passed-in {@link Route}.
+     * 
+     * @param route the {@link Route} to process.
+     * @param routeContext the {@link RouteContext} for the current request.
+     * @throws Exception if proceesing of the route causes an exception.
+     */
+    void process(Route route, RouteContext routeContext) throws Exception;
+
 }
