@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router;
+package org.jboss.aerogear.controller.filter;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 import org.junit.Test;
 
-public class ErrorServletTest {
+public class ErrorFilterTest {
 
     @Test
     public void readTempate() {
         final Exception e = new IllegalStateException("dummy");
-        final String template = ErrorServlet.readTemplate("/org/jboss/aerogear/controller/router/error.html", e);
+        final String template = ErrorFilter.readTemplate("/org/jboss/aerogear/controller/router/error.html", e);
         assertThat(template).isNotNull();
     }
 

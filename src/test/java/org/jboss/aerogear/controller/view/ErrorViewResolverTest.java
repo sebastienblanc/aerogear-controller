@@ -39,7 +39,7 @@ public class ErrorViewResolverTest {
     public void resolveGlobalErrorPath() {
         final ErrorViewResolver evs = new ErrorViewResolver(new DefaultViewResolver());
         final String resolvedPath = evs.resolveViewPathFor(ErrorRoute.DEFAULT.getRoute());
-        assertThat(resolvedPath).isEqualTo("/ErrorServlet");
+        assertThat(resolvedPath).isEqualTo("/ErrorFilter");
     }
     
     @Test
@@ -51,7 +51,7 @@ public class ErrorViewResolverTest {
     
     @SuppressWarnings("unchecked")
     private Route customErrorRoute(final Class<? extends Throwable> t) throws Exception {
-        return new DefaultRoute("/ErrorServlet", new RequestMethod[]{RequestMethod.GET}, 
+        return new DefaultRoute("/ErrorFilter", new RequestMethod[]{RequestMethod.GET}, 
                 ErrorTarget.class, 
                 ErrorTarget.class.getDeclaredMethod("errorPage"), 
                 new HashSet<Class<? extends Throwable>>(Arrays.asList(t)));

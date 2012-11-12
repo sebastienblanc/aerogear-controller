@@ -21,9 +21,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import javax.servlet.annotation.WebServlet;
+import javax.servlet.annotation.WebFilter;
 
 import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.filter.ErrorFilter;
 
 /**
  * A singleton {@link Route} that acts as a catch-all error {@link Route} which 
@@ -37,7 +38,7 @@ public enum ErrorRoute {
     
     @SuppressWarnings("unchecked")
     private ErrorRoute() {
-        route = new DefaultRoute(ErrorServlet.class.getAnnotation(WebServlet.class).value()[0], 
+        route = new DefaultRoute(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0], 
             new RequestMethod[]{RequestMethod.GET}, 
             ErrorHandler.class, targetMethod("error"),
             new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)));
@@ -52,7 +53,7 @@ public enum ErrorRoute {
         return route;
     }
     
-    private static final Method targetMethod(final String methodName) {
+    private static Method targetMethod(final String methodName) {
         try {
             return ErrorHandler.class.getDeclaredMethod(methodName, Throwable.class);
         } catch (final Exception e) {
