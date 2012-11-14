@@ -1,5 +1,8 @@
 package org.jboss.aerogear.controller.router;
 
+import java.util.Collections;
+
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,8 +31,8 @@ public class DefaultRouter implements Router {
     }
     
     @Inject
-    public DefaultRouter(RoutingModule routes, RouteProcessor routeProcessor) {
-        this.routes = routes.build();
+    public DefaultRouter(Instance<RoutingModule> instance, RouteProcessor routeProcessor) {
+        this.routes = instance.isUnsatisfied() ? Routes.from(Collections.<RouteBuilder>emptyList()) : instance.get().build();
         this.routeProcessor = routeProcessor;
     }
 

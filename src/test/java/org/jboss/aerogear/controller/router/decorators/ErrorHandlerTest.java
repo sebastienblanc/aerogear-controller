@@ -44,7 +44,6 @@ import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
 import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.router.RoutingModule;
-import org.jboss.aerogear.controller.router.decorators.ErrorHandler;
 import org.jboss.aerogear.controller.router.error.ErrorTarget;
 import org.jboss.aerogear.controller.view.ViewResolver;
 import org.junit.Before;
@@ -82,7 +81,7 @@ public class ErrorHandlerTest {
         controller = spy(new SampleController());
         configureExceptionTestMocks(controller);
     }
-    
+
     @Test 
     public void testOnException() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
