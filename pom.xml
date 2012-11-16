@@ -4,7 +4,7 @@
 
     <groupId>org.jboss.aerogear</groupId>
     <artifactId>aerogear-controller</artifactId>
-    <version>0.0.4.M6-SNAPSHOT</version>
+    <version>1.0.0.M1-20121115</version>
     <packaging>jar</packaging>
 
     <name>aerogear-controller</name>
