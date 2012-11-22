@@ -11,7 +11,7 @@ public class StringUtils {
     private StringUtils() {
     }
     
-    public static String decapitalize(String name) {
+    private static String decapitalize(String name) {
         if (name.length() == 1) {
             return name.toLowerCase();
         }

@@ -23,7 +23,7 @@ import java.util.List;
  * 
  */
 public abstract class AbstractRoutingModule implements RoutingModule {
-    private List<RouteBuilder> routes = new LinkedList<RouteBuilder>();
+    private final List<RouteBuilder> routes = new LinkedList<RouteBuilder>();
     
     /**
      * "Hook" for the template method {@link #build()}, which subclasses should
@@ -66,24 +66,11 @@ public abstract class AbstractRoutingModule implements RoutingModule {
      * <pre>
      *     .to(SampleController.class).save(param(Car.class));
      * </pre>
-     * 
+     *
      * @param clazz the type of the parameter that the target method accepts.
      * @return T reference of type T but will always be null.
      */
     public static <T> T param(Class<T> clazz) {
-        return null;
-    }
-
-    /**
-     * Param is used when a target method takes a argument.
-     * </p>
-     * Example usage:<pre>{@code
-     *     .to(SampleController.class).save(AbstractRoutingModule.<Car>param());
-     * }</pre>
-     * 
-     * @return T reference of type T but will always be null.
-     */
-    public static <T> T param() {
         return null;
     }
 

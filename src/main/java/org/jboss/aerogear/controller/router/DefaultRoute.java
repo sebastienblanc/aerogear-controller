@@ -143,17 +143,17 @@ public class DefaultRoute implements Route {
         }
         return false;
     }
-    
+
     @Override
     public String toString() {
         return new StringBuilder("DefaultRoute[")
-            .append("path=").append(path)
-            .append(", targetClass=").append(targetClass)
-            .append(", targetMethod=").append(targetMethod)
-            .append(", roles=").append(roles)
-            .append(", throwables=").append(throwables)
-            .append("]")
-            .toString();
+                .append("path=").append(path)
+                .append(", targetClass=").append(targetClass)
+                .append(", targetMethod=").append(targetMethod)
+                .append(", roles=").append(roles)
+                .append(", throwables=").append(throwables)
+                .append("]")
+                .toString();
     }
 
     private Set<RequestMethod> asSet(final RequestMethod[] methods) {
@@ -165,6 +165,6 @@ public class DefaultRoute implements Route {
     }
 
     private static Set<Class<? extends Throwable>> emptyThrowableSet() {
-        return Collections.<Class<? extends Throwable>>emptySet();
+        return Collections.emptySet();
     }
 }

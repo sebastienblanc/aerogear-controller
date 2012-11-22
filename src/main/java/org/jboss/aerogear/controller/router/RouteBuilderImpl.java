@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class RouteBuilderImpl implements RouteBuilder {
 
-    private RouteDescriptor routeDescriptor = new RouteDescriptor();
+    private final RouteDescriptor routeDescriptor = new RouteDescriptor();
 
     @Override
     public OnMethods from(String path) {

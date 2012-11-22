@@ -107,7 +107,7 @@ public class DefaultRouteTest {
         assertThat(route.toString()).isEqualTo(expected);
     }
 
-    private static final Method indexMethod(final Class<?> targetClass, final String methodName) {
+    private static Method indexMethod(final Class<?> targetClass, final String methodName) {
         Method m = null;
         try {
             m = targetClass.getDeclaredMethod(methodName);
