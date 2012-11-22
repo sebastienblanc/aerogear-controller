@@ -2,7 +2,7 @@ package org.jboss.aerogear.controller.log;
 
 import java.io.IOException;
 
-import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;

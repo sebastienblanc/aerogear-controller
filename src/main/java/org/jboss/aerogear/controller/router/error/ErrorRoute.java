@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router;
+package org.jboss.aerogear.controller.router.error;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.filter.ErrorFilter;
+import org.jboss.aerogear.controller.router.AeroGearException;
+import org.jboss.aerogear.controller.router.DefaultRoute;
+import org.jboss.aerogear.controller.router.RequestMethod;
+import org.jboss.aerogear.controller.router.Route;
 
 /**
  * A singleton {@link Route} that acts as a catch-all error {@link Route} which 
@@ -32,20 +36,22 @@ import org.jboss.aerogear.controller.filter.ErrorFilter;
  */
 public enum ErrorRoute {
     
-    DEFAULT;
+    DEFAULT("org.jboss.aerogear.controller.exception");
     
     private final Route route;
+    private final String exceptionAttributeName;
     
     @SuppressWarnings("unchecked")
-    private ErrorRoute() {
+    private ErrorRoute(final String exceptionAttributeName) {
+        this.exceptionAttributeName = exceptionAttributeName;
         route = new DefaultRoute(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0], 
             new RequestMethod[]{RequestMethod.GET}, 
-            ErrorHandler.class, targetMethod("error"),
+            ErrorTarget.class, targetMethod("error"),
             new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)));
     }
     
     /**
-     * Returns an {@link Route} which is configured to route to an instance of {@link ErrorHandler}.
+     * Returns an {@link Route} which is configured to route to an instance of {@link ErrorTarget}.
      * 
      * @return {@link Route} provided as a fallback when a route has no explicit error route  defined.
      */
@@ -53,12 +59,23 @@ public enum ErrorRoute {
         return route;
     }
     
+    /**
+     * Returns the name of the request attribute for this ErrorRoute, which will be accessible 
+     * by calling {@link HttpServletRequest#getAttribute(String)} method.
+     * 
+     * @return String the name of the request attribute to get hold of the target exception.
+     */
+    public String getExceptionAttrName() {
+        return exceptionAttributeName;
+    }
+    
     private static Method targetMethod(final String methodName) {
         try {
-            return ErrorHandler.class.getDeclaredMethod(methodName, Throwable.class);
+            return ErrorTarget.class.getDeclaredMethod(methodName, Throwable.class);
         } catch (final Exception e) {
             throw new AeroGearException("Could not find a method named '" + methodName + "' on target class", e);
         }
     }
+    
 
 }

@@ -19,7 +19,6 @@ package org.jboss.aerogear.controller.router;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.SampleController;
 import org.junit.Test;
 

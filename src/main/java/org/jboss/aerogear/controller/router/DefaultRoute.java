@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.jboss.aerogear.controller.RequestMethod;
 
 /**
  * An immutable implementation of {@link Route}.

@@ -19,8 +19,8 @@ package org.jboss.aerogear.controller.view;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.jboss.aerogear.controller.router.ErrorHandler;
 import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.error.ErrorTarget;
 
 /**
  * A {@link ViewResolver} that decorates a ViewResolver to enable short-curcuiting
@@ -48,7 +48,7 @@ public class ErrorViewResolver implements ViewResolver {
      */
     @Override
     public String resolveViewPathFor(final Route route) {
-        if (route.getTargetClass().equals(ErrorHandler.class)) {
+        if (route.getTargetClass().equals(ErrorTarget.class)) {
             return route.getPath();
         }
         return delegate.resolveViewPathFor(route);
