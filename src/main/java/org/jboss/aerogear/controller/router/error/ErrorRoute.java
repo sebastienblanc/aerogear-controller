@@ -69,7 +69,7 @@ public enum ErrorRoute {
         return exceptionAttributeName;
     }
     
-    private static final Method targetMethod(final String methodName) {
+    private final Method targetMethod(final String methodName) {
         try {
             return ErrorTarget.class.getDeclaredMethod(methodName, Throwable.class);
         } catch (final Exception e) {
