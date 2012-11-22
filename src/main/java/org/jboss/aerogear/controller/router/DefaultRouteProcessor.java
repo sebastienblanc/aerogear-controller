@@ -113,7 +113,7 @@ public class DefaultRouteProcessor implements RouteProcessor {
             return new Object[]{instantiate};
         }
 
-        return new Object[0];  //To change body of created methods use File | Settings | File Templates.
+        return new Object[0];  
     }
 
     private Object getController(Route route) {
