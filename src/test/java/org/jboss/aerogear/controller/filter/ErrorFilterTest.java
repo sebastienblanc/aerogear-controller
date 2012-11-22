@@ -24,7 +24,7 @@ import org.junit.Test;
 public class ErrorFilterTest {
 
     @Test
-    public void readTempate() {
+    public void readTemplate() {
         final Exception e = new IllegalStateException("dummy");
         final String template = ErrorFilter.readTemplate("/org/jboss/aerogear/controller/router/error.html", e);
         assertThat(template).isNotNull();

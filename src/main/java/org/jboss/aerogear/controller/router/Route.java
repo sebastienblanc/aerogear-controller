@@ -77,7 +77,7 @@ public interface Route {
     /**
      * Determines if this Route can handle the throwable.
      * 
-     * @param throwable 
+     * @param throwable
      * @return {@code true} if this Route can handle the Throwable, otherwise {@code false}.
      */
     boolean canHandle(Throwable throwable);

@@ -87,7 +87,7 @@ public class DefaultRouteProcessor implements RouteProcessor {
     }
     
     private Object[] extractPathParameters(String requestPath, Route route) {
-        // TODO: extract this from resteasy
+        // TODO: extract this from Resteasy
         final int paramOffset = route.getPath().indexOf('{');
         final CharSequence param = requestPath.subSequence(paramOffset, requestPath.length());
         return new Object[]{param.toString()};

@@ -27,7 +27,7 @@ import org.jboss.aerogear.controller.router.Route;
 public class ErrorTarget {
     
     /**
-     * Simply logs the exception thown.
+     * Simply logs the exception thrown.
      * 
      * @param throwable the error to be logged.
      */

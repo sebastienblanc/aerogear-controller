@@ -78,7 +78,7 @@ public class SecurityHandlerTest {
     }
     
     @Test (expected = ServletException.class)
-    public void testRouteForbbiden() throws Exception {
+    public void testRouteForbidden() throws Exception {
         when(route.isSecured()).thenReturn(true);
         doThrow(ServletException.class).when(securityProvider).isRouteAllowed(any(Route.class));
         securityHandler.process(route, routeContext());

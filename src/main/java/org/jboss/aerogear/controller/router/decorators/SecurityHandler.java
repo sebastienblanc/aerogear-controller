@@ -42,7 +42,7 @@ public class SecurityHandler implements RouteProcessor {
      * Sole constructor which will have its parameters injected by CDI.
      * 
      * @param delegate the target {@link RouteProcessor}.
-     * @param securityProvider the security provider to be used.
+     * @param securityProviders the security provider to be used.
      */
     @Inject
     public SecurityHandler(final @Delegate RouteProcessor delegate, final Instance<SecurityProvider> securityProviders) {

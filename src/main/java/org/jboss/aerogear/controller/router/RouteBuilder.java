@@ -30,7 +30,7 @@ public interface RouteBuilder {
      * Specifies the request path that the {@link Route} will handle request from.
      * 
      * @param path the request path that the {@link Route} will handle request from.
-     * @return {@link OnMethods} which enables futher specialization of the types of requests that 
+     * @return {@link OnMethods} which enables further specialization of the types of requests that
      * can be handled by the {@link Route}.
      */
     OnMethods from(String path);

@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * AbstractRoutingModule simplfies the process of configuring Routes by implementing
+ * AbstractRoutingModule simplifies the process of configuring Routes by implementing
  * {@link RoutingModule} and providing helper methods.
  * </p>
  * Example Usage: 
@@ -28,7 +28,7 @@ public abstract class AbstractRoutingModule implements RoutingModule {
     /**
      * "Hook" for the template method {@link #build()}, which subclasses should
      * implement to define the routes of the application. 
-     * For an example usage see the javadocs for this class.
+     * For an example usage see the javadoc for this class.
      * 
      * @throws Exception enables a route to specify a target method that throws an exception. 
      * This method is only about configuring routes and not invoking them, but the target methods might

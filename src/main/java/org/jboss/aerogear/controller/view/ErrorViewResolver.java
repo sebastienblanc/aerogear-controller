@@ -23,7 +23,7 @@ import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.error.ErrorTarget;
 
 /**
- * A {@link ViewResolver} that decorates a ViewResolver to enable short-curcuiting
+ * A {@link ViewResolver} that decorates a ViewResolver to enable short-circuiting
  * the call to resolve the views path.
  * </p>
  * 

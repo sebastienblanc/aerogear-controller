@@ -22,7 +22,7 @@ public class DefaultRoute implements Route {
     private final Set<Class<? extends Throwable>> throwables;
 
     /**
-     * Constructs a Route without any roles or exceptions accociated with it.
+     * Constructs a Route without any roles or exceptions associated with it.
      * 
      * @param path the path for this Route. Can be {@code null}.
      * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.
@@ -47,7 +47,7 @@ public class DefaultRoute implements Route {
     }
     
     /**
-     * Constructs a Route with the specified exceptions accociated with it.
+     * Constructs a Route with the specified exceptions associated with it.
      * 
      * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.
      * @param targetClass the target {@link Class} that is the target for this Route. Must not be {@code null}
@@ -60,7 +60,7 @@ public class DefaultRoute implements Route {
     }
 
     /**
-     * Constructs a Route with the specified roles and exceptions accociated with it.
+     * Constructs a Route with the specified roles and exceptions associated with it.
      * 
      * @param path the path for this Route. Can be {@code null}.
      * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.

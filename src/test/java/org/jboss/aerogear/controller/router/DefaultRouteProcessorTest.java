@@ -103,12 +103,12 @@ public class DefaultRouteProcessorTest {
     }
 
     @Test(expected = ServletException.class)
-    public void testRouteForbbiden() throws Exception {
+    public void testRouteForbidden() throws Exception {
         final SampleController controller = spy(new SampleController());
         doThrow(new ServletException()).when(securityProvider).isRouteAllowed(route);
 
         when(route.isSecured()).thenReturn(true);
-        //TODO it must be fixed with mockito
+        //TODO it must be fixed with Mockito
         securityProvider.isRouteAllowed(route);
 
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);

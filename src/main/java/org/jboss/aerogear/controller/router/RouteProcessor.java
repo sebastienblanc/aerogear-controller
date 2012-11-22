@@ -24,11 +24,11 @@ package org.jboss.aerogear.controller.router;
 public interface RouteProcessor {
     
     /**
-     * Handles the actual invokation of the target or the passed-in {@link Route}.
+     * Handles the actual invocation of the target or the passed-in {@link Route}.
      * 
      * @param route the {@link Route} to process.
      * @param routeContext the {@link RouteContext} for the current request.
-     * @throws Exception if proceesing of the route causes an exception.
+     * @throws Exception if processing of the route causes an exception.
      */
     void process(Route route, RouteContext routeContext) throws Exception;
 
