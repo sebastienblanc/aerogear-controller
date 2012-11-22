@@ -19,10 +19,10 @@ package org.jboss.aerogear.controller.router.decorators;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.enterprise.inject.Instance;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,14 +35,11 @@ import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class SecurityHandlerTest {
     
-    @Mock
-    private SecurityProvider securityProvider;
     @Mock
     private Route route;
     @Mock
@@ -53,13 +50,20 @@ public class SecurityHandlerTest {
     private RouteProcessor routeProcessor;
     @Mock
     private Routes routes;
-    @InjectMocks
+    @Mock
+    private Instance<SecurityProvider> securityInstance;
+    @Mock
+    private SecurityProvider securityProvider;
+    @Mock
+    private ServletContext servletContext;
     private SecurityHandler securityHandler;
     
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        final ServletContext servletContext = mock(ServletContext.class);
+        when(securityInstance.isUnsatisfied()).thenReturn(false);
+        when(securityInstance.get()).thenReturn(securityProvider);
+        securityHandler = new SecurityHandler(routeProcessor, securityInstance);
         when(servletContext.getContextPath()).thenReturn("/myapp");
         when(request.getServletContext()).thenReturn(servletContext);
         when(request.getRequestURI()).thenReturn("/myapp/cars/1");
