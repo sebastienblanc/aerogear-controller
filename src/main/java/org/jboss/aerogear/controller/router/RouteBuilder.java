@@ -1,6 +1,5 @@
 package org.jboss.aerogear.controller.router;
 
-import org.jboss.aerogear.controller.RequestMethod;
 
 /**
  * RouteBuilder builds a {@link Route} using a fluent API.

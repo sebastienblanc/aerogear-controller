@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.fest.assertions.Fail;
-import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.SampleController;
 import org.junit.Test;
 

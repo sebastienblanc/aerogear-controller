@@ -1,6 +1,5 @@
 package org.jboss.aerogear.controller.router;
 
-import org.jboss.aerogear.controller.RequestMethod;
 
 import java.lang.reflect.Method;
 import java.util.Set;

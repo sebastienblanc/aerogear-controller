@@ -24,10 +24,10 @@ import java.util.HashSet;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.filter.ErrorFilter;
 import org.jboss.aerogear.controller.router.AeroGearException;
 import org.jboss.aerogear.controller.router.DefaultRoute;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
 
 /**

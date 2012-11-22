@@ -35,7 +35,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.view.ViewResolver;

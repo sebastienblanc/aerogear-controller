@@ -1,6 +1,6 @@
 package org.jboss.aerogear.controller.log;
 
-import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;

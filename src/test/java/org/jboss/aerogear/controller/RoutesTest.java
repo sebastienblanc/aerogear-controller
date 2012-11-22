@@ -7,8 +7,8 @@ import org.jboss.aerogear.controller.router.error.ErrorTarget;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.jboss.aerogear.controller.RequestMethod.GET;
-import static org.jboss.aerogear.controller.RequestMethod.POST;
+import static org.jboss.aerogear.controller.router.RequestMethod.GET;
+import static org.jboss.aerogear.controller.router.RequestMethod.POST;
 
 public class RoutesTest {
 

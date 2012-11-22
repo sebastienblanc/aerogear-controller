@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

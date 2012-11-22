@@ -19,7 +19,7 @@ package org.jboss.aerogear.controller.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.aerogear.controller.RequestMethod;
+import org.jboss.aerogear.controller.router.RequestMethod;
 
 /**
  * Utility methods for various {@link HttpServletRequest} operation.

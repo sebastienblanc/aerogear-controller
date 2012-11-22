@@ -34,11 +34,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.SampleControllerException;
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 import org.jboss.aerogear.controller.router.ControllerFactory;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;

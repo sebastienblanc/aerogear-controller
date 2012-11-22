@@ -22,8 +22,8 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.jboss.aerogear.controller.RequestMethod;
 import org.jboss.aerogear.controller.router.DefaultRoute;
+import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.error.ErrorRoute;
 import org.junit.Test;
