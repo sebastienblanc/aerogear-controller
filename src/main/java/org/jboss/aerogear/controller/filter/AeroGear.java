@@ -26,7 +26,7 @@ public class AeroGear implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!isHttpServletContainer(request, response)) {
+        if (isHttpServletContainer(request, response)) {
             throw LoggerMessages.MESSAGES.mustRunInsideAContainer();
         }
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
@@ -39,7 +39,7 @@ public class AeroGear implements Filter {
     }
 
     private boolean isHttpServletContainer(ServletRequest request, ServletResponse response) {
-        return request instanceof HttpServletRequest && response instanceof HttpServletResponse;
+        return !(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class DefaultRouteProcessor implements RouteProcessor {
     
     private BeanManager beanManager;
     private ViewResolver viewResolver;
-    private Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
+    private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     private ControllerFactory controllerFactory;
     
     public DefaultRouteProcessor() {
@@ -102,14 +102,13 @@ public class DefaultRouteProcessor implements RouteProcessor {
                 parameters.add(new Parameter(entry.getKey(), value[0]));
             } else {
                 AeroGearLogger.LOGGER.multivaluedParamsUnsupported();
-                continue;
             }
         }
         Class<?>[] parameterTypes = route.getTargetMethod().getParameterTypes();
         if (parameterTypes.length == 1) {
             Class<?> parameterType = parameterTypes[0];
             Target<?> target = Target.create(parameterType, StringUtils.downCaseFirst(parameterType.getSimpleName()));
-            Object instantiate = iogi.instantiate(target, parameters.toArray(new Parameter[]{}));
+            Object instantiate = iogi.instantiate(target, parameters.toArray(new Parameter[parameters.size()]));
             return new Object[]{instantiate};
         }
 
