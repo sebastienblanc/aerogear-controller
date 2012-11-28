@@ -1,6 +1,5 @@
 package org.jboss.aerogear.controller.router;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Objects.firstNonNull;
 
 import java.lang.reflect.Method;
@@ -19,68 +18,25 @@ public class DefaultRoute implements Route {
     private final Method targetMethod;
     private final Set<RequestMethod> methods;
     private final Set<String> roles;
+    private final Set<String> produces;
     private final Set<Class<? extends Throwable>> throwables;
 
-    /**
-     * Constructs a Route without any roles or exceptions associated with it.
-     * 
-     * @param path the path for this Route. Can be {@code null}.
-     * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.
-     * @param targetClass the target {@link Class} that is the target for this Route. Must not be {@code null}
-     * @param targetMethod the target method in the {@link #targetClass}. Must not be {@code null}
-     */
-    public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod) {
-        this(path, methods, targetClass, targetMethod, new String[]{}, emptyThrowableSet());
-    }
 
     /**
-     * Constructs a Route with the specified roles.
+     * Constructs a Route with the specified {@code RouteDescriptor} configuration options.
      * 
-     * @param path the path for this Route. Can be {@code null}.
-     * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.
-     * @param targetClass the target {@link Class} that is the target for this Route. Must not be {@code null}
-     * @param targetMethod the target method in the {@link #targetClass}. Must not be {@code null}
-     * @param roles the roles to associate with this Route. Can be {@code null}.
+     * @param descriptor the {@link RouteDescriptor} with the configured values.
      */
-    public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod, String[] roles) {
-        this(path, methods, targetClass, targetMethod, roles, emptyThrowableSet());
-    }
-    
-    /**
-     * Constructs a Route with the specified exceptions associated with it.
-     * 
-     * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.
-     * @param targetClass the target {@link Class} that is the target for this Route. Must not be {@code null}
-     * @param targetMethod the target method in the {@link #targetClass}. Must not be {@code null}
-     * @param throwables the exceptions that this Route can handle. Can be {@code null}.
-     */
-    public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod, 
-            Set<Class<? extends Throwable>> throwables ) {
-        this(path, methods, targetClass, targetMethod, new String[]{}, throwables);
+    public DefaultRoute(RouteDescriptor descriptor) {
+        this.path = descriptor.getPath();
+        this.methods = asSet(descriptor.getMethods());
+        this.targetMethod = descriptor.getTargetMethod();
+        this.targetClass = descriptor.getTargetClass();
+        this.roles = asSet(firstNonNull(descriptor.getRoles(), new String[]{}));
+        this.throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
+        this.produces = asSet(firstNonNull(descriptor.getProduces(), defaultMediaType()));
     }
 
-    /**
-     * Constructs a Route with the specified roles and exceptions associated with it.
-     * 
-     * @param path the path for this Route. Can be {@code null}.
-     * @param methods the {@link RequestMethod}s that this Route should handle. Can be {@code null}.
-     * @param targetClass the target {@link Class} that is the target for this Route. Must not be {@code null}
-     * @param targetMethod the target method in the {@link #targetClass}. Must not be {@code null}
-     * @param roles the roles to associate with this Route. Can be {@code null}.
-     * @param throwables the exceptions that this Route can handle. Can be {@code null}.
-     */
-    public DefaultRoute(String path, RequestMethod[] methods, Class<?> targetClass, Method targetMethod,
-                        String[] roles, Set<Class<? extends Throwable>> throwables) {
-        checkNotNull(targetClass, "'targetClass' must not be null");
-        checkNotNull(targetMethod, "'targetMethod' must not be null");
-        this.path = path;
-        this.methods = asSet(methods);
-        this.targetClass = targetClass;
-        this.targetMethod = targetMethod;
-        this.roles = asSet(roles);
-        this.throwables = firstNonNull(throwables, emptyThrowableSet());
-    }
-    
     @Override
     public Set<RequestMethod> getMethods() {
         return Collections.unmodifiableSet(methods);
@@ -135,6 +91,11 @@ public class DefaultRoute implements Route {
     }
     
     @Override
+    public Set<String> produces() {
+        return Collections.unmodifiableSet(produces);
+    }
+    
+    @Override
     public boolean canHandle(final Throwable throwable) {
         for (Class<? extends Throwable> t : throwables) {
             if (t.isAssignableFrom(throwable.getClass())) {
@@ -160,11 +121,16 @@ public class DefaultRoute implements Route {
         return methods == null ? Collections.<RequestMethod>emptySet() : new HashSet<RequestMethod>(Arrays.asList(methods));
     }
 
-    private Set<String> asSet(final String[] roles) {
-        return roles == null ? Collections.<String>emptySet() : new HashSet<String>(Arrays.asList(roles));
+    private Set<String> asSet(final String[] strings) {
+        return new HashSet<String>(Arrays.asList(strings));
     }
-
+    
     private static Set<Class<? extends Throwable>> emptyThrowableSet() {
         return Collections.emptySet();
     }
+    
+    private static String[] defaultMediaType() {
+        return new String[] {MediaType.HTML.toString()};
+    }
+
 }

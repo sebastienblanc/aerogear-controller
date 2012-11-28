@@ -81,4 +81,11 @@ public interface Route {
      * @return {@code true} if this Route can handle the Throwable, otherwise {@code false}.
      */
     boolean canHandle(Throwable throwable);
+    
+    /**
+     * Returns the media types that this Route is capabile of serving. 
+     * 
+     * @return  the media types that this routes can produce.
+     */
+    Set<String> produces();
 }

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import org.jboss.aerogear.controller.router.DefaultRoute;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.RouteDescriptor;
 import org.jboss.aerogear.controller.router.error.ErrorRoute;
 import org.junit.Test;
 
@@ -51,10 +52,11 @@ public class ErrorViewResolverTest {
     
     @SuppressWarnings("unchecked")
     private Route customErrorRoute(final Class<? extends Throwable> t) throws Exception {
-        return new DefaultRoute("/ErrorFilter", new RequestMethod[]{RequestMethod.GET}, 
-                ErrorTarget.class, 
-                ErrorTarget.class.getDeclaredMethod("errorPage"), 
-                new HashSet<Class<? extends Throwable>>(Arrays.asList(t)));
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("ErrorFilter")
+            .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(t)))
+            .on(RequestMethod.GET).to(ErrorTarget.class).errorPage();
+        return new DefaultRoute(rd);
     }
        
     static class ErrorTarget {
