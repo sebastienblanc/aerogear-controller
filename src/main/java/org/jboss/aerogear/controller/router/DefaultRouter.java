@@ -13,6 +13,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.aerogear.controller.util.RequestUtils;
+
 /**
  * Default implementation of {@link Router}.
  * </p>
@@ -46,9 +48,9 @@ public class DefaultRouter implements Router {
     @Override
     public void dispatch(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException {
         try {
-            RouteContext routeContext = new RouteContext(request, response, routes);
-            Route route = routes.routeFor(extractMethod(request), routeContext.getRequestPath(), Collections.<String>emptySet());
-            routeProcessor.process(route, new RouteContext(request, response, routes));
+            String requestPath = RequestUtils.extractPath(request);
+            Route route = routes.routeFor(extractMethod(request), requestPath, extractAcceptHeader(request));
+            routeProcessor.process(new RouteContext(route, requestPath, request, response, routes));
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
         }

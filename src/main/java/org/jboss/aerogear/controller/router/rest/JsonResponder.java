@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router;
+package org.jboss.aerogear.controller.router.rest;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.jboss.aerogear.controller.router.MediaType;
+import org.jboss.aerogear.controller.router.Responder;
+import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
- * A RouteProcessor processes/handles a single Route in AeroGear Controller.
+ * A RESTFul {@link Responder} that is able to return JSON responses.
  * </p>
+ * This implementation uses Jackson for JSON support.
  */
-public interface RouteProcessor {
-    
-    /**
-     * Handles the actual invocation of the target or the passed-in {@link Route}.
-     * 
-     * @param routeContext the {@link RouteContext} for the current request.
-     * @throws Exception if processing of the route causes an exception.
-     */
-    void process(RouteContext routeContext) throws Exception;
+public class JsonResponder extends AbstractRestResponder {
+
+    public JsonResponder() {
+        super(MediaType.JSON.toString());
+    }
+
+    @Override
+    public void writeResponse(final Object entity, final RouteContext routeContext) throws Exception {
+        final ObjectMapper om = new ObjectMapper();
+        om.writeValue(routeContext.getResponse().getWriter(), entity);
+    }
 
 }

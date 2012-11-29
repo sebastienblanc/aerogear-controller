@@ -57,11 +57,12 @@ public class SecurityHandler implements RouteProcessor {
      * @throws Exception if access to the Route is denied.
      */
     @Override
-    public void process(final Route route, final RouteContext routeContext) throws Exception {
+    public void process(final RouteContext routeContext) throws Exception {
+        final Route route = routeContext.getRoute();
         if (route.isSecured()) {
             securityProvider.isRouteAllowed(route);
         }
-        delegate.process(route, routeContext);
+        delegate.process(routeContext);
     }
     
     private SecurityProvider defaultSecurityProvider() {

@@ -18,17 +18,26 @@
 package org.jboss.aerogear.controller.router;
 
 /**
- * A RouteProcessor processes/handles a single Route in AeroGear Controller.
- * </p>
+ * A Responder is capable of responding to a specific MediaType.
  */
-public interface RouteProcessor {
+public interface Responder {
     
     /**
-     * Handles the actual invocation of the target or the passed-in {@link Route}.
+     * Determines whether this responder can respond to the passed-in @{code mediaType}
      * 
-     * @param routeContext the {@link RouteContext} for the current request.
-     * @throws Exception if processing of the route causes an exception.
+     * @param mediaType the mediaType that this responder supports.
+     * @return @{code true} if this responder can handle the media type passed in, false otherwise.
      */
-    void process(RouteContext routeContext) throws Exception;
+    boolean accepts(final String mediaType);
+    
+    /**
+     * Responds to the current request in a why appropriate to the type of Responder (forward, return).
+     * </p>
+     * 
+     * @param entity the entity returned from a {@link Route} endpoint.
+     * @param routeContext the current {@link RouteContext}.
+     * @throws Exception if an error occurs while responding.
+     */
+    void respond(final Object entity, final RouteContext routeContext) throws Exception;
 
 }

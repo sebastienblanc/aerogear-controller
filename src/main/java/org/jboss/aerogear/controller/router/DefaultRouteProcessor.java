@@ -17,25 +17,27 @@
 
 package org.jboss.aerogear.controller.router;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.util.RequestUtils;
 import org.jboss.aerogear.controller.util.StringUtils;
-import org.jboss.aerogear.controller.view.View;
-import org.jboss.aerogear.controller.view.ViewResolver;
 
 import br.com.caelum.iogi.Iogi;
 import br.com.caelum.iogi.parameters.Parameter;
 import br.com.caelum.iogi.reflection.Target;
 import br.com.caelum.iogi.util.DefaultLocaleProvider;
 import br.com.caelum.iogi.util.NullDependencyProvider;
+
+import com.google.common.collect.Sets;
 
 /**
  * Default implementation of {@link RouteProcessor}.
@@ -51,25 +53,27 @@ import br.com.caelum.iogi.util.NullDependencyProvider;
 public class DefaultRouteProcessor implements RouteProcessor {
     
     private BeanManager beanManager;
-    private ViewResolver viewResolver;
     private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     private ControllerFactory controllerFactory;
+    private Set<Responder> responders = new HashSet<Responder>();
     
     public DefaultRouteProcessor() {
     }
     
     @Inject
-    public DefaultRouteProcessor(BeanManager beanManager, ViewResolver viewResolver, ControllerFactory controllerFactory) {
+    public DefaultRouteProcessor(BeanManager beanManager, Instance<Responder> responders, ControllerFactory controllerFactory) {
         this.beanManager = beanManager;
-        this.viewResolver = viewResolver;
         this.controllerFactory = controllerFactory;
+        for (Responder responder : responders) {
+            this.responders.add(responder);
+        }
     }
 
     @Override
-    public void process(Route route, RouteContext routeContext) throws Exception {
+    public void process(RouteContext routeContext) throws Exception {
         final HttpServletRequest request = routeContext.getRequest();
-        final HttpServletResponse response = routeContext.getResponse();
-        final String requestPath = RequestUtils.extractPath(request);
+        final String requestPath = routeContext.getRequestPath();
+        final Route route = routeContext.getRoute();
         Object[] params;
 
         if (route.isParameterized()) {
@@ -78,12 +82,15 @@ public class DefaultRouteProcessor implements RouteProcessor {
             params = extractParameters(request, route);
         }
         Object result = route.getTargetMethod().invoke(getController(route), params);
-        String viewPath = viewResolver.resolveViewPathFor(route);
-        View view = new View(viewPath, result);
-        if (view.hasModelData()) {
-            request.setAttribute(view.getModelName(), view.getModel());
+        
+        for (String mediaType : Sets.intersection(route.produces(), RequestUtils.extractAcceptHeader(request))) {
+            for (Responder responder : responders) {
+                if (responder.accepts(mediaType)) {
+                    responder.respond(result, routeContext);
+                    return;
+                }
+            }
         }
-        request.getRequestDispatcher(view.getViewPath()).forward(request, response);
     }
     
     private Object[] extractPathParameters(String requestPath, Route route) {

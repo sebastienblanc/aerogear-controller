@@ -27,23 +27,38 @@ import org.jboss.aerogear.controller.util.RequestUtils;
  */
 public class RouteContext {
     
+    private final Route route;
     private final String requestPath;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final Routes routes;
     
     /**
-     * Sole constructor.
+     * Constructor.
      * 
+     * @param route the {@link HttpServletRequest}.
      * @param request the {@link HttpServletRequest}.
      * @param response the {@link HttpServletRequest}.
      * @param routes the {@link Routes} to enables querying of information about configured routes.
      */
-    public RouteContext(final HttpServletRequest request, final HttpServletResponse response, final Routes routes) {
-        this.requestPath = RequestUtils.extractPath(request);
+    public RouteContext(final Route route, final HttpServletRequest request, final HttpServletResponse response, final Routes routes) {
+        this(route, RequestUtils.extractPath(request), request, response, routes);
+    }
+    
+    public RouteContext(final Route route, final String requestPath, final HttpServletRequest request, final HttpServletResponse response, final Routes routes) {
+        this.route = route;
+        this.requestPath = requestPath;
         this.request = request;
         this.response = response;
         this.routes = routes;
+    }
+    
+    /**
+     * Returns the current Route
+     * @return {@link Route} the current route.
+     */
+    public Route getRoute() {
+        return route;
     }
 
     /**

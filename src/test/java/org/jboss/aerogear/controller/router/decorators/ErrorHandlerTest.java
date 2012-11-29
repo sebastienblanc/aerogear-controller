@@ -102,8 +102,8 @@ public class ErrorHandlerTest {
         final Routes routes = routingModule.build();
         final Route route = routes.routeFor(RequestMethod.GET, "/home", MediaType.defaultAcceptHeader());
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, viewResolver, controllerFactory, beanManager);
-        doThrow(IllegalStateException.class).when(routeProcessor).process(any(Route.class), any(RouteContext.class));
-        errorHandler.process(route, new RouteContext(request, response, routes));
+        doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
+        errorHandler.process(new RouteContext(route, request, response, routes));
         verify(controller).errorPage();
         verify(requestDispatcher).forward(request, response);
     }
@@ -123,9 +123,9 @@ public class ErrorHandlerTest {
             }
         };
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, viewResolver, controllerFactory, beanManager);
-        doThrow(IllegalStateException.class).when(routeProcessor).process(any(Route.class), any(RouteContext.class));
+        doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
         final Route route = routes.routeFor(RequestMethod.GET, "/home", MediaType.defaultAcceptHeader());
-        errorHandler.process(route, new RouteContext(request, response, routingModule.build()));
+        errorHandler.process(new RouteContext(route, request, response, routingModule.build()));
         verify(controller).error(any(IllegalArgumentException.class));
         verify(requestDispatcher).forward(request, response);
     }
@@ -145,9 +145,9 @@ public class ErrorHandlerTest {
         final Routes routes = routingModule.build();
         final Route route = routes.routeFor(RequestMethod.GET, "/home", MediaType.defaultAcceptHeader());
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, viewResolver, controllerFactory, beanManager);
-        doThrow(SampleControllerException.class).when(routeProcessor).process(any(Route.class), any(RouteContext.class));
+        doThrow(SampleControllerException.class).when(routeProcessor).process(any(RouteContext.class));
         when(controllerFactory.createController(eq(ErrorTarget.class), eq(beanManager))).thenReturn(errorTarget);
-        errorHandler.process(route, new RouteContext(request, response, routes));
+        errorHandler.process(new RouteContext(route, request, response, routes));
         verify(errorTarget).error(any(SampleControllerException.class));
         verify(requestDispatcher).forward(request, response);
     }

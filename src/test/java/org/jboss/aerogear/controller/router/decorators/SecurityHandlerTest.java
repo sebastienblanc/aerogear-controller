@@ -73,19 +73,19 @@ public class SecurityHandlerTest {
     public void testRouteAllowed() throws Exception {
         when(route.isSecured()).thenReturn(true);
         final RouteContext routeContext = routeContext();
-        securityHandler.process(route, routeContext);
-        verify(routeProcessor).process(route, routeContext); 
+        securityHandler.process(routeContext);
+        verify(routeProcessor).process(routeContext); 
     }
     
     @Test (expected = ServletException.class)
     public void testRouteForbidden() throws Exception {
         when(route.isSecured()).thenReturn(true);
         doThrow(ServletException.class).when(securityProvider).isRouteAllowed(any(Route.class));
-        securityHandler.process(route, routeContext());
+        securityHandler.process(routeContext());
     }
     
     private RouteContext routeContext() {
-        return new RouteContext(request, response, routes);
+        return new RouteContext(route, request, response, routes);
     }
 
 }
