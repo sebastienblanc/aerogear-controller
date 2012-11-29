@@ -42,9 +42,10 @@ public interface Route {
      * 
      * @param method the http request methods.
      * @param path the request path.
+     * @param acceptHeaders the accept headers provided, or an empty set if none were provided.
      * @return {@code true} if this Route can handle the method and path passed in, {@code false} otherwise.
      */
-    boolean matches(RequestMethod method, String path);
+    boolean matches(RequestMethod method, String path, Set<String> acceptHeaders);
 
     /**
      * Determines if this Route's path is parameterized.

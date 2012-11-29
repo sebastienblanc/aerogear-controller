@@ -1,5 +1,9 @@
 package org.jboss.aerogear.controller.router;
 
+import static org.jboss.aerogear.controller.util.RequestUtils.extractMethod;
+import static org.jboss.aerogear.controller.util.RequestUtils.extractPath;
+import static org.jboss.aerogear.controller.util.RequestUtils.extractAcceptHeader;
+
 import java.util.Collections;
 
 import javax.enterprise.inject.Instance;
@@ -8,8 +12,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jboss.aerogear.controller.util.RequestUtils;
 
 /**
  * Default implementation of {@link Router}.
@@ -37,15 +39,15 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public boolean hasRouteFor(HttpServletRequest httpServletRequest) {
-        return routes.hasRouteFor(RequestUtils.extractMethod(httpServletRequest), RequestUtils.extractPath(httpServletRequest));
+    public boolean hasRouteFor(HttpServletRequest request) {
+        return routes.hasRouteFor(extractMethod(request), extractPath(request), extractAcceptHeader(request));
     }
 
     @Override
     public void dispatch(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException {
         try {
             RouteContext routeContext = new RouteContext(request, response, routes);
-            Route route = routes.routeFor(RequestUtils.extractMethod(request), routeContext.getRequestPath());
+            Route route = routes.routeFor(extractMethod(request), routeContext.getRequestPath(), Collections.<String>emptySet());
             routeProcessor.process(route, new RouteContext(request, response, routes));
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);

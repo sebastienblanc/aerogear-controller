@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
+
 
 /**
  * An immutable implementation of {@link Route}.
@@ -53,8 +55,8 @@ public class DefaultRoute implements Route {
     }
 
     @Override
-    public boolean matches(RequestMethod method, String path) {
-        return this.methods.contains(method) && isPathCompatible(path);
+    public boolean matches(RequestMethod method, String path, Set<String> acceptHeaders) {
+        return this.methods.contains(method) && isPathCompatible(path) && !Sets.intersection(produces, acceptHeaders).isEmpty();
     }
 
     private boolean isPathCompatible(String path) {

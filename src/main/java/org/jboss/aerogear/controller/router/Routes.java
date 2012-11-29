@@ -6,6 +6,7 @@ import org.jboss.aerogear.controller.router.error.ErrorRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Routes is a collection of {@link Route} instances that are able to handle certain
@@ -56,12 +57,13 @@ public class Routes {
      * 
      * @param method the HTTP {@link RequestMethod}.
      * @param requestURI the URI.
+     * @param acceptHeaders the accept headers provided, or an empty set if none were provided.
      * @return {@code true} if this Routes has a {@link Route} for the specified {@link RequestMethod}/URI combination
      */
-    public boolean hasRouteFor(RequestMethod method, String requestURI) {
+    public boolean hasRouteFor(RequestMethod method, String requestURI, Set<String> acceptHeaders) {
         AeroGearLogger.LOGGER.requestedRoute(method, requestURI);
         for (Route route : routes) {
-            if (route.matches(method, requestURI)) {
+            if (route.matches(method, requestURI, acceptHeaders)) {
                 return true;
             }
         }
@@ -73,16 +75,17 @@ public class Routes {
      * 
      * @param method the HTTP {@link RequestMethod}.
      * @param requestURI the URI.
+     * @param acceptHeaders the accept headers provided, or an empty set if none were provided.
      * @return {@link Route} configured to server the {@link RequestMethod}/URI combination. Will throw
      * a RuntimeException if the specified RequestMethod/URI combination is not supported by this Routes instance.
      */
-    public Route routeFor(RequestMethod method, String requestURI) {
+    public Route routeFor(RequestMethod method, String requestURI, Set<String> acceptHeaders) {
         for (Route route : routes) {
-            if (route.matches(method, requestURI)) {
+            if (route.matches(method, requestURI, acceptHeaders)) {
                 return route;
             }
         }
-        throw LoggerMessages.MESSAGES.routeNotFound(method, requestURI);
+        throw LoggerMessages.MESSAGES.routeNotFound(method, requestURI, acceptHeaders);
     }
     
     /**

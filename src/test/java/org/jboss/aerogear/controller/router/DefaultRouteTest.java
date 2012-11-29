@@ -4,7 +4,9 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.fest.assertions.Fail;
@@ -96,7 +98,7 @@ public class DefaultRouteTest {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/index").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
-        assertThat(route.matches(RequestMethod.GET, "/index")).isTrue();
+        assertThat(route.matches(RequestMethod.GET, "/index", MediaType.defaultAcceptHeader())).isTrue();
     }
 
     @Test
@@ -104,7 +106,25 @@ public class DefaultRouteTest {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
-        assertThat(route.matches(RequestMethod.GET, "/car/3")).isTrue();
+        assertThat(route.matches(RequestMethod.GET, "/car/3", MediaType.defaultAcceptHeader())).isTrue();
+    }
+    
+    @Test
+    public void doesNotMatchesProduces() throws NoSuchMethodException {
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("/car/{id}").on(GET).produces(MediaType.HTML.toString()).to(SampleController.class).index();
+        final Route route = new DefaultRoute(rd);
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isFalse();
+    }
+    
+    @Test
+    public void matchesProduces() throws NoSuchMethodException {
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("/car/{id}").on(GET).produces(MediaType.HTML.toString()).to(SampleController.class).index();
+        final Route route = new DefaultRoute(rd);
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.HTML.toString()));
+        assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isTrue();
     }
     
     @Test

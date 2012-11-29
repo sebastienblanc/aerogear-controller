@@ -1,5 +1,7 @@
 package org.jboss.aerogear.controller.log;
 
+import java.util.Set;
+
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
@@ -23,6 +25,6 @@ public interface LoggerMessages {
     ServletException mustRunInsideAContainer();
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 4, value = "method: '%s', requested URI: '%s'")
-    RuntimeException routeNotFound(RequestMethod method, String requestURI);
+    @Message(id = 4, value = "method: '%s', requested URI: '%s', Accept: '%s'")
+    RuntimeException routeNotFound(RequestMethod method, String requestURI, Set<String> acceptHeaders);
 }

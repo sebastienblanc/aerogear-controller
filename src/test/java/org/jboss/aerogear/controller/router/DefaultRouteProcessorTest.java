@@ -27,6 +27,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+
 import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
@@ -97,7 +99,7 @@ public class DefaultRouteProcessorTest {
         when(servletContext.getContextPath()).thenReturn("/abc");
         when(request.getRequestURI()).thenReturn("/abc/car/3");
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}");
+        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", MediaType.defaultAcceptHeader());
         router.process(route, new RouteContext(request, response, routes));
         verify(controller).find(eq("3"));
     }
@@ -117,7 +119,7 @@ public class DefaultRouteProcessorTest {
         when(servletContext.getContextPath()).thenReturn("/abc");
         when(request.getRequestURI()).thenReturn("/abc/car/3");
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}");
+        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", MediaType.defaultAcceptHeader());
         router.process(route, new RouteContext(request, response, routes));
         verify(controller).find(eq("3"));
     }
