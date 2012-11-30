@@ -40,58 +40,95 @@ public class CorsConfigTest {
     
     @Test
     public void disableCorsSupport() throws Exception  {
-        final CorsConfiguration config = CorsConfig.create().enableCorsSupport(false).build();
+        final CorsConfiguration config = CorsConfig.disableCorsSupport();
         assertThat(config.isCorsSupportEnabled()).isFalse();
     }
     
     @Test
     public void exposeHeaders() throws Exception {
         final String headers = "Header1, Header2";
-        final CorsConfiguration config = CorsConfig.create().exposeHeaders(headers).build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport()
+                .echoOrigin()
+                .disableCookies()
+                .exposeHeaders(headers).build();
         assertThat(config.getExposeHeaders()).isEqualTo(headers);
     }
     
     @Test
     public void echoOrigin() throws Exception {
-        final CorsConfiguration config = CorsConfig.create().anyOrigin(false).build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport().echoOrigin().build();
         assertThat(config.anyOrigin()).isFalse();
     }
     
     @Test
     public void anyOrigin() throws Exception {
-        final CorsConfiguration config = CorsConfig.create().anyOrigin(true).build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport().anyOrigin().build();
         assertThat(config.anyOrigin()).isTrue();
     }
     
     @Test
     public void allowCookies() throws Exception {
-        final CorsConfiguration config = CorsConfig.create().allowCookies(true).build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport()
+                .anyOrigin()
+                .enableCookies().build();
         assertThat(config.allowCookies()).isTrue();
     }
     
     @Test
     public void disallowCookies() throws Exception {
-        final CorsConfiguration config = CorsConfig.create().allowCookies(false).build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport().anyOrigin().build();
         assertThat(config.allowCookies()).isFalse();
     }
     
     @Test
     public void maxAge() throws Exception {
-        final CorsConfiguration config = CorsConfig.create().maxAge(10000).build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport()
+                .anyOrigin()
+                .enableCookies()
+                .maxAge(10000).build();
         assertThat(config.getMaxAge()).isEqualTo(10000);
     }
     
     @Test
     public void validRequestMethods() throws Exception {
-        final CorsConfiguration config = CorsConfig.create().validRequestMethods(RequestMethod.GET, RequestMethod.POST).build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport()
+                .anyOrigin()
+                .enableCookies()
+                .maxAge(10L)
+                .validRequestMethods(RequestMethod.GET, RequestMethod.POST).build();
         assertThat(config.getValidRequestMethods().size()).isEqualTo(2);
         assertThat(config.getValidRequestMethods()).contains("GET", "POST");
     }
     
     @Test
+    public void enableAllRequestMethods() throws Exception {
+        final CorsConfiguration config = CorsConfig.enableCorsSupport()
+                .anyOrigin()
+                .enableCookies()
+                .maxAge(10L)
+                .enableAllRequestMethods().build();
+        assertThat(config.getValidRequestMethods()).contains("GET", "PUT", "POST", "DELETE", "OPTIONS", "HEAD", "PATCH");
+    }
+    
+    @Test
     public void validRequestHeaders() throws Exception {
-        final CorsConfiguration config = CorsConfig.create().validRequestHeaders("Header1,Header2").build();
+        final CorsConfiguration config = CorsConfig.enableCorsSupport()
+                .anyOrigin()
+                .enableCookies()
+                .maxAge(10L)
+                .validRequestMethods(RequestMethod.GET)
+                .validRequestHeaders("Header1,Header2");
         assertThat(config.getValidRequestHeaders()).contains("origin", "header1", "header2");
     }
+    
+    @Test
+    public void buildOrdering() {
+        CorsConfig.enableCorsSupport()
+            .echoOrigin()
+            .enableCookies()
+            .maxAge(10l)
+            .validRequestMethods(RequestMethod.GET).validRequestHeaders("");
+    }
+   
     
 }

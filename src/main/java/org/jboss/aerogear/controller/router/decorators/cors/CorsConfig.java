@@ -44,7 +44,7 @@ public class CorsConfig implements CorsConfiguration {
     
     private CorsConfig(final Builder builder) {
         this.corsSupportEnabled = builder.corsSupportEnabled;
-        this.exposeHeaders = builder.exposeheaders;
+        this.exposeHeaders = builder.exposeHeaders;
         this.anyOrigin = builder.anyOrigin;
         this.allowCookies = builder.allowCookies;
         this.maxAge = builder.maxAge;
@@ -53,21 +53,25 @@ public class CorsConfig implements CorsConfiguration {
     }
     
     /**
-     * Returns a {@link Builder} instance which can be configured as needed. instance which can be configured as needed.
+     * Returns a {@link Origin} instance which can be configured as needed
      * 
-     * @return {@link Builder} to be used to configure and build a {@link CorsConfiguration} instance.
+     * @return {@link Origin} to be used to configure and build a {@link CorsConfiguration} instance.
      */
-    public static Builder create() {
-        return new Builder();
+    public static Origin enableCorsSupport() {
+        return new Builder().enableCorsSupport();
+    }
+    
+    public static CorsConfiguration disableCorsSupport() {
+        return new Builder().disableCorsSupport();
     }
     
     /**
      * Returns a {@link CorsConfiguration} instance with the default values for all properties.
      * 
-     * @return {@link CorsConfiguration} with default properites set.
+     * @return {@link CorsConfiguration} with default properties set.
      */
     public static CorsConfiguration defaultConfig() {
-        return CorsConfig.create().build();
+        return CorsConfig.enableCorsSupport().build();
     }
     
     @Override
@@ -128,51 +132,111 @@ public class CorsConfig implements CorsConfiguration {
             .append("]").toString();
     }
     
-    public static class Builder {
+    
+    public interface SupportedOptions {
+        Origin enableCorsSupport();
+        CorsConfiguration disableCorsSupport();
+        CorsConfiguration build();
+    }
+    
+    public interface Origin {
+        Cookies anyOrigin();
+        Cookies echoOrigin();
+        CorsConfiguration build();
+    }
+    
+    public interface Cookies {
+        ExposeHeaders enableCookies();
+        ExposeHeaders disableCookies();
+        CorsConfiguration build();
+    }
+    
+    public interface ExposeHeaders extends MaxAge {
+        MaxAge exposeHeaders(String headers);
+        CorsConfiguration build();
+    }
+    
+    public interface MaxAge {
+        ValidRequestMethods maxAge(long age);
+        CorsConfiguration build();
+    }
+    
+    public interface ValidRequestMethods {
+        ValidRequestHeaders validRequestMethods(RequestMethod... requestMethods);
+        ValidRequestHeaders enableAllRequestMethods();
+        CorsConfiguration build();
+    }
+    
+    public interface ValidRequestHeaders {
+        CorsConfiguration validRequestHeaders(final String validHeaders);
+        CorsConfiguration build();
+    }
+    
+    private static class Builder implements SupportedOptions, Origin, ExposeHeaders, Cookies, MaxAge, ValidRequestHeaders, ValidRequestMethods {
         private boolean corsSupportEnabled = true;
         private boolean anyOrigin;
         private boolean allowCookies;
         private long maxAge;
-        private String exposeheaders;
+        private String exposeHeaders;
         private Set<String> validRequestMethods = new HashSet<String>();
         private Set<String> validRequestHeaders = new HashSet<String>();
         
         public Builder() {
         }
         
-        public Builder enableCorsSupport(final boolean enable) {
-            corsSupportEnabled = enable;
+        public Origin enableCorsSupport() {
+            corsSupportEnabled = true;
             return this;
         }
         
-        public Builder exposeHeaders(final String headers) {
-            exposeheaders = headers;
+        public CorsConfiguration disableCorsSupport() {
+            corsSupportEnabled = false;
+            return build();
+        }
+        
+        public Cookies anyOrigin() {
+            this.anyOrigin = true;
             return this;
         }
         
-        public Builder anyOrigin(final boolean anyOrigin) {
-            this.anyOrigin = anyOrigin;
+        public Cookies echoOrigin() {
+            this.anyOrigin = false;
             return this;
         }
         
-        public Builder allowCookies(final boolean allow) {
-            allowCookies = allow;
+        public ExposeHeaders enableCookies() {
+            allowCookies = true;
             return this;
         }
         
-        public Builder maxAge(final long age) {
+        public ExposeHeaders disableCookies() {
+            allowCookies = false;
+            return this;
+        }
+        
+        public MaxAge exposeHeaders(final String headers) {
+            exposeHeaders = headers;
+            return this;
+        }
+        
+        public ValidRequestMethods maxAge(final long age) {
             maxAge = age; 
             return this;
         }
         
-        public Builder validRequestMethods(final RequestMethod... requestMethods) {
+        public ValidRequestHeaders validRequestMethods(final RequestMethod... requestMethods) {
             validRequestMethods.addAll(asSet(requestMethods));
             return this;
         }
         
-        public Builder validRequestHeaders(final String validHeaders) {
-            validRequestHeaders.addAll(asSet(validHeaders, true));
+        public ValidRequestHeaders enableAllRequestMethods() {
+            validRequestMethods(RequestMethod.values());
             return this;
+        }
+        
+        public CorsConfiguration validRequestHeaders(final String validHeaders) {
+            validRequestHeaders.addAll(asSet(validHeaders, true));
+            return build();
         }
         
         private Set<String> asSet(final RequestMethod... requestMethods) {
@@ -195,7 +259,7 @@ public class CorsConfig implements CorsConfiguration {
         public CorsConfiguration build() {
             validRequestHeaders.add("origin");
             if (validRequestMethods.isEmpty()) {
-                validRequestMethods(RequestMethod.values());
+                enableAllRequestMethods();
             }
             return new CorsConfig(this);
         }

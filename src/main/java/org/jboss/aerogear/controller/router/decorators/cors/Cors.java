@@ -39,7 +39,7 @@ public class Cors {
         METHOD("Access-Control-Request-Method"),
         HEADERS("Access-Control-Request-Headers");
         
-        private String headerName;
+        private final String headerName;
         
         private RequestHeader(final String headerName) {
             this.headerName = headerName;
@@ -59,7 +59,7 @@ public class Cors {
         MAX_AGE("Access-Control-Max-Age"),
         ALLOW_HEADERS("Access-Control-Allow-Headers");
         
-        private String headerName;
+        private final String headerName;
         
         private ResponseHeader(final String headerName) {
             this.headerName = headerName;
@@ -93,13 +93,13 @@ public class Cors {
      * @return {@code true} if the current request has an 'Origin' request header, otherwise false.
      */
     public boolean isCorsRequest() {
-        return hasOrginHeader();
+        return hasOriginHeader();
     }
     
     /**
      * Determines if this instance can handle CORS requests. 
      * </p>
-     * This is simply a convienience method and is the equivalent of calling
+     * This is simply a convenience method and is the equivalent of calling
      * {@link Cors#isCorsSupportEnabled()} && {@link Cors#isCorsRequest()}
      * 
      * @return {@code true} is CORS support has been enabled and if the current request is a CORS request.
@@ -123,7 +123,7 @@ public class Cors {
      * 
      * @return {@code true} if the current request has an 'Origin' request header, otherwise false.
      */
-    public boolean hasOrginHeader() {
+    public boolean hasOriginHeader() {
         return hasHeader(RequestHeader.ORIGIN.toString());
     }
     
@@ -144,7 +144,7 @@ public class Cors {
      * @return {@code true} if the current request qualifies as a preflight, otherwise false.
      */
     public boolean isPreflightRequest() {
-        return hasOrginHeader() && isOptionsMethod() && hasHeader(RequestHeader.METHOD.toString());
+        return hasOriginHeader() && isOptionsMethod() && hasHeader(RequestHeader.METHOD.toString());
     }
     
     /**
@@ -246,7 +246,7 @@ public class Cors {
      * @return {@code Cors} to support methods chaining.
      */
     public Cors setOrigin(final HttpServletResponse response, final String origin) {
-        if (hasOrginHeader()) {
+        if (hasOriginHeader()) {
             response.setHeader(ResponseHeader.ALLOW_ORIGIN.toString(), origin);
         }
         return this;
@@ -255,7 +255,7 @@ public class Cors {
     /**
      * Set the {@link ResponseHeader#ALLOW_ORIGIN} to '*'.
      * 
-     * @param response the {@link HttpServletResponse} for which the response header RepsonseHeader.ALLOW_ORIGIN should be set.
+     * @param response the {@link HttpServletResponse} for which the response header ResponseHeader.ALLOW_ORIGIN should be set.
      * @return {@code Cors} to support methods chaining.
      */
     public Cors setAnyOrigin(final HttpServletResponse response) {

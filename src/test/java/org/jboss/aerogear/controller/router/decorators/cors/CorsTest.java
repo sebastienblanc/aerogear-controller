@@ -54,13 +54,13 @@ public class CorsTest {
 
     @Test
     public void isCorsRequest() {
-        assertThat(cors.hasOrginHeader()).isTrue();
+        assertThat(cors.hasOriginHeader()).isTrue();
     }
     
     @Test
     public void isNotCorsRequest() {
         CorsTestUtil.setOriginRequestHeader(request, null);
-        assertThat(cors.hasOrginHeader()).isFalse();
+        assertThat(cors.hasOriginHeader()).isFalse();
     }
     
     @Test
