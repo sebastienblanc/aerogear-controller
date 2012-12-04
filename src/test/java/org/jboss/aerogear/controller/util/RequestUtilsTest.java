@@ -18,13 +18,22 @@
 package org.jboss.aerogear.controller.util;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.aerogear.controller.RoutesTest;
+import org.jboss.aerogear.controller.RoutesTest.Car;
+import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
+import org.jboss.aerogear.controller.router.Route;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -36,6 +45,8 @@ public class RequestUtilsTest {
     private ServletContext servletContext;
     @Mock
     private HttpServletRequest request;
+    @Mock
+    private Route route;
     
     @Before
     public void initMocks() {
@@ -84,6 +95,26 @@ public class RequestUtilsTest {
     public void extractAcceptsHeader() {
         when(request.getHeader("Accept")).thenReturn("application/json, application/xml");
         assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.toString(), "application/xml");
+    }
+    
+    @Test
+    public void extractPathParameters() {
+        when(route.getPath()).thenReturn("/cars/{id}");
+        final Object[] params = RequestUtils.extractPathParameters("/cars/2", route);
+        assertThat(params.length).isEqualTo(1);
+        assertThat(params[0]).isEqualTo("2");
+    }
+    
+    @Test
+    public void extractParameters() throws Exception {
+        final HashMap<String, String[]> paramMap = new HashMap<String, String[]>();
+        paramMap.put("car.name", new String[] {"Herbi"});
+        when(request.getParameterMap()).thenReturn(paramMap);
+        when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class));
+        final Object[] params = RequestUtils.extractParameters(request, route);
+        assertThat(params.length).isEqualTo(1);
+        Car car = (Car) params[0];
+        assertThat(car.getName()).isEqualTo("Herbi");
     }
     
 }

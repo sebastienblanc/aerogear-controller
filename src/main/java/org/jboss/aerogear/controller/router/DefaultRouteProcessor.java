@@ -18,8 +18,6 @@
 package org.jboss.aerogear.controller.router;
 
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
@@ -27,15 +25,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.util.RequestUtils;
-import org.jboss.aerogear.controller.util.StringUtils;
-
-import br.com.caelum.iogi.Iogi;
-import br.com.caelum.iogi.parameters.Parameter;
-import br.com.caelum.iogi.reflection.Target;
-import br.com.caelum.iogi.util.DefaultLocaleProvider;
-import br.com.caelum.iogi.util.NullDependencyProvider;
 
 import com.google.common.collect.Sets;
 
@@ -53,7 +43,6 @@ import com.google.common.collect.Sets;
 public class DefaultRouteProcessor implements RouteProcessor {
     
     private BeanManager beanManager;
-    private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     private ControllerFactory controllerFactory;
     private Set<Responder> responders = new HashSet<Responder>();
     
@@ -77,9 +66,9 @@ public class DefaultRouteProcessor implements RouteProcessor {
         Object[] params;
 
         if (route.isParameterized()) {
-            params = extractPathParameters(requestPath, route);
+            params = RequestUtils.extractPathParameters(requestPath, route);
         } else {
-            params = extractParameters(request, route);
+            params = RequestUtils.extractParameters(request, route);
         }
         Object result = route.getTargetMethod().invoke(getController(route), params);
         
@@ -93,35 +82,6 @@ public class DefaultRouteProcessor implements RouteProcessor {
         }
     }
     
-    private Object[] extractPathParameters(String requestPath, Route route) {
-        // TODO: extract this from Resteasy
-        final int paramOffset = route.getPath().indexOf('{');
-        final CharSequence param = requestPath.subSequence(paramOffset, requestPath.length());
-        return new Object[]{param.toString()};
-    }
-
-    private Object[] extractParameters(HttpServletRequest request, Route route) {
-        LinkedList<Parameter> parameters = new LinkedList<Parameter>();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            String[] value = entry.getValue();
-            if (value.length == 1) {
-                parameters.add(new Parameter(entry.getKey(), value[0]));
-            } else {
-                AeroGearLogger.LOGGER.multivaluedParamsUnsupported();
-            }
-        }
-        Class<?>[] parameterTypes = route.getTargetMethod().getParameterTypes();
-        if (parameterTypes.length == 1) {
-            Class<?> parameterType = parameterTypes[0];
-            Target<?> target = Target.create(parameterType, StringUtils.downCaseFirst(parameterType.getSimpleName()));
-            Object instantiate = iogi.instantiate(target, parameters.toArray(new Parameter[parameters.size()]));
-            return new Object[]{instantiate};
-        }
-
-        return new Object[0];  
-    }
-
     private Object getController(Route route) {
         return controllerFactory.createController(route.getTargetClass(), beanManager);
     }

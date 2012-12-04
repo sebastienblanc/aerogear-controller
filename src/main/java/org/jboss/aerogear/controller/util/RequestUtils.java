@@ -19,19 +19,30 @@ package org.jboss.aerogear.controller.util;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.router.RequestMethod;
+import org.jboss.aerogear.controller.router.Route;
 
-import com.google.common.base.Joiner;
+import br.com.caelum.iogi.Iogi;
+import br.com.caelum.iogi.parameters.Parameter;
+import br.com.caelum.iogi.reflection.Target;
+import br.com.caelum.iogi.util.DefaultLocaleProvider;
+import br.com.caelum.iogi.util.NullDependencyProvider;
+
 import com.google.common.base.Splitter;
 
 /**
  * Utility methods for various {@link HttpServletRequest} operation.
  */
 public class RequestUtils {
+    
+    private static final Iogi IOGI = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     
     private RequestUtils() {
     }
@@ -78,6 +89,35 @@ public class RequestUtils {
             acceptHeaders.add(header);
         }
         return acceptHeaders;
+    }
+    
+    public static Object[] extractPathParameters(String requestPath, Route route) {
+        // TODO: extract this from Resteasy
+        final int paramOffset = route.getPath().indexOf('{');
+        final CharSequence param = requestPath.subSequence(paramOffset, requestPath.length());
+        return new Object[]{param.toString()};
+    }
+
+    public static Object[] extractParameters(HttpServletRequest request, Route route) {
+        LinkedList<Parameter> parameters = new LinkedList<Parameter>();
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String[] value = entry.getValue();
+            if (value.length == 1) {
+                parameters.add(new Parameter(entry.getKey(), value[0]));
+            } else {
+                AeroGearLogger.LOGGER.multivaluedParamsUnsupported();
+            }
+        }
+        Class<?>[] parameterTypes = route.getTargetMethod().getParameterTypes();
+        if (parameterTypes.length == 1) {
+            Class<?> parameterType = parameterTypes[0];
+            Target<?> target = Target.create(parameterType, StringUtils.downCaseFirst(parameterType.getSimpleName()));
+            Object instantiate = IOGI.instantiate(target, parameters.toArray(new Parameter[parameters.size()]));
+            return new Object[]{instantiate};
+        }
+
+        return new Object[0]; 
     }
 
 }
