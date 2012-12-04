@@ -1,5 +1,9 @@
 package org.jboss.aerogear.controller.router;
 
+import static org.jboss.aerogear.controller.util.RequestUtils.extractMethod;
+import static org.jboss.aerogear.controller.util.RequestUtils.extractPath;
+import static org.jboss.aerogear.controller.util.RequestUtils.extractAcceptHeader;
+
 import java.util.Collections;
 
 import javax.enterprise.inject.Instance;
@@ -37,16 +41,16 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public boolean hasRouteFor(HttpServletRequest httpServletRequest) {
-        return routes.hasRouteFor(RequestUtils.extractMethod(httpServletRequest), RequestUtils.extractPath(httpServletRequest));
+    public boolean hasRouteFor(HttpServletRequest request) {
+        return routes.hasRouteFor(extractMethod(request), extractPath(request), extractAcceptHeader(request));
     }
 
     @Override
     public void dispatch(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException {
         try {
-            RouteContext routeContext = new RouteContext(request, response, routes);
-            Route route = routes.routeFor(RequestUtils.extractMethod(request), routeContext.getRequestPath());
-            routeProcessor.process(route, new RouteContext(request, response, routes));
+            String requestPath = RequestUtils.extractPath(request);
+            Route route = routes.routeFor(extractMethod(request), requestPath, extractAcceptHeader(request));
+            routeProcessor.process(new RouteContext(route, requestPath, request, response, routes));
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
         }

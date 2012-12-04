@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
 
+import org.jboss.aerogear.controller.router.RouteBuilder.TargetEndpoint;
+
 /**
  * Describes/configures a single route in AeroGear controller.
  */
@@ -18,6 +20,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private RequestMethod[] methods;
     private Class<?> targetClass;
     private String[] roles;
+    private String[] produces;
     private Set<Class<? extends Throwable>> throwables;
 
     public RouteDescriptor() {
@@ -30,8 +33,9 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
      * 
      * @param path the from path for this route.
      */
-    public void setPath(String path) {
+    public RouteDescriptor setPath(String path) {
         this.path = path;
+        return this;
     }
 
     @Override
@@ -101,11 +105,21 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
                 '}';
     }
 
-    public void setThrowables(Set<Class<? extends Throwable>> throwables) {
+    public RouteDescriptor setThrowables(Set<Class<? extends Throwable>> throwables) {
         this.throwables = throwables;
+        return this;
     }
     
     public Set<Class<? extends Throwable>> getThrowables() {
         return throwables;
+    }
+    @Override
+    public TargetEndpoint produces(String... produces) {
+        this.produces = produces;
+        return this;
+    }
+    
+    public String[] getProduces() {
+        return produces;
     }
 }

@@ -17,18 +17,31 @@
 
 package org.jboss.aerogear.controller.router;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * A RouteProcessor processes/handles a single Route in AeroGear Controller.
- * </p>
+ * Media types supported out-of-the-box with AeroGear Controller.
  */
-public interface RouteProcessor {
+public enum MediaType {
+    HTML("text/html"), 
+    JSON("application/json");
     
-    /**
-     * Handles the actual invocation of the target or the passed-in {@link Route}.
-     * 
-     * @param routeContext the {@link RouteContext} for the current request.
-     * @throws Exception if processing of the route causes an exception.
-     */
-    void process(RouteContext routeContext) throws Exception;
+    private String type;
+
+    private MediaType(final String type) {
+        this.type = type;
+    }
+    
+    @Override
+    public String toString() {
+        return type;
+    }
+    
+    public static Set<String> defaultAcceptHeader() {
+        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(HTML.toString())));
+    }
 
 }

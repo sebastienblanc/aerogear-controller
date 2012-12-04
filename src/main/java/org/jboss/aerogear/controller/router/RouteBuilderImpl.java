@@ -22,8 +22,7 @@ public class RouteBuilderImpl implements RouteBuilder {
     
     @Override
     public Route build() {
-        return new DefaultRoute(routeDescriptor.getPath(), routeDescriptor.getMethods(), routeDescriptor.getTargetClass(),
-                routeDescriptor.getTargetMethod(), routeDescriptor.getRoles(), routeDescriptor.getThrowables());
+        return new DefaultRoute(routeDescriptor);
     }
 
     @Override

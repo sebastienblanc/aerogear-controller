@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,6 +73,17 @@ public class RequestUtilsTest {
         assertThat(RequestUtils.extractMethod(request)).isEqualTo(RequestMethod.HEAD);
         when(request.getMethod()).thenReturn("PATCH");
         assertThat(RequestUtils.extractMethod(request)).isEqualTo(RequestMethod.PATCH);
+    }
+    
+    @Test
+    public void extractAcceptsHeaderMissing() {
+        assertThat(RequestUtils.extractAcceptHeader(request).isEmpty()).isTrue();
+    }
+    
+    @Test
+    public void extractAcceptsHeader() {
+        when(request.getHeader("Accept")).thenReturn("application/json, application/xml");
+        assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.toString(), "application/xml");
     }
     
 }

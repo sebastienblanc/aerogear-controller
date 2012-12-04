@@ -42,9 +42,10 @@ public interface Route {
      * 
      * @param method the http request methods.
      * @param path the request path.
+     * @param acceptHeaders the accept headers provided, or an empty set if none were provided.
      * @return {@code true} if this Route can handle the method and path passed in, {@code false} otherwise.
      */
-    boolean matches(RequestMethod method, String path);
+    boolean matches(RequestMethod method, String path, Set<String> acceptHeaders);
 
     /**
      * Determines if this Route's path is parameterized.
@@ -81,4 +82,11 @@ public interface Route {
      * @return {@code true} if this Route can handle the Throwable, otherwise {@code false}.
      */
     boolean canHandle(Throwable throwable);
+    
+    /**
+     * Returns the media types that this Route is capabile of serving. 
+     * 
+     * @return  the media types that this routes can produce.
+     */
+    Set<String> produces();
 }

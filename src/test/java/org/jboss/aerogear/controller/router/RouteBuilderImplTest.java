@@ -63,6 +63,13 @@ public class RouteBuilderImplTest {
         assertCanHandle(rb.build(), new IllegalStateException(), new IllegalArgumentException(), new UnsupportedOperationException());
     }
     
+    @Test
+    public void testProduces() {
+        final RouteBuilderImpl rb = new RouteBuilderImpl();
+        rb.from("/somepath").on(RequestMethod.GET).produces("application/json").to(SampleController.class).index();
+        assertThat(rb.build().produces()).contains("application/json");
+    }
+    
     private void assertCanHandle(final Route route, final Throwable... t) {
         for (Throwable throwable : t) {
             assertThat(route.canHandle(throwable)).isTrue();

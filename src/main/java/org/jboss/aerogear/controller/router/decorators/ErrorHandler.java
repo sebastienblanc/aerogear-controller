@@ -43,7 +43,7 @@ import com.google.common.base.Throwables;
 /**
  * ErrorHandler is a CDI Decorator that decorates a {@link RouteProcessor}.
  * </p>
- * By wrapping the call to {@link RouteProcessor#process(Route, RouteContext)} with a try catch block, this class 
+ * By wrapping the call to {@link RouteProcessor#process(RouteContext)} with a try catch block, this class 
  * will handle any exception thrown and either forward to a the appropriate error route configured, or if no error 
  * route exists, forward to the default error view.
  */
@@ -65,9 +65,9 @@ public class ErrorHandler implements RouteProcessor {
     }
 
     @Override
-    public void process(Route route, RouteContext routeContext) throws Exception {
+    public void process(RouteContext routeContext) throws Exception {
         try {
-            delegate.process(route, routeContext);
+            delegate.process(routeContext);
         } catch (Throwable t) {
             if (t instanceof HttpStatusAwareException) {
                 routeContext.getResponse().setStatus(((HttpStatusAwareException) t).getStatus());

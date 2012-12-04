@@ -15,20 +15,32 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router;
+package org.jboss.aerogear.controller.router.rest;
 
-/**
- * A RouteProcessor processes/handles a single Route in AeroGear Controller.
- * </p>
- */
-public interface RouteProcessor {
+public class Entity {
+
+    private String name;
+    private int age;
     
-    /**
-     * Handles the actual invocation of the target or the passed-in {@link Route}.
-     * 
-     * @param routeContext the {@link RouteContext} for the current request.
-     * @throws Exception if processing of the route causes an exception.
-     */
-    void process(RouteContext routeContext) throws Exception;
+    public Entity(final String name, final int age) {
+        this.name = name;
+        this.age = age;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+    
 }

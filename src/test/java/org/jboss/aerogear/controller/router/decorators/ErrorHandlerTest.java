@@ -27,6 +27,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+
 import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
@@ -38,6 +40,7 @@ import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.SampleControllerException;
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 import org.jboss.aerogear.controller.router.ControllerFactory;
+import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
@@ -97,10 +100,10 @@ public class ErrorHandlerTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Route route = routes.routeFor(RequestMethod.GET, "/home");
+        final Route route = routes.routeFor(RequestMethod.GET, "/home", MediaType.defaultAcceptHeader());
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, viewResolver, controllerFactory, beanManager);
-        doThrow(IllegalStateException.class).when(routeProcessor).process(any(Route.class), any(RouteContext.class));
-        errorHandler.process(route, new RouteContext(request, response, routes));
+        doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
+        errorHandler.process(new RouteContext(route, request, response, routes));
         verify(controller).errorPage();
         verify(requestDispatcher).forward(request, response);
     }
@@ -120,9 +123,9 @@ public class ErrorHandlerTest {
             }
         };
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, viewResolver, controllerFactory, beanManager);
-        doThrow(IllegalStateException.class).when(routeProcessor).process(any(Route.class), any(RouteContext.class));
-        final Route route = routes.routeFor(RequestMethod.GET, "/home");
-        errorHandler.process(route, new RouteContext(request, response, routingModule.build()));
+        doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
+        final Route route = routes.routeFor(RequestMethod.GET, "/home", MediaType.defaultAcceptHeader());
+        errorHandler.process(new RouteContext(route, request, response, routingModule.build()));
         verify(controller).error(any(IllegalArgumentException.class));
         verify(requestDispatcher).forward(request, response);
     }
@@ -140,11 +143,11 @@ public class ErrorHandlerTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Route route = routes.routeFor(RequestMethod.GET, "/home");
+        final Route route = routes.routeFor(RequestMethod.GET, "/home", MediaType.defaultAcceptHeader());
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, viewResolver, controllerFactory, beanManager);
-        doThrow(SampleControllerException.class).when(routeProcessor).process(any(Route.class), any(RouteContext.class));
+        doThrow(SampleControllerException.class).when(routeProcessor).process(any(RouteContext.class));
         when(controllerFactory.createController(eq(ErrorTarget.class), eq(beanManager))).thenReturn(errorTarget);
-        errorHandler.process(route, new RouteContext(request, response, routes));
+        errorHandler.process(new RouteContext(route, request, response, routes));
         verify(errorTarget).error(any(SampleControllerException.class));
         verify(requestDispatcher).forward(request, response);
     }

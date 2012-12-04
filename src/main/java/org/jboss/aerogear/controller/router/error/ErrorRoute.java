@@ -17,7 +17,6 @@
 
 package org.jboss.aerogear.controller.router.error;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -25,10 +24,10 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.aerogear.controller.filter.ErrorFilter;
-import org.jboss.aerogear.controller.router.AeroGearException;
 import org.jboss.aerogear.controller.router.DefaultRoute;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.RouteDescriptor;
 
 /**
  * A singleton {@link Route} that acts as a catch-all error {@link Route} which 
@@ -44,10 +43,11 @@ public enum ErrorRoute {
     @SuppressWarnings("unchecked")
     private ErrorRoute(final String exceptionAttributeName) {
         this.exceptionAttributeName = exceptionAttributeName;
-        route = new DefaultRoute(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0], 
-            new RequestMethod[]{RequestMethod.GET}, 
-            ErrorTarget.class, targetMethod("error"),
-            new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)));
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0])
+            .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)))
+            .on(RequestMethod.GET).to(ErrorTarget.class).error(null);
+        route = new DefaultRoute(rd);
     }
     
     /**
@@ -67,14 +67,6 @@ public enum ErrorRoute {
      */
     public String getExceptionAttrName() {
         return exceptionAttributeName;
-    }
-    
-    private static Method targetMethod(final String methodName) {
-        try {
-            return ErrorTarget.class.getDeclaredMethod(methodName, Throwable.class);
-        } catch (final Exception e) {
-            throw new AeroGearException("Could not find a method named '" + methodName + "' on target class", e);
-        }
     }
     
 

@@ -1,6 +1,12 @@
 package org.jboss.aerogear.controller;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
+import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.router.error.ErrorTarget;
@@ -46,7 +52,7 @@ public class RoutesTest {
                         .to(SampleController.class).save(param(Car.class));
             }
         }.build();
-        assertThat(routes.hasRouteFor(POST, "/cars")).isTrue();
+        assertThat(routes.hasRouteFor(POST, "/cars", MediaType.defaultAcceptHeader())).isTrue();
     }
 
     @Test
@@ -60,7 +66,7 @@ public class RoutesTest {
                         .to(SampleController.class).admin();
             }
         }.build();
-        assertThat(routes.hasRouteFor(GET, "/admin")).isTrue();
+        assertThat(routes.hasRouteFor(GET, "/admin", MediaType.defaultAcceptHeader())).isTrue();
     }
 
     @Test
@@ -74,7 +80,23 @@ public class RoutesTest {
                         .to(SampleController.class).find(pathParam("id"));
             }
         }.build();
-        assertThat(routes.hasRouteFor(GET, "/car/1")).isTrue();
+        assertThat(routes.hasRouteFor(GET, "/car/1", MediaType.defaultAcceptHeader())).isTrue();
+    }
+    
+    @Test
+    public void restfulRoute() {
+        Routes routes = new AbstractRoutingModule(){
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}")
+                        .on(GET)
+                        .produces(MediaType.JSON.toString())
+                        .to(SampleController.class).find(pathParam("id"));
+            }
+        }.build();
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders)).isTrue();
     }
     
     @Test
