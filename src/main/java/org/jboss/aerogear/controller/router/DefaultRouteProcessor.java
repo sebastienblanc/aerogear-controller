@@ -17,7 +17,6 @@
 
 package org.jboss.aerogear.controller.router;
 
-
 import static org.jboss.aerogear.controller.router.parameter.Parameters.extractArguments;
 
 import javax.enterprise.inject.spi.BeanManager;

@@ -174,7 +174,7 @@ public class DefaultRouteProcessorTest {
         verify(jsonResponder).respond(anyObject(), any(RouteContext.class));
     }
     
-    
+    @Test
     public void testFormParmeters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
@@ -495,9 +495,9 @@ public class DefaultRouteProcessorTest {
             @Override
             public void configuration() {
                 route()
-                        .from("/car/{id}")
+                        .from("/car/{id}").roles("admin")
                         .on(RequestMethod.GET)
-                        .produces(MediaType.HTML, MediaType.JSON)
+                        .produces(MediaType.JSON)
                         .to(SampleController.class).find(param("id"));
             }
         };

@@ -137,7 +137,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     public List<String> getProduces() {
         return produces;
     }
-    
+
     public void addParameter(final Parameter<?> parameter) {
         parameters.add(parameter);
     }
