@@ -25,29 +25,33 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.servlet.FilterChain;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
-import org.jboss.aerogear.controller.view.ViewResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -57,19 +61,14 @@ public class DefaultRouteProcessorTest {
 
     @Mock
     private SecurityProvider securityProvider;
-
     @Mock
     private Route route;
     @Mock
     private BeanManager beanManager;
     @Mock
-    private ViewResolver viewResolver;
-    @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
-    @Mock
-    private FilterChain chain;
     @Mock
     private ControllerFactory controllerFactory;
     @Mock
@@ -82,60 +81,36 @@ public class DefaultRouteProcessorTest {
     private JsonResponder jsonResponder;
     @Mock
     private MvcResponder mvcResponder;
-
+   
     private DefaultRouteProcessor router;
-    private Routes routes;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-
+        instrumentResponders();
+        router = new DefaultRouteProcessor(beanManager, responders, controllerFactory);
+        when(request.getHeader("Accept")).thenReturn("text/html");
+    }
+    
+    @Test(expected = ServletException.class)
+    public void testRouteForbidden() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
-
             @Override
             public void configuration() {
                 route()
                         .from("/car/{id}").roles("admin")
                         .on(RequestMethod.GET)
-                        .to(SampleController.class).find(pathParam("id"));
+                        .to(SampleController.class).find(param("id"));
             }
         };
-        routes = routingModule.build();
-        instrumentResponders();
-        router = new DefaultRouteProcessor(beanManager, this.responders, controllerFactory);
-    }
-    
-    private void instrumentResponders() {
-        final LinkedList<Responder> responders = new LinkedList<Responder>();
-        when(mvcResponder.accepts(MediaType.ANY.toString())).thenReturn(true);
-        responders.add(mvcResponder);
-        responders.add(jsonResponder);
-        when(this.responders.iterator()).thenReturn(responders.iterator());
-    }
-
-    @Test
-    public void testMvcRoute() throws Exception {
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
-        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
-        when(request.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getContextPath()).thenReturn("/abc");
-        when(request.getRequestURI()).thenReturn("/abc/car/3");
-        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", MediaType.defaultAcceptHeader());
-        router.process(new RouteContext(route, request, response, routes));
-        verify(controller).find(eq("3"));
-    }
-
-    @Test(expected = ServletException.class)
-    public void testRouteForbidden() throws Exception {
+        final Routes routes = routingModule.build();
         final SampleController controller = spy(new SampleController());
         doThrow(new ServletException()).when(securityProvider).isRouteAllowed(route);
-
+    
         when(route.isSecured()).thenReturn(true);
         //TODO it must be fixed with Mockito
         securityProvider.isRouteAllowed(route);
-
+    
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
@@ -144,22 +119,46 @@ public class DefaultRouteProcessorTest {
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
         final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", MediaType.defaultAcceptHeader());
         router.process(new RouteContext(route, request, response, routes));
-        verify(controller).find(eq("3"));
+        verify(controller).find("3");
     }
-    
+
     @Test
-    public void testRestRoute() throws Exception {
+    public void testMvcRouteWithPathParam() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
                 route()
                         .from("/car/{id}").roles("admin")
                         .on(RequestMethod.GET)
-                        .produces(MediaType.HTML.toString(), MediaType.JSON.toString())
-                        .to(SampleController.class).find(pathParam("id"));
+                        .to(SampleController.class).find(param("id"));
             }
         };
-        routes = routingModule.build();
+        final Routes routes = routingModule.build();
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/car/3");
+        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
+        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("3");
+    }
+
+    @Test
+    public void testRestRouteWithPathParam() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}").roles("admin")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.HTML, MediaType.JSON)
+                        .to(SampleController.class).find(param("id"));
+            }
+        };
+        final Routes routes = routingModule.build();
         final SampleController controller = spy(new SampleController());
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
@@ -168,10 +167,195 @@ public class DefaultRouteProcessorTest {
         when(request.getRequestURI()).thenReturn("/abc/car/3");
         when(request.getHeader("Accept")).thenReturn("application/json");
         when(jsonResponder.accepts("application/json")).thenReturn(true);
+        when(jsonResponder.mediaType()).thenReturn("application/json");
         final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
         final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", acceptHeaders);
         router.process(new RouteContext(route, request, response, routes));
         verify(jsonResponder).respond(anyObject(), any(RouteContext.class));
+    }
+    
+    
+    public void testFormParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.POST)
+                        .to(SampleController.class).save(param("color"), param("brand"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
+        requestParamMap.put("color", new String[] {"red"});
+        requestParamMap.put("brand", new String[] {"Ferrari"});
+        when(request.getParameterMap()).thenReturn(requestParamMap);
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.POST.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.POST, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).save("red", "Ferrari");
+    }
+    
+    @Test
+    public void testFormParmetersWithOneDefaultValue() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.POST)
+                        .to(SampleController.class).save(param("color", "gray"), param("brand", "Lada"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
+        requestParamMap.put("color", new String[] {"gray"});
+        when(request.getParameterMap()).thenReturn(requestParamMap);
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.POST.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.POST, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).save("gray", "Lada");
+    }
+    
+    @Test
+    public void testEntityFormParmeter() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.POST)
+                        .to(SampleController.class).save(param(Car.class));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
+        requestParamMap.put("car.color", new String[] {"Blue"});
+        requestParamMap.put("car.brand", new String[] {"BMW"});
+        when(request.getParameterMap()).thenReturn(requestParamMap);
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.POST.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.POST, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).save(any(Car.class));
+    }
+    
+    @Test
+    public void testQueryParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand", "Ferrari"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
+        requestParamMap.put("color", new String[] {"red"});
+        when(request.getParameterMap()).thenReturn(requestParamMap);
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("red", "Ferrari");
+    }
+    
+    @Test
+    public void testHeaderParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand", "Ferrari"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getHeader("color")).thenReturn("red");
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("red", "Ferrari");
+    }
+    
+    @Test
+    public void testCookieParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand", "Ferrari"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Cookie colorCookie = mock(Cookie.class);
+        when(colorCookie.getName()).thenReturn("color");
+        when(colorCookie.getValue()).thenReturn("red");
+        when(request.getCookies()).thenReturn(new Cookie[] {colorCookie});
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("red", "Ferrari");
+    }
+    
+    
+    @Test (expected = RuntimeException.class)
+    public void testNoRespondersForMediaType() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).find(param("id"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/car/3");
+        when(request.getHeader("Accept")).thenReturn("not/available");
+        when(jsonResponder.mediaType()).thenReturn("application/json");
+        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", acceptHeaders);
+        router.process(new RouteContext(route, request, response, routes));
     }
     
     @Test
@@ -180,10 +364,10 @@ public class DefaultRouteProcessorTest {
             @Override
             public void configuration() {
                 route()
-                        .from("/car/{id}").roles("admin")
+                        .from("/car/{id}")
                         .on(RequestMethod.GET)
-                        .produces(MediaType.HTML.toString(), MediaType.JSON.toString())
-                        .to(SampleController.class).find(pathParam("id"));
+                        .produces(MediaType.HTML, MediaType.JSON)
+                        .to(SampleController.class).find(param("id"));
             }
         };
         final Routes routes = routingModule.build();
@@ -207,9 +391,9 @@ public class DefaultRouteProcessorTest {
             @Override
             public void configuration() {
                 route()
-                        .from("/car/{id}").roles("admin")
+                        .from("/car/{id}")
                         .on(RequestMethod.GET)
-                        .to(SampleController.class).find(pathParam("id"));
+                        .to(SampleController.class).find(param("id"));
             }
         };
         final Routes routes = routingModule.build();
@@ -225,5 +409,14 @@ public class DefaultRouteProcessorTest {
         router.process(new RouteContext(route, request, response, routes));
         verify(mvcResponder).respond(anyObject(), any(RouteContext.class));
     }
-    
+
+    private void instrumentResponders() {
+        when(jsonResponder.accepts(MediaType.JSON.toString())).thenReturn(true);
+        when(jsonResponder.mediaType()).thenReturn(MediaType.JSON.toString());
+        when(mvcResponder.accepts(MediaType.HTML.toString())).thenReturn(true);
+        when(mvcResponder.mediaType()).thenReturn(MediaType.HTML.toString());
+        final Iterator<Responder> iterator = new HashSet<Responder>(Arrays.asList(mvcResponder, jsonResponder)).iterator();
+        when(responders.iterator()).thenReturn(iterator);
+    }
+
 }

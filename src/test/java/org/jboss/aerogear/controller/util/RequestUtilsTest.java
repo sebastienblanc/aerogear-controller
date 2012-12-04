@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
+import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.RouteContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -36,6 +38,10 @@ public class RequestUtilsTest {
     private ServletContext servletContext;
     @Mock
     private HttpServletRequest request;
+    @Mock
+    private Route route;
+    @Mock
+    private RouteContext routeContext;
     
     @Before
     public void initMocks() {

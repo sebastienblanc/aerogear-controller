@@ -6,7 +6,11 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.jboss.aerogear.controller.router.parameter.Parameter;
 
 import com.google.common.collect.Sets;
 
@@ -22,6 +26,7 @@ public class DefaultRoute implements Route {
     private final Set<String> roles;
     private final Set<String> produces;
     private final Set<Class<? extends Throwable>> throwables;
+    private final List<Parameter<?>> parameters;
 
 
     /**
@@ -36,7 +41,8 @@ public class DefaultRoute implements Route {
         this.targetClass = descriptor.getTargetClass();
         this.roles = asSet(firstNonNull(descriptor.getRoles(), new String[]{}));
         this.throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
-        this.produces = asSet(firstNonNull(descriptor.getProduces(), defaultMediaType()));
+        this.parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>>emptyList());
+        this.produces = asSet(descriptor.getProduces(), MediaType.HTML.toString());
     }
 
     @Override
@@ -107,6 +113,11 @@ public class DefaultRoute implements Route {
     }
     
     @Override
+    public List<Parameter<?>> getParameters() {
+        return Collections.<Parameter<?>>unmodifiableList(parameters);
+    }
+    
+    @Override
     public boolean canHandle(final Throwable throwable) {
         for (Class<? extends Throwable> t : throwables) {
             if (t.isAssignableFrom(throwable.getClass())) {
@@ -122,6 +133,8 @@ public class DefaultRoute implements Route {
                 .append("path=").append(path)
                 .append(", targetClass=").append(targetClass)
                 .append(", targetMethod=").append(targetMethod)
+                .append(", produces=").append(produces)
+                .append(", parameters=").append(parameters)
                 .append(", roles=").append(roles)
                 .append(", throwables=").append(throwables)
                 .append("]")
@@ -131,6 +144,10 @@ public class DefaultRoute implements Route {
     private Set<RequestMethod> asSet(final RequestMethod[] methods) {
         return methods == null ? Collections.<RequestMethod>emptySet() : new HashSet<RequestMethod>(Arrays.asList(methods));
     }
+    
+    private Set<String> asSet(final List<String> strings, final String defaultValue) {
+        return strings.isEmpty() ? new HashSet<String>(Arrays.asList(defaultValue)) : new LinkedHashSet<String>(strings);
+    }
 
     private Set<String> asSet(final String[] strings) {
         return new HashSet<String>(Arrays.asList(strings));
@@ -138,10 +155,6 @@ public class DefaultRoute implements Route {
     
     private static Set<Class<? extends Throwable>> emptyThrowableSet() {
         return Collections.emptySet();
-    }
-    
-    private static String[] defaultMediaType() {
-        return new String[] {MediaType.HTML.toString()};
     }
 
 }

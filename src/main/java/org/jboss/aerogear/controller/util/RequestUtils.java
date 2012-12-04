@@ -25,13 +25,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.aerogear.controller.router.RequestMethod;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 /**
  * Utility methods for various {@link HttpServletRequest} operation.
  */
 public class RequestUtils {
+    
     
     private RequestUtils() {
     }
@@ -79,5 +79,5 @@ public class RequestUtils {
         }
         return acceptHeaders;
     }
-
+    
 }

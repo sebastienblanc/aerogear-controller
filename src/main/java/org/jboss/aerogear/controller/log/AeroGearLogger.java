@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.logging.BasicLogger;
+import org.jboss.logging.Cause;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
@@ -25,9 +26,9 @@ public interface AeroGearLogger extends BasicLogger {
     @Message(id = 3, value = "method: '%s', requested URI: '%s'")
     void requestedRoute(RequestMethod method, String requestURI);
     
-    @LogMessage(level = Logger.Level.TRACE)
+    @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 5, value = "Exception Message: '%s'")
-    void routeCatchAllException(Throwable exception);
+    void routeCatchAllException(@Cause Throwable exception, String error) ;
     
     @LogMessage(level = Logger.Level.TRACE)
     @Message(id = 6, value = "Exception when trying to close input stream: '%s'")

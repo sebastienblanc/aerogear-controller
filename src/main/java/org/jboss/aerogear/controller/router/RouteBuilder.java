@@ -64,14 +64,19 @@ public interface RouteBuilder {
         
         /**
          * Specifies the media types that this endpoint produces. 
-         * </p>
-         * The distinguishes an MVC call from a REST request and will cause a response
-         * to be returned to the caller, as opposed to the request being forwarded to a view.
          * 
          * @param mediaTypes the media types that this endpoint method can produce.
          * @return {@link TargetEndpoint} to support method chaining.
          */
         TargetEndpoint produces(String... mediaTypes);
+        
+        /**
+         * Specifies the MediaType's that this endpoint produces. 
+         * 
+         * @param mediaTypes the {@link MediaType}s that this endpoint method can produce.
+         * @return {@link TargetEndpoint} to support method chaining.
+         */
+        TargetEndpoint produces(MediaType... mediaTypes);
         
         /**
          * Specifies the target Class for the {@link Route}.

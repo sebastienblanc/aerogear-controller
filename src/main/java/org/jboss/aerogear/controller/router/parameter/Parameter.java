@@ -15,35 +15,40 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router.rest;
+package org.jboss.aerogear.controller.router.parameter;
 
-public class Entity {
 
-    private String name;
-    private int age;
+/**
+ * Parameter represents a single target endpoint method parameter.
+ * 
+ * @param T the type of this parameter.
+ */
+public class Parameter <T> {
     
-    public Entity() {
-    }
-    
-    public Entity(final String name, final int age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
+    public enum Type {
+        REQUEST,
+        ENTITY,
     }
     
+    private final Type parameterType;
+    private final Class<T> type;
+    
+    public Parameter(final Type parameterType, final Class<T> type) {
+        this.parameterType = parameterType;
+        this.type = type;
+    }
+    
+    public Type getParameterType() {
+        return parameterType;
+    }
+    
+    public Class<?> getType() {
+        return type;
+    }
+    
+    @Override
+    public String toString() {
+        return "Parameter[type=" + parameterType + ", type=" + type + "]";
+    }
+
 }
