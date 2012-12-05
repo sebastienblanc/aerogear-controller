@@ -17,15 +17,15 @@
 
 package org.jboss.aerogear.controller.router;
 
+import static org.jboss.aerogear.controller.util.RequestUtils.extractAcceptHeader;
+import static org.jboss.aerogear.controller.util.RequestUtils.extractArguments;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-
-import org.jboss.aerogear.controller.util.RequestUtils;
 
 import com.google.common.collect.Sets;
 
@@ -60,19 +60,11 @@ public class DefaultRouteProcessor implements RouteProcessor {
 
     @Override
     public void process(RouteContext routeContext) throws Exception {
-        final HttpServletRequest request = routeContext.getRequest();
-        final String requestPath = routeContext.getRequestPath();
         final Route route = routeContext.getRoute();
-        Object[] params;
-
-        if (route.isParameterized()) {
-            params = RequestUtils.extractPathParameters(requestPath, route);
-        } else {
-            params = RequestUtils.extractParameters(request, route);
-        }
-        Object result = route.getTargetMethod().invoke(getController(route), params);
+        final Object[] arguments = extractArguments(routeContext);
+        final Object result = route.getTargetMethod().invoke(getController(route), arguments);
         
-        for (String mediaType : Sets.intersection(route.produces(), RequestUtils.extractAcceptHeader(request))) {
+        for (String mediaType : Sets.intersection(route.produces(), extractAcceptHeader(routeContext.getRequest()))) {
             for (Responder responder : responders) {
                 if (responder.accepts(mediaType)) {
                     responder.respond(result, routeContext);

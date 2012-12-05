@@ -70,7 +70,7 @@ public abstract class AbstractRoutingModule implements RoutingModule {
      * @param clazz the type of the parameter that the target method accepts.
      * @return T reference of type T but will always be null.
      */
-    public static <T> T param(Class<T> clazz) {
+    public static <T> T instanceOf(Class<T> clazz) {
         return null;
     }
 
@@ -86,8 +86,67 @@ public abstract class AbstractRoutingModule implements RoutingModule {
      * @param id the id/name of the parameter
      * @return {@code String} the same String that was passed in.
      */
-    public static String pathParam(String id) {
+    public String pathParam(String id) {
+        addParameter(id, Parameter.Type.PATH);
         return id;
+    }
+    
+    public <T> T formParam(Class<T> clazz) {
+        current().addParameter(new Parameter(Parameter.Type.FORM));
+        return null;
+    }
+    
+    public String formParam(String id) {
+        addParameter(id, Parameter.Type.FORM);
+        return null;
+    }
+    
+    public String formParam(String id, String defaultValue) {
+        addParameter(id, Parameter.Type.FORM, defaultValue);
+        return null;
+    }
+    
+    public String queryParam(String id) {
+        addParameter(id, Parameter.Type.QUERY);
+        return null;
+    }
+    
+    public String queryParam(String id, String defaultValue) {
+        addParameter(id, Parameter.Type.QUERY, defaultValue);
+        return null;
+    }
+    
+    public String headerParam(String id) {
+        addParameter(id, Parameter.Type.HEADER);
+        return null;
+    }
+    
+    public String headerParam(String id, String defaultValue) {
+        addParameter(id, Parameter.Type.HEADER, defaultValue);
+        return null;
+    }
+    
+    public String cookieParam(String id) {
+        addParameter(id, Parameter.Type.COOKIE);
+        return null;
+    }
+    
+    public String cookieParam(String id, String defaultValue) {
+        addParameter(id, Parameter.Type.COOKIE, defaultValue);
+        return null;
+    }
+    
+    private void addParameter(final String name, final Parameter.Type type) {
+        current().addParameter(new Parameter(name, type));
+    }
+    
+    private void addParameter(final String name, final Parameter.Type type, final String defaultValue) {
+        current().addParameter(new Parameter(name, type, defaultValue));
+    }
+    
+    private RouteDescriptor current() {
+        RouteDescriptorAccessor rda = (RouteDescriptorAccessor) routes.get(routes.size()-1);
+        return rda.getRouteDescriptor();
     }
     
 }

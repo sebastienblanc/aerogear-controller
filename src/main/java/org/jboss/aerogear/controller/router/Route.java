@@ -2,6 +2,7 @@ package org.jboss.aerogear.controller.router;
 
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -89,4 +90,6 @@ public interface Route {
      * @return  the media types that this routes can produce.
      */
     Set<String> produces();
+    
+    List<Parameter> getParameters();
 }

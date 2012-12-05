@@ -115,7 +115,7 @@ public class ErrorHandlerTest {
             public void configuration() throws Exception {
                 route()
                         .on(SampleControllerException.class, IllegalStateException.class)
-                        .to(SampleController.class).error(param(Exception.class));
+                        .to(SampleController.class).error(instanceOf(Exception.class));
                 route()
                         .from("/home")
                         .on(RequestMethod.GET, RequestMethod.POST)

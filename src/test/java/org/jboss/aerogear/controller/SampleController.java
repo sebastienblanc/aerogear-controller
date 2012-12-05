@@ -12,7 +12,9 @@ public class SampleController {
     }
 
     public void save(RoutesTest.Car car) {
-
+    }
+    
+    public void save(RoutesTest.Car car, String metadata) {
     }
 
     public void find(String id) {

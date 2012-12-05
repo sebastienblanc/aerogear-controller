@@ -136,10 +136,11 @@ public class DefaultRouteTest {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
+        System.out.println(route);
         final String expected = "DefaultRoute[path=/car/{id}, " +
             "targetClass=class org.jboss.aerogear.controller.SampleController, " +
             "targetMethod=public void org.jboss.aerogear.controller.SampleController.index(), " +
-            "roles=[], throwables=[]]";
+            "parameters=[], roles=[], throwables=[]]";
         assertThat(route.toString()).isEqualTo(expected);
     }
     
