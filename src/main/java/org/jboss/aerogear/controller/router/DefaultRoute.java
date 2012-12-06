@@ -24,6 +24,7 @@ public class DefaultRoute implements Route {
     private final Method targetMethod;
     private final Set<RequestMethod> methods;
     private final Set<String> roles;
+    private final Set<String> consumes;
     private final Set<String> produces;
     private final Set<Class<? extends Throwable>> throwables;
     private final List<Parameter<?>> parameters;
@@ -40,9 +41,10 @@ public class DefaultRoute implements Route {
         this.targetMethod = descriptor.getTargetMethod();
         this.targetClass = descriptor.getTargetClass();
         this.roles = asSet(firstNonNull(descriptor.getRoles(), new String[]{}));
-        this.throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
-        this.parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>>emptyList());
         this.produces = asSet(descriptor.getProduces(), MediaType.HTML.toString());
+        this.consumes = asSet(descriptor.getConsumes(), MediaType.HTML.toString());
+        this.parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>>emptyList());
+        this.throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
     }
 
     @Override
@@ -115,6 +117,10 @@ public class DefaultRoute implements Route {
     @Override
     public List<Parameter<?>> getParameters() {
         return Collections.<Parameter<?>>unmodifiableList(parameters);
+    }
+    
+    public Set<String> consumes() {
+        return Collections.unmodifiableSet(consumes);
     }
     
     @Override

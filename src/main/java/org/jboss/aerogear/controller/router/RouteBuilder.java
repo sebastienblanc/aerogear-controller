@@ -63,6 +63,22 @@ public interface RouteBuilder {
     public static interface TargetEndpoint {
         
         /**
+         * Specifies the media types that this endpoint can consumes. 
+         * 
+         * @param mediaTypes the media types that this endpoint method can consume.
+         * @return {@link TargetEndpoint} to support method chaining.
+         */
+        TargetEndpoint consumes(String... mediaTypes);
+        
+        /**
+         * Specifies the media types that this endpoint can consumes. 
+         * 
+         * @param mediaTypes the {@link MediaType} types that this endpoint method can consume.
+         * @return {@link TargetEndpoint} to support method chaining.
+         */
+        TargetEndpoint consumes(MediaType... mediaTypes);
+        
+        /**
          * Specifies the media types that this endpoint produces. 
          * 
          * @param mediaTypes the media types that this endpoint method can produce.

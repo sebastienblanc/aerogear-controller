@@ -26,7 +26,8 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private RequestMethod[] methods;
     private Class<?> targetClass;
     private String[] roles;
-    private List<String> produces = new LinkedList<String>();
+    private final List<String> produces = new LinkedList<String>();
+    private final List<String> consumes = new LinkedList<String>();
     private Set<Class<? extends Throwable>> throwables;
     private final static FinalizeFilter FINALIZE_FILTER = new FinalizeFilter();
     private final List<Parameter<?>> parameters = new LinkedList<Parameter<?>>();
@@ -137,7 +138,23 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     public List<String> getProduces() {
         return produces;
     }
-
+    
+    @Override
+    public TargetEndpoint consumes(MediaType... consumes) {
+        this.consumes.addAll(Arrays.asList(toStringArray(consumes)));
+        return this;
+    }
+    
+    @Override
+    public TargetEndpoint consumes(String... consumes) {
+        this.consumes.addAll(Arrays.asList(consumes));
+        return this;
+    }
+    
+    public List<String> getConsumes() {
+        return consumes;
+    }
+    
     public void addParameter(final Parameter<?> parameter) {
         parameters.add(parameter);
     }
