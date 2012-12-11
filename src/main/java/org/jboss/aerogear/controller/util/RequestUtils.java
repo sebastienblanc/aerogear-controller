@@ -101,7 +101,7 @@ public class RequestUtils {
      * 
      * @param requestPath  the path of a Http request.
      * @param route  the route which will be used to match the request path. Will contains a '{}'
-     *               which will be used to match a request paramter value.  
+     *               which will be used to match a request parameter value.  
      * @return {@code String} the extracted path parameter value.
      */
     public static String extractPathParameters(final String requestPath, final Route route) {

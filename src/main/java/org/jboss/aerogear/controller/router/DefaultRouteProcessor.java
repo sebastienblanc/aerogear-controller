@@ -44,8 +44,11 @@ public class DefaultRouteProcessor implements RouteProcessor {
     
     private BeanManager beanManager;
     private ControllerFactory controllerFactory;
-    private Set<Responder> responders = new HashSet<Responder>();
+    private final Set<Responder> responders = new HashSet<Responder>();
     
+    /**
+     * No-args constructor required by CDI.
+     */
     public DefaultRouteProcessor() {
     }
     
