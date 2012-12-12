@@ -62,7 +62,9 @@ public class DefaultRoute implements Route {
     private boolean isPathCompatible(String path) {
         if (isParameterized()) {
             final int paramStart = this.path.indexOf('{');
-            return this.path.subSequence(0, paramStart).equals(path.subSequence(0, paramStart));
+            if (paramStart < path.length()) {
+                return this.path.subSequence(0, paramStart).equals(path.subSequence(0, paramStart));
+            }
         }
         return this.path.equals(path);
     }

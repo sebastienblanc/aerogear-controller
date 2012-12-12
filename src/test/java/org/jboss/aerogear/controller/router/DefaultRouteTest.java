@@ -100,13 +100,17 @@ public class DefaultRouteTest {
         final Route route = new DefaultRoute(rd);
         assertThat(route.matches(RequestMethod.GET, "/index", MediaType.defaultAcceptHeader())).isTrue();
     }
-
+    
     @Test
-    public void matchesParameterizedRoutePaths() throws NoSuchMethodException {
+    public void matchParameterizedRoutePaths() throws NoSuchMethodException {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
         assertThat(route.matches(RequestMethod.GET, "/car/3", MediaType.defaultAcceptHeader())).isTrue();
+        assertThat(route.matches(RequestMethod.GET, "/car", MediaType.defaultAcceptHeader())).isFalse();
+        assertThat(route.matches(RequestMethod.GET, "/c", MediaType.defaultAcceptHeader())).isFalse();
+        assertThat(route.matches(RequestMethod.GET, "/carss", MediaType.defaultAcceptHeader())).isFalse();
+        assertThat(route.matches(RequestMethod.GET, "/somelongpath", MediaType.defaultAcceptHeader())).isFalse();
     }
     
     @Test
