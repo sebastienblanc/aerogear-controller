@@ -17,31 +17,9 @@
 
 package org.jboss.aerogear.controller.router;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * Media types supported out-of-the-box with AeroGear Controller.
- */
-public enum MediaType {
-    HTML("text/html"), 
-    JSON("application/json");
+public interface RouteDescriptorAccessor {
     
-    private final String type;
-
-    private MediaType(final String type) {
-        this.type = type;
-    }
+    RouteDescriptor getRouteDescriptor();
     
-    @Override
-    public String toString() {
-        return type;
-    }
-    
-    public static Set<String> defaultAcceptHeader() {
-        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(HTML.toString())));
-    }
 
 }

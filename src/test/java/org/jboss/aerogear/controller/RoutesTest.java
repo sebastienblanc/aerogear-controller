@@ -1,7 +1,10 @@
 package org.jboss.aerogear.controller;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jboss.aerogear.controller.router.RequestMethod.GET;
+import static org.jboss.aerogear.controller.router.RequestMethod.POST;
+
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,34 +15,7 @@ import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.router.error.ErrorTarget;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jboss.aerogear.controller.router.RequestMethod.GET;
-import static org.jboss.aerogear.controller.router.RequestMethod.POST;
-
 public class RoutesTest {
-
-    @Test
-    public void basicRoute() {
-        Routes routes = new AbstractRoutingModule() {
-            @Override
-            public void configuration() {
-                route()
-                        .from("/home")
-                        .on(GET)
-                        .to(SampleController.class).index();
-                route()
-                        .from("/client/:name")
-                        .on(GET)
-                        .to(SampleController.class).client(":name");
-                route()
-                        .from("/lol")
-                        .on(GET, POST)
-                        .to(SampleController.class).lol();
-
-            }
-        }.build();
-
-    }
 
     @Test
     public void routesWithParameters() {
@@ -49,7 +25,7 @@ public class RoutesTest {
                 route()
                         .from("/cars")
                         .on(POST)
-                        .to(SampleController.class).save(param(Car.class));
+                        .to(SampleController.class).save(formParam(Car.class));
             }
         }.build();
         assertThat(routes.hasRouteFor(POST, "/cars", MediaType.defaultAcceptHeader())).isTrue();
@@ -124,7 +100,7 @@ public class RoutesTest {
             public void configuration() throws Exception {
                 route().on(SubException.class).to(SampleController.class).subException();
                 route().on(SuperException.class).to(SampleController.class).superException();
-                route().on(Exception.class).to(SampleController.class).error(param(Exception.class));
+                route().on(Exception.class).to(SampleController.class).error(instanceOf(Exception.class));
                 route()
                         .from("/home")
                         .on(GET)

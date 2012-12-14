@@ -10,7 +10,7 @@ import java.util.Set;
  * 
  * @see RouteBuilder
  */
-public class RouteBuilderImpl implements RouteBuilder {
+public class RouteBuilderImpl implements RouteBuilder, RouteDescriptorAccessor {
 
     private final RouteDescriptor routeDescriptor = new RouteDescriptor();
 
@@ -51,6 +51,11 @@ public class RouteBuilderImpl implements RouteBuilder {
             set.add((Class<? extends Throwable>) e);
         }
         return new HashSet<Class<? extends Throwable>>(set);
+    }
+
+    @Override
+    public RouteDescriptor getRouteDescriptor() {
+        return routeDescriptor;
     }
 
 }
