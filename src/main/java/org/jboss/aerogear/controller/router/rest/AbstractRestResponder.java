@@ -51,7 +51,7 @@ public abstract class AbstractRestResponder implements Responder {
      * @param routeContext the current {@link RouteContext}.
      * @throws Exception if an error occurs while responding.
      */
-    public abstract void writeResponse(final Object entity, final RouteContext routeContext) throws Exception;
+    protected abstract void writeResponse(final Object entity, final RouteContext routeContext) throws Exception;
 
     @Override
     public boolean accepts(final String mediaType) {
