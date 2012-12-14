@@ -24,7 +24,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private String[] roles;
     private String[] produces;
     private Set<Class<? extends Throwable>> throwables;
-    private List<Parameter> parameters = new LinkedList<Parameter>();
+    private final List<Parameter> parameters = new LinkedList<Parameter>();
 
     public RouteDescriptor() {
     }

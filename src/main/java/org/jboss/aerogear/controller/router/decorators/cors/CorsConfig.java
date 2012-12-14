@@ -178,8 +178,8 @@ public class CorsConfig implements CorsConfiguration {
         private boolean allowCookies;
         private long maxAge;
         private String exposeHeaders;
-        private Set<String> validRequestMethods = new HashSet<String>();
-        private Set<String> validRequestHeaders = new HashSet<String>();
+        private final Set<String> validRequestMethods = new HashSet<String>();
+        private final Set<String> validRequestHeaders = new HashSet<String>();
         
         public Builder() {
         }
