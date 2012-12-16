@@ -20,11 +20,13 @@ package org.jboss.aerogear.controller.router.parameter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.Cookie;
 
 import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.util.StringUtils;
 
@@ -60,12 +62,14 @@ public class Parameters {
      * @param routeContext the {@link RouteContext}.
      * @return {@code Object[]} an array of Object matching the route targets parameters.
      */
-    public static Object[] extractArguments(final RouteContext routeContext) {
+    public static Object[] extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) {
         final List<Object> args = new LinkedList<Object>();
         for (Parameter<?> parameter : routeContext.getRoute().getParameters()) {
             switch (parameter.getParameterType()) {
             case ENTITY:
-                addIfPresent(extractIogiParam(routeContext), args);
+                if (!addIfPresent(extractIogiParam(routeContext), args)) {
+                    args.add(extractBody(routeContext, parameter, consumers));
+                }
                 break;
             case REQUEST:
                 final RequestParameter<?> requestParameter = (RequestParameter<?>) parameter;
@@ -89,6 +93,18 @@ public class Parameters {
         }
         return args.toArray();
     }
+    
+    private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter, final Map<String, Consumer> consumers) {
+        final Set<String> mediaTypes = routeContext.getRoute().consumes();
+        for (String mediaType : mediaTypes) {
+            final Consumer consumer = consumers.get(mediaType);
+            if (consumer != null) {
+                return consumer.unmarshall(routeContext.getRequest(), parameter.getType());
+            }
+        }
+        throw LoggerMessages.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
+    }
+            
 
     /**
      * Extracts a path parameter from the passed in request path.

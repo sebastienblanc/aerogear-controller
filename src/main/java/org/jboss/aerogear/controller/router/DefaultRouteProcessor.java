@@ -19,6 +19,10 @@ package org.jboss.aerogear.controller.router;
 
 import static org.jboss.aerogear.controller.router.parameter.Parameters.extractArguments;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
@@ -38,21 +42,25 @@ public class DefaultRouteProcessor implements RouteProcessor {
     private BeanManager beanManager;
     private ControllerFactory controllerFactory;
     private Responders responders;
+    private final Map<String, Consumer> consumers = new HashMap<String, Consumer>();
     
     public DefaultRouteProcessor() {
     }
     
     @Inject
-    public DefaultRouteProcessor(BeanManager beanManager, Responders responders, ControllerFactory controllerFactory) {
+    public DefaultRouteProcessor(BeanManager beanManager, Instance<Consumer> consumers, Responders responders, ControllerFactory controllerFactory) {
         this.beanManager = beanManager;
         this.controllerFactory = controllerFactory;
         this.responders = responders;
+        for (Consumer consumer : consumers) {
+            this.consumers.put(consumer.mediaType(), consumer);
+        }
     }
 
     @Override
     public void process(RouteContext routeContext) throws Exception {
         final Route route = routeContext.getRoute();
-        final Object[] arguments = extractArguments(routeContext);
+        final Object[] arguments = extractArguments(routeContext, consumers);
         final Object result = route.getTargetMethod().invoke(getController(route), arguments);
         responders.respond(routeContext, result);
     }

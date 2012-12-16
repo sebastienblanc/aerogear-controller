@@ -60,7 +60,6 @@ import org.jboss.aerogear.controller.router.rest.JsonConsumer;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -100,7 +99,7 @@ public class DefaultRouteProcessorTest {
         MockitoAnnotations.initMocks(this);
         instrumentResponders();
         instrumentConsumers();
-        router = new DefaultRouteProcessor(beanManager, responders, controllerFactory);
+        router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
         when(request.getHeader("Accept")).thenReturn("text/html");
     }
     
@@ -569,7 +568,7 @@ public class DefaultRouteProcessorTest {
         this.responders = new Responders(responderInstance);
     }
     
-    @Ignore
+    @Test
     public void testConsumes() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
@@ -582,23 +581,52 @@ public class DefaultRouteProcessorTest {
                         .to(SampleController.class).save(param(Car.class));
             }
         };
+        final Routes routes = routingModule.build();
         final SampleController controller = spy(new SampleController());
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
         when(request.getRequestURI()).thenReturn("/abc/cars");
-        final Routes routes = routingModule.build();
         when(request.getHeader("Accept")).thenReturn("application/json");
         when(request.getInputStream()).thenReturn(inputStream("{\"color\":\"red\", \"brand\":\"mini\"}"));
         when(jsonResponder.accepts("application/json")).thenReturn(true);
         final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
         final Route route = routes.routeFor(RequestMethod.POST, "/cars", acceptHeaders);
         router.process(new RouteContext(route, request, response, routes));
-        verify(controller, never()).save(null);
-        verify(controller, never()).save(any(Car.class));
+        verify(controller).save(any(Car.class));
     }
     
+    @Test (expected = RuntimeException.class) 
+    public void testNoConsumers() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars").roles("admin")
+                        .on(RequestMethod.POST)
+                        .consumes(MediaType.JSON.toString())
+                        .produces(MediaType.JSON.toString())
+                        .to(SampleController.class).save(param(Car.class));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(consumers.iterator()).thenReturn(new HashSet<Consumer>().iterator());
+        router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        when(request.getInputStream()).thenReturn(inputStream("{\"color\":\"red\", \"brand\":\"mini\"}"));
+        when(jsonResponder.accepts("application/json")).thenReturn(true);
+        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        final Route route = routes.routeFor(RequestMethod.POST, "/cars", acceptHeaders);
+        router.process(new RouteContext(route, request, response, routes));
+    }
+   
     private ServletInputStream inputStream(final String json) {
         final ByteArrayInputStream ba = new ByteArrayInputStream(json.getBytes());
         return new ServletInputStream() {
