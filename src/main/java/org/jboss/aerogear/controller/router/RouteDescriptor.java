@@ -1,8 +1,11 @@
 package org.jboss.aerogear.controller.router;
 
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import net.sf.cglib.proxy.NoOp;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -22,6 +25,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private String[] roles;
     private String[] produces;
     private Set<Class<? extends Throwable>> throwables;
+    private final static FinalizeFilter FINALIZE_FILTER = new FinalizeFilter();
 
     public RouteDescriptor() {
     }
@@ -54,7 +58,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     public <T> T to(Class<T> clazz) {
         this.targetClass = clazz;
         try {
-            Object o = Enhancer.create(clazz, new MyMethodInterceptor(this));
+            Object o = Enhancer.create(clazz, null, FINALIZE_FILTER, new Callback[] {new MyMethodInterceptor(this), NoOp.INSTANCE});
             return (T) o;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -121,5 +125,18 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     
     public String[] getProduces() {
         return produces;
+    }
+    
+    private static class FinalizeFilter implements CallbackFilter {
+        
+        /* Indexes into the callback array */
+        private static final int OUR_INTERCEPTOR = 0;
+        private static final int NO_OP = 1;
+
+        @Override
+        public int accept(Method method) {
+            return method.getName().equals("finalize") ? NO_OP : OUR_INTERCEPTOR;
+        }
+        
     }
 }
