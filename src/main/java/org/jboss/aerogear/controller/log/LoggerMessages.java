@@ -27,8 +27,4 @@ public interface LoggerMessages {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 4, value = "method: '%s', requested URI: '%s', Accept: '%s'")
     RuntimeException routeNotFound(RequestMethod method, String requestURI, Set<String> acceptHeaders);
-    
-    @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 9, value = "oops, multivalued params not supported yet. Parameter name: '%s'")
-    RuntimeException multivaluedParamsUnsupported(String parameterName);
 }

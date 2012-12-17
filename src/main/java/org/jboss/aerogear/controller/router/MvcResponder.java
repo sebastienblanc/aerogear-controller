@@ -27,7 +27,7 @@ import org.jboss.aerogear.controller.view.ViewResolver;
  */
 public class MvcResponder implements Responder {
     
-    private final ViewResolver viewResolver;
+    private ViewResolver viewResolver;
 
     @Inject
     public MvcResponder(final ViewResolver viewResolver) {

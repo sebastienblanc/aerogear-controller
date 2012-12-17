@@ -6,8 +6,6 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.jboss.aerogear.controller.router.RouteBuilder.TargetEndpoint;
@@ -24,7 +22,6 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private String[] roles;
     private String[] produces;
     private Set<Class<? extends Throwable>> throwables;
-    private final List<Parameter> parameters = new LinkedList<Parameter>();
 
     public RouteDescriptor() {
     }
@@ -124,13 +121,5 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     
     public String[] getProduces() {
         return produces;
-    }
-
-    public void addParameter(final Parameter parameter) {
-        parameters.add(parameter);
-    }
-    
-    public List<Parameter> getParameters() {
-        return parameters;
     }
 }

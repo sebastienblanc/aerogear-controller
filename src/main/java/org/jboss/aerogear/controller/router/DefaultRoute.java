@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -23,7 +22,6 @@ public class DefaultRoute implements Route {
     private final Set<String> roles;
     private final Set<String> produces;
     private final Set<Class<? extends Throwable>> throwables;
-    private final List<Parameter> parameters;
 
 
     /**
@@ -39,7 +37,6 @@ public class DefaultRoute implements Route {
         this.roles = asSet(firstNonNull(descriptor.getRoles(), new String[]{}));
         this.throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
         this.produces = asSet(firstNonNull(descriptor.getProduces(), defaultMediaType()));
-        this.parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter>emptyList());
     }
 
     @Override
@@ -118,7 +115,6 @@ public class DefaultRoute implements Route {
                 .append("path=").append(path)
                 .append(", targetClass=").append(targetClass)
                 .append(", targetMethod=").append(targetMethod)
-                .append(", parameters=").append(parameters)
                 .append(", roles=").append(roles)
                 .append(", throwables=").append(throwables)
                 .append("]")
@@ -139,11 +135,6 @@ public class DefaultRoute implements Route {
     
     private static String[] defaultMediaType() {
         return new String[] {MediaType.HTML.toString()};
-    }
-
-    @Override
-    public List<Parameter> getParameters() {
-        return Collections.unmodifiableList(parameters);
     }
 
 }

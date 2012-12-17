@@ -29,7 +29,7 @@ public enum MediaType {
     HTML("text/html"), 
     JSON("application/json");
     
-    private final String type;
+    private String type;
 
     private MediaType(final String type) {
         this.type = type;
