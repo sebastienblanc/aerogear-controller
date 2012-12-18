@@ -132,6 +132,15 @@ public class DefaultRouteTest {
     }
     
     @Test
+    public void matchesProducesAny() throws NoSuchMethodException {
+        final RouteDescriptor rd = new RouteDescriptor();
+        rd.setPath("/car/{id}").on(GET).produces(MediaType.HTML.toString()).to(SampleController.class).index();
+        final Route route = new DefaultRoute(rd);
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList("*/*"));
+        assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isTrue();
+    }
+    
+    @Test
     public void toStringTest() {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
