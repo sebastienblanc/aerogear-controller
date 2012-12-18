@@ -23,7 +23,7 @@ import org.jboss.aerogear.controller.router.Responder;
 import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
- * AbstractRestResponder is a Responder capable of returing a response to a request.
+ * AbstractRestResponder is a Responder capable of returning a response to a request.
  * </p>
  * This class handles common task such as implementing {@link #accepts(String)} and making
  * sure that certain HTTP headers are always set on the {@link HttpServletResponse}, for example
@@ -35,7 +35,7 @@ public abstract class AbstractRestResponder implements Responder {
     private final String mediaType;
     
     /**
-     * Sole contructor that subclasses should call from thier no-args constructor
+     * Sole constructor that subclasses should call from tier no-args constructor
      * 
      * @param mediaType the media type that this responder accepts.
      */
@@ -44,7 +44,7 @@ public abstract class AbstractRestResponder implements Responder {
     }
     
     /**
-     * Writes the passed-in entity to the {@link HttpServletResponse} enabling concreate implementation
+     * Writes the passed-in entity to the {@link HttpServletResponse} enabling concrete implementation
      * to add additional headers of in other ways process the response. 
      * 
      * @param entity the entity returned from a {@link Route} endpoint.
