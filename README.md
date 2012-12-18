@@ -41,7 +41,7 @@
             </body>
         </html>
         
-### parameter population
+### populating parameters
 
 You can use immutable beans straight away as controller parameters:
 
