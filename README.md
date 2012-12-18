@@ -8,7 +8,7 @@
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aerogear-controller</artifactId>
-            <version>1.0.0.M1-20121203-SNAPSHOT</version>
+            <version>1.0.0.M1-20121217-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
@@ -26,9 +26,9 @@
         @Override
         public void configuration() {
             route()
-                    .from("/")
-                    .on(RequestMethod.GET)
-                    .to(Home.class).index();
+                   .from("/")
+                   .on(RequestMethod.GET)
+                   .to(Home.class).index();
             }
         }
 
@@ -54,9 +54,9 @@ You can use immutable beans straight away as controller parameters:
 This can be populated by putting a route to it (preferrably via post, of course)
 
         route()
-            .from("/cars")
-            .on(RequestMethod.POST)
-            .to(Store.class).save(param(Car.class));
+               .from("/cars")
+               .on(RequestMethod.POST)
+               .to(Store.class).save(param(Car.class));
 
 
 And you can use a simple html form for it, by just following the convention:
@@ -70,5 +70,54 @@ The car object will be automatically populated with the provided values - note t
 
 All the intermediate objects are created automatically.
 
+### error handling
+You can configure a route as an error handler for a type of exception:
+
+        route()
+               .on(YourException.class)
+               .to(ExceptionHandler.class).errorPage(); 
+
+You can specify multiple exceptions if needed:
+
+        route()
+               .on(YourException.class, SomeOtherException.class)
+               .to(ExceptionHandler.class).errorPage();
+               
+If you'd like to log the exception in the error route, you can specify that the target method, errorPage() above, should 
+take a parameter:
+
+        route()
+               .on(YourException.class, SomeOtherException.class)
+               .to(ExceptionHandler.class).errorPage(param(Exception.class));
+
+As mentioned previously in this document a view for ExceptionHandler would in this case be located in:
+
+        /WEB-INF/pages/ExceptionHandler/errorPage.jsp   
+
+The exception is made available to the jsp page:
+
+        ${requestScope['org.jboss.aerogear.controller.exception']}
+        
+### Cross Origin Resource Sharing  (CORS) Support
+CORS is supported by default but can be disabled or configured differently by implementing a CDI Producer:
+
+        @Produces
+        public CorsConfiguration demoConfig() {
+            return CorsConfig.enableCorsSupport()
+                    .anyOrigin()
+                    .enableCookies()
+                    .exposeHeaders("header1")
+                    .maxAge(20)
+                    .enableAllRequestMethods()
+                    .validRequestHeaders("header1");
+    }
+
+To disable CORS support
+
+        @Produces
+        public CorsConfiguration demoConfig() {
+            return CorsConfig.disableCorsSupport();
+        }
+   
 ---
 you can find a slightly better example at <https://github.com/aerogear/aerogear-controller-demo> 
