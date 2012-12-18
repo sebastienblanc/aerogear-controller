@@ -56,7 +56,14 @@ public class DefaultRoute implements Route {
 
     @Override
     public boolean matches(RequestMethod method, String path, Set<String> acceptHeaders) {
-        return this.methods.contains(method) && isPathCompatible(path) && !Sets.intersection(produces, acceptHeaders).isEmpty();
+        return this.methods.contains(method) && isPathCompatible(path) && matchesProduces(acceptHeaders);
+    }
+    
+    private boolean matchesProduces(final Set<String> acceptHeaders) {
+        if (acceptHeaders.contains("*/*")) {
+            return true;
+        }
+        return !Sets.intersection(produces, acceptHeaders).isEmpty();
     }
 
     private boolean isPathCompatible(String path) {
