@@ -8,7 +8,7 @@
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aerogear-controller</artifactId>
-            <version>1.0.0.M1-20121217-SNAPSHOT</version>
+            <version>1.0.0.M1</version>
             <scope>compile</scope>
         </dependency>
 
