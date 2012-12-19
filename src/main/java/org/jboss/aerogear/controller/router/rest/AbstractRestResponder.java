@@ -20,6 +20,7 @@ package org.jboss.aerogear.controller.router.rest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.router.Responder;
+import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 
 /**

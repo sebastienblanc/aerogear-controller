@@ -30,9 +30,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
@@ -101,9 +101,16 @@ public class DefaultRouteProcessorTest {
             }
         };
         routes = routingModule.build();
-        Iterator<Responder> iterator = new HashSet<Responder>(Arrays.asList(mvcResponder, jsonResponder)).iterator();
-        when(responders.iterator()).thenReturn(iterator);
-        router = new DefaultRouteProcessor(beanManager, responders, controllerFactory);
+        instrumentResponders();
+        router = new DefaultRouteProcessor(beanManager, this.responders, controllerFactory);
+    }
+    
+    private void instrumentResponders() {
+        final LinkedList<Responder> responders = new LinkedList<Responder>();
+        when(mvcResponder.accepts(MediaType.ANY.toString())).thenReturn(true);
+        responders.add(mvcResponder);
+        responders.add(jsonResponder);
+        when(this.responders.iterator()).thenReturn(responders.iterator());
     }
 
     @Test
@@ -165,6 +172,58 @@ public class DefaultRouteProcessorTest {
         final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", acceptHeaders);
         router.process(new RouteContext(route, request, response, routes));
         verify(jsonResponder).respond(anyObject(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testAnyResponder() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}").roles("admin")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.HTML.toString(), MediaType.JSON.toString())
+                        .to(SampleController.class).find(pathParam("id"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/car/3");
+        when(request.getHeader("Accept")).thenReturn(MediaType.ANY.toString());
+        when(jsonResponder.accepts("application/json")).thenReturn(true);
+        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", acceptHeaders);
+        router.process(new RouteContext(route, request, response, routes));
+        verify(mvcResponder).respond(anyObject(), any(RouteContext.class));
+    }
+    
+    @Test
+    public void testAnyResponderEmptyAcceptHeader() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}").roles("admin")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(pathParam("id"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/car/3");
+        when(request.getHeader("Accept")).thenReturn(MediaType.ANY.toString());
+        when(jsonResponder.accepts("application/json")).thenReturn(true);
+        final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", Collections.<String>emptySet());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(mvcResponder).respond(anyObject(), any(RouteContext.class));
     }
     
 }

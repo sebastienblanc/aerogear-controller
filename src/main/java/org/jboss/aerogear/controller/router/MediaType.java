@@ -27,7 +27,8 @@ import java.util.Set;
  */
 public enum MediaType {
     HTML("text/html"), 
-    JSON("application/json");
+    JSON("application/json"),
+    ANY("*/*");
     
     private String type;
 
