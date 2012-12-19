@@ -60,7 +60,7 @@ public class DefaultRoute implements Route {
     }
     
     private boolean matchesProduces(final Set<String> acceptHeaders) {
-        if (acceptHeaders.contains("*/*")) {
+        if (acceptHeaders.isEmpty() || acceptHeaders.contains(MediaType.ANY.toString())) {
             return true;
         }
         return !Sets.intersection(produces, acceptHeaders).isEmpty();

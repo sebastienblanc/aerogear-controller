@@ -17,7 +17,7 @@
 
 package org.jboss.aerogear.controller.router;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +55,7 @@ public class DefaultRouteProcessor implements RouteProcessor {
     private BeanManager beanManager;
     private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     private ControllerFactory controllerFactory;
-    private Set<Responder> responders = new HashSet<Responder>();
+    private Set<Responder> responders = new LinkedHashSet<Responder>();
     
     public DefaultRouteProcessor() {
     }
@@ -83,14 +83,25 @@ public class DefaultRouteProcessor implements RouteProcessor {
         }
         Object result = route.getTargetMethod().invoke(getController(route), params);
         
-        for (String mediaType : Sets.intersection(route.produces(), RequestUtils.extractAcceptHeader(request))) {
-            for (Responder responder : responders) {
-                if (responder.accepts(mediaType)) {
-                    responder.respond(result, routeContext);
-                    return;
-                }
+        final Set<String> acceptHeaders = RequestUtils.extractAcceptHeader(request);
+        for (String mediaType : Sets.intersection(route.produces(), acceptHeaders)) {
+            if (respond(mediaType, result, routeContext)) {
+                return;
             }
         }
+        if (acceptHeaders.contains(MediaType.ANY.toString())) {
+            respond(MediaType.ANY.toString(), result, routeContext);
+        }
+    }
+    
+    private boolean respond(final String mediaType, final Object result, final RouteContext routeContext) throws Exception {
+        for (Responder responder : responders) {
+            if (responder.accepts(mediaType)) {
+                responder.respond(result, routeContext);
+                return true;
+            }
+        }
+        return false;
     }
     
     private Object[] extractPathParameters(String requestPath, Route route) {

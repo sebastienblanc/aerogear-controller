@@ -36,7 +36,7 @@ public class MvcResponder implements Responder {
 
     @Override
     public boolean accepts(final String mediaType) {
-        return MediaType.HTML.toString().equals(mediaType);
+        return MediaType.HTML.toString().equals(mediaType) || MediaType.ANY.toString().equals(mediaType);
     }
 
     @Override
