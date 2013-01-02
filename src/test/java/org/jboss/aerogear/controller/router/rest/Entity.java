@@ -17,7 +17,10 @@
 
 package org.jboss.aerogear.controller.router.rest;
 
-public class Entity {
+import java.util.HashMap;
+import java.util.Map;
+
+public class Entity implements ResponseHeaders {
 
     private String name;
     private int age;
@@ -44,6 +47,14 @@ public class Entity {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    @Override
+    public Map<String, String> headers() {
+        final Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Entity-Name", name);
+        headers.put("Entity-Age", Integer.toString(age));
+        return headers;
     }
     
 }

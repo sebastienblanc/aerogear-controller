@@ -28,8 +28,11 @@ import java.util.Set;
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.router.error.ErrorTarget;
+import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
+import org.jboss.aerogear.controller.view.AbstractViewResolver;
 import org.junit.Test;
 
 public class RoutesTest {
@@ -45,7 +48,7 @@ public class RoutesTest {
                         .to(SampleController.class).save(param(Car.class));
             }
         }.build();
-        assertThat(routes.hasRouteFor(POST, "/cars", MediaType.defaultAcceptHeader())).isTrue();
+        assertThat(routes.hasRouteFor(POST, "/cars", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
     }
 
     @Test
@@ -59,7 +62,7 @@ public class RoutesTest {
                         .to(SampleController.class).admin();
             }
         }.build();
-        assertThat(routes.hasRouteFor(GET, "/admin", MediaType.defaultAcceptHeader())).isTrue();
+        assertThat(routes.hasRouteFor(GET, "/admin", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
     }
 
     @Test
@@ -73,26 +76,24 @@ public class RoutesTest {
                         .to(SampleController.class).find(param("id"));
             }
         }.build();
-        assertThat(routes.hasRouteFor(GET, "/car/1", MediaType.defaultAcceptHeader())).isTrue();
+        assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
     }
     
     @Test
     public void restfulRoute() {
+        final MediaType custom = new MediaType("application/custom", CustomResponder.class);
         Routes routes = new AbstractRoutingModule(){
             @Override
             public void configuration() {
                 route()
                         .from("/car/{id}")
                         .on(GET)
-                        .produces(MediaType.JSON)
-                        .produces("application/custom")
-                        .produces(MediaType.HTML)
+                        .produces(MediaType.JSON, custom)
                         .to(SampleController.class).find(param("id"));
             }
         }.build();
-        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.toString(), "application/custom"));
-        Route route = routes.routeFor(GET, "/car/1", acceptHeaders);
-        assertThat(route.produces()).contains(MediaType.JSON.toString(), "application/custom", MediaType.HTML.toString());
+        final Route route = routes.routeFor(GET, "/car/1", acceptHeaders(MediaType.JSON.getMediaType(), "application/custom"));
+        assertThat(route.produces()).contains(MediaType.JSON, custom);
     }
     
     @Test
@@ -107,7 +108,7 @@ public class RoutesTest {
                         .to(SampleController.class).find(param("id"));
             }
         }.build();
-        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType()));
         assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders)).isTrue();
     }
     
@@ -164,5 +165,22 @@ public class RoutesTest {
     }
     public static class SubException extends SuperException {
         private static final long serialVersionUID = 1L;
+    }
+    
+    private Set<String> acceptHeaders(String... mediaTypes) {
+        return new HashSet<String>(Arrays.asList(mediaTypes));
+    }
+    
+    private class CustomResponder extends AbstractRestResponder {
+
+        public CustomResponder(String mediaType) {
+            super(new MediaType(mediaType, CustomResponder.class));
+        }
+
+        @Override
+        public void writeResponse(Object entity, RouteContext routeContext) throws Exception {
+            //NoOp
+        }
+        
     }
 }

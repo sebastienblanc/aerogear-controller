@@ -17,7 +17,8 @@
 
 package org.jboss.aerogear.controller.router;
 
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
@@ -25,7 +26,6 @@ import javax.inject.Inject;
 
 import org.jboss.aerogear.controller.log.LoggerMessages;
 import org.jboss.aerogear.controller.util.RequestUtils;
-import com.google.common.collect.Sets;
 
 /**
  * Handles responding from a Route invocation by delegating to the appropriate {@link Responder}.
@@ -34,12 +34,12 @@ import com.google.common.collect.Sets;
  */
 public class Responders {
     
-    private final Set<Responder> responders = new LinkedHashSet<Responder>();
+    private final Map<MediaType, Responder> responders = new LinkedHashMap<MediaType, Responder>();
     
     @Inject
     public Responders(final Instance<Responder> responders) {
         for (Responder responder : responders) {
-            this.responders.add(responder); 
+            this.responders.put(responder.mediaType(), responder); 
         }
     }
     
@@ -59,24 +59,38 @@ public class Responders {
      */
     public void respond(final RouteContext routeContext, final Object result) throws Exception {
         final Set<String> acceptHeaders = RequestUtils.extractAcceptHeader(routeContext.getRequest());
-        for (String mediaType : Sets.intersection(routeContext.getRoute().produces(), acceptHeaders)) {
-            if (respond(mediaType, result, routeContext)) {
-                return;
+        final Set<MediaType> routeMediaTypes = routeContext.getRoute().produces();
+        for (String acceptHeader : acceptHeaders) {
+            for (MediaType mediaType: routeMediaTypes) {
+                if (mediaType.getMediaType().equals(acceptHeader)) {
+                    if (respond(mediaType, result, routeContext)) {
+                        return;
+                    }
+                }
             }
         }
-        if (acceptHeaders.contains(MediaType.ANY.toString()) || acceptHeaders.isEmpty()) {
-            respond(MediaType.ANY.toString(), result, routeContext);
+        
+        if (acceptHeaders.contains(MediaType.ANY) || acceptHeaders.isEmpty()) {
+            respondAny(routeMediaTypes, result, routeContext);
         } else {
             throw LoggerMessages.MESSAGES.noResponderForRequestedMediaType(routeContext.getRequest().getHeader("Accept"), this);
         }
     }
 
-    private boolean respond(final String mediaType, final Object result, final RouteContext routeContext) throws Exception {
-        for (Responder responder : responders) {
-            if (responder.accepts(mediaType)) {
-                responder.respond(result, routeContext);
+    private boolean respond(final MediaType mediaType, final Object result, final RouteContext routeContext) throws Exception {
+        if (responders.containsKey(mediaType)) {
+            responders.get(mediaType).respond(result, routeContext);
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean respondAny(final Set<MediaType> mediaTypes, final Object result, final RouteContext routeContext) throws Exception {
+        for (MediaType mediaType : mediaTypes) {
+            if (respond(mediaType, result, routeContext)) {
                 return true;
             }
+            responders.values().iterator().next().respond(result, routeContext);
         }
         return false;
     }

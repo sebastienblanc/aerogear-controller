@@ -43,11 +43,11 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private RequestMethod[] methods;
     private Class<?> targetClass;
     private String[] roles;
-    private final List<String> produces = new LinkedList<String>();
     private final List<String> consumes = new LinkedList<String>();
+    private final List<Parameter<?>> parameters = new LinkedList<Parameter<?>>();
+    private MediaType[] produces;
     private Set<Class<? extends Throwable>> throwables;
     private final static FinalizeFilter FINALIZE_FILTER = new FinalizeFilter();
-    private final List<Parameter<?>> parameters = new LinkedList<Parameter<?>>();
 
     public RouteDescriptor() {
     }
@@ -140,26 +140,18 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
         return throwables;
     }
     
-    @Override
-    public TargetEndpoint produces(String... produces) {
-        this.produces.addAll(Arrays.asList(produces));
-        return this;
+    public List<Parameter<?>> getParameters() {
+        return parameters;
     }
-    
+
     @Override
     public TargetEndpoint produces(MediaType... produces) {
-        this.produces.addAll(Arrays.asList(toStringArray(produces)));
+        this.produces = produces;
         return this;
     }
     
-    public List<String> getProduces() {
+    public MediaType[] getProduces() {
         return produces;
-    }
-    
-    @Override
-    public TargetEndpoint consumes(MediaType... consumes) {
-        this.consumes.addAll(Arrays.asList(toStringArray(consumes)));
-        return this;
     }
     
     @Override
@@ -176,18 +168,6 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
         parameters.add(parameter);
     }
     
-    public List<Parameter<?>> getParameters() {
-        return parameters;
-    }
-
-    private String[] toStringArray(final MediaType... mediaTypes) {
-        final String[] stringTypes = new String[mediaTypes.length];
-        for (int i = 0; i < mediaTypes.length; i++) {
-            stringTypes[i] = mediaTypes[i].toString();
-        }
-        return stringTypes;
-    }
-
     private static class FinalizeFilter implements CallbackFilter {
         
         /* Indexes into the callback array */
@@ -199,4 +179,5 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
             return method.getName().equals("finalize") ? NO_OP : OUR_INTERCEPTOR;
         }
     }
+
 }

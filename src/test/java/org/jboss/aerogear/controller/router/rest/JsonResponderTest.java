@@ -57,7 +57,7 @@ public class JsonResponderTest {
 
     @Test
     public void accepts() {
-        assertThat(new JsonResponder().accepts(MediaType.JSON.toString())).isTrue();
+        assertThat(new JsonResponder().accepts(MediaType.JSON.getMediaType())).isTrue();
     }
     
     @Test
@@ -80,7 +80,9 @@ public class JsonResponderTest {
         verify(response).getWriter();
         verify(response).setCharacterEncoding("UTF-8");
         assertThat(stringWriter.toString()).isEqualTo("{\"name\":\"Larry\",\"age\":38}");
-        verify(response).setContentType(MediaType.JSON.toString());
+        verify(response).setContentType(MediaType.JSON.getMediaType());
+        verify(response).setHeader("Entity-Name", "Larry");
+        verify(response).setHeader("Entity-Age", "38");
     }
 
 }

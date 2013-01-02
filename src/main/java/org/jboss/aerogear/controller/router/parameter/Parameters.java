@@ -139,10 +139,13 @@ public class Parameters {
                 AeroGearLogger.LOGGER.multivaluedParamsUnsupported();
             }
         }
-        final Class<?>[] parameterTypes = routeContext.getRoute().getTargetMethod().getParameterTypes();
-        final Class<?> parameterType = parameterTypes[0];
-        final Target<?> target = Target.create(parameterType, StringUtils.downCaseFirst(parameterType.getSimpleName()));
-        return Optional.fromNullable(IOGI.instantiate(target, parameters.toArray(new br.com.caelum.iogi.parameters.Parameter[parameters.size()])));
+        if (!parameters.isEmpty()) {
+            final Class<?>[] parameterTypes = routeContext.getRoute().getTargetMethod().getParameterTypes();
+            final Class<?> parameterType = parameterTypes[0];
+            final Target<?> target = Target.create(parameterType, StringUtils.downCaseFirst(parameterType.getSimpleName()));
+            return Optional.fromNullable(IOGI.instantiate(target, parameters.toArray(new br.com.caelum.iogi.parameters.Parameter[parameters.size()])));
+        }
+        return Optional.absent();
     }
     
     private static boolean addIfPresent(final Optional<?> op, final List<Object> args) {

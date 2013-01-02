@@ -66,8 +66,8 @@ public class RouteBuilderImplTest {
     @Test
     public void testProduces() {
         final RouteBuilderImpl rb = new RouteBuilderImpl();
-        rb.from("/somepath").on(RequestMethod.GET).produces("application/json").to(SampleController.class).index();
-        assertThat(rb.build().produces()).contains("application/json");
+        rb.from("/somepath").on(RequestMethod.GET).produces(MediaType.JSON).to(SampleController.class).index();
+        assertThat(rb.build().produces()).contains(MediaType.JSON);
     }
     
     @Test

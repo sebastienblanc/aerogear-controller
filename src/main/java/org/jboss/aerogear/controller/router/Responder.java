@@ -17,6 +17,7 @@
 
 package org.jboss.aerogear.controller.router;
 
+
 /**
  * A Responder is capable of responding to a specific MediaType.
  */
@@ -24,9 +25,9 @@ public interface Responder {
     
     /**
      * The media type that this Responder can handle.
-     * @return {@code String} the media type.
+     * @return {@code MediaType} the media type.
      */
-    String mediaType();
+    MediaType mediaType();
     
     /**
      * Determines whether this responder can respond to the passed-in @{code mediaType}

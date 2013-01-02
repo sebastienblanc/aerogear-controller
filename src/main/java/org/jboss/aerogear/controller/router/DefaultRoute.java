@@ -29,8 +29,6 @@ import java.util.Set;
 
 import org.jboss.aerogear.controller.router.parameter.Parameter;
 
-import com.google.common.collect.Sets;
-
 
 /**
  * An immutable implementation of {@link Route}.
@@ -42,7 +40,7 @@ public class DefaultRoute implements Route {
     private final Set<RequestMethod> methods;
     private final Set<String> roles;
     private final Set<String> consumes;
-    private final Set<String> produces;
+    private final Set<MediaType> produces;
     private final Set<Class<? extends Throwable>> throwables;
     private final List<Parameter<?>> parameters;
 
@@ -53,15 +51,15 @@ public class DefaultRoute implements Route {
      * @param descriptor the {@link RouteDescriptor} with the configured values.
      */
     public DefaultRoute(RouteDescriptor descriptor) {
-        this.path = descriptor.getPath();
-        this.methods = asSet(descriptor.getMethods());
-        this.targetMethod = descriptor.getTargetMethod();
-        this.targetClass = descriptor.getTargetClass();
-        this.roles = asSet(firstNonNull(descriptor.getRoles(), new String[]{}));
-        this.produces = asSet(descriptor.getProduces(), MediaType.HTML.toString());
-        this.consumes = asSet(descriptor.getConsumes(), MediaType.HTML.toString());
-        this.parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>>emptyList());
-        this.throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
+        path = descriptor.getPath();
+        methods = asSet(descriptor.getMethods());
+        targetMethod = descriptor.getTargetMethod();
+        targetClass = descriptor.getTargetClass();
+        roles = asSet(firstNonNull(descriptor.getRoles(), new String[]{}));
+        consumes = asSet(descriptor.getConsumes(), MediaType.HTML.getMediaType());
+        parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>>emptyList());
+        produces = asSet(firstNonNull(descriptor.getProduces(), defaultMediaTypes()));
+        throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
     }
 
     @Override
@@ -85,10 +83,15 @@ public class DefaultRoute implements Route {
     }
     
     private boolean matchesProduces(final Set<String> acceptHeaders) {
-        if (acceptHeaders.isEmpty() || acceptHeaders.contains(MediaType.ANY.toString())) {
+        if (acceptHeaders.isEmpty() || acceptHeaders.contains(MediaType.ANY)) {
             return true;
         }
-        return !Sets.intersection(produces, acceptHeaders).isEmpty();
+        for (MediaType mediaType : produces) {
+            if (acceptHeaders.contains(mediaType.getMediaType())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isPathCompatible(String path) {
@@ -127,7 +130,7 @@ public class DefaultRoute implements Route {
     }
     
     @Override
-    public Set<String> produces() {
+    public Set<MediaType> produces() {
         return Collections.unmodifiableSet(produces);
     }
     
@@ -168,16 +171,24 @@ public class DefaultRoute implements Route {
         return methods == null ? Collections.<RequestMethod>emptySet() : new HashSet<RequestMethod>(Arrays.asList(methods));
     }
     
-    private Set<String> asSet(final List<String> strings, final String defaultValue) {
-        return strings.isEmpty() ? new HashSet<String>(Arrays.asList(defaultValue)) : new LinkedHashSet<String>(strings);
-    }
-
     private Set<String> asSet(final String[] strings) {
         return new HashSet<String>(Arrays.asList(strings));
     }
     
+    private Set<MediaType> asSet(final MediaType[] types) {
+        return new HashSet<MediaType>(Arrays.asList(types));
+    }
+    
+    private Set<String> asSet(final List<String> strings, final String defaultValue) {
+        return strings.isEmpty() ? new HashSet<String>(Arrays.asList(defaultValue)) : new LinkedHashSet<String>(strings);
+    }
+    
     private static Set<Class<? extends Throwable>> emptyThrowableSet() {
         return Collections.emptySet();
+    }
+    
+    private static MediaType[] defaultMediaTypes() {
+        return new MediaType[] {MediaType.JSP};
     }
 
 }

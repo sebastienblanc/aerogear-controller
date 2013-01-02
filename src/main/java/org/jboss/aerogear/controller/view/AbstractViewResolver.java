@@ -21,26 +21,26 @@ import org.jboss.aerogear.controller.view.ViewResolver;
 import org.jboss.aerogear.controller.router.Route;
 
 /**
- * A {@link ViewResolver} that resolves Java Server Page (JSP) views. 
- * </p>
- * 
- * The pattern for resolving a view is as follows:
+ * An Abstract {@link ViewResolver} pattern for resolving a view is as follows:
  * <pre>
- * /WEB-INF/pages/TargetClassName/TargetMethodName.jsp
+ * /WEB-INF/pages/TargetClassName/TargetMethodName<.suffix>
  * </pre>
  * 
  * @see View
  */
-public class DefaultViewResolver implements ViewResolver {
+public abstract class AbstractViewResolver implements ViewResolver {
 
     private static final String DEFAULT_PREFIX = "/WEB-INF/pages";
-    private static final String DEFAULT_TEMPLATE_FORMAT = ".jsp";
+    private String suffix;
+    
+    public AbstractViewResolver(final String suffix) {
+        this.suffix = suffix;
+    }
 
     @Override
     public String resolveViewPathFor(Route route) {
         String folder = route.getTargetClass().getSimpleName();
         String name = route.getTargetMethod().getName();
-
-        return String.format("%s/%s/%s%s", DEFAULT_PREFIX, folder, name, DEFAULT_TEMPLATE_FORMAT);
+        return String.format("%s/%s/%s%s", DEFAULT_PREFIX, folder, name, suffix);
     }
 }

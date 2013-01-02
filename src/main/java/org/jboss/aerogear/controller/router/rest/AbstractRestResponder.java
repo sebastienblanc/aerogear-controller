@@ -19,6 +19,7 @@ package org.jboss.aerogear.controller.router.rest;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Responder;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
@@ -33,14 +34,14 @@ import org.jboss.aerogear.controller.router.RouteContext;
  */
 public abstract class AbstractRestResponder implements Responder {
     
-    private final String mediaType;
+    private final MediaType mediaType;
     
     /**
      * Sole constructor that subclasses should call from tier no-args constructor
      * 
      * @param mediaType the media type that this responder accepts.
      */
-    public AbstractRestResponder(final String mediaType) {
+    public AbstractRestResponder(final MediaType mediaType) {
         this.mediaType = mediaType;
     }
     
@@ -56,16 +57,20 @@ public abstract class AbstractRestResponder implements Responder {
 
     @Override
     public boolean accepts(final String mediaType) {
-        return this.mediaType.equals(mediaType);
+        return this.mediaType.getMediaType().equals(mediaType);
     }
-
+    
     @Override
     public void respond(final Object entity, final RouteContext routeContext) throws Exception {
         final HttpServletResponse response = routeContext.getResponse();
-        response.setContentType(mediaType);
+        response.setContentType(mediaType.getMediaType());
         response.setCharacterEncoding("UTF-8");
         writeResponse(entity, routeContext);
     }
     
-
+    @Override
+    public MediaType mediaType() {
+        return mediaType;
+    }
+    
 }

@@ -108,7 +108,7 @@ public interface Route {
      * 
      * @return  the media types that this routes can produce.
      */
-    Set<String> produces();
+    Set<MediaType> produces();
 
     /**
      * Returns the Parameter's that this route accepts.
