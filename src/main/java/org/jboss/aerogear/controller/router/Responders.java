@@ -22,6 +22,8 @@ import java.util.Set;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+
+import org.jboss.aerogear.controller.log.LoggerMessages;
 import org.jboss.aerogear.controller.util.RequestUtils;
 import com.google.common.collect.Sets;
 
@@ -64,6 +66,8 @@ public class Responders {
         }
         if (acceptHeaders.contains(MediaType.ANY.toString()) || acceptHeaders.isEmpty()) {
             respond(MediaType.ANY.toString(), result, routeContext);
+        } else {
+            throw LoggerMessages.MESSAGES.noResponderForRequestedMediaType(routeContext.getRequest().getHeader("Accept"), this);
         }
     }
 
@@ -75,6 +79,11 @@ public class Responders {
             }
         }
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return "Responders[" + responders + "]";
     }
 
 }

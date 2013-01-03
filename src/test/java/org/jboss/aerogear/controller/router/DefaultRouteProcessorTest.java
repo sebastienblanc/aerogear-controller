@@ -33,9 +33,9 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,12 +76,12 @@ public class DefaultRouteProcessorTest {
     @Mock
     private RequestDispatcher requestDispatcher;
     @Mock
-    private Instance<Responder> responders;
+    private Instance<Responder> responderInstance;
     @Mock
     private JsonResponder jsonResponder;
     @Mock
     private MvcResponder mvcResponder;
-   
+    private Responders responders;
     private DefaultRouteProcessor router;
 
     @Before
@@ -472,7 +472,7 @@ public class DefaultRouteProcessorTest {
                 route()
                         .from("/car/{id}")
                         .on(RequestMethod.GET)
-                        .produces(MediaType.JSON)
+                        .produces("custom/type")
                         .to(SampleController.class).find(param("id"));
             }
         };
@@ -483,9 +483,8 @@ public class DefaultRouteProcessorTest {
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
         when(request.getRequestURI()).thenReturn("/abc/car/3");
-        when(request.getHeader("Accept")).thenReturn("not/available");
-        when(jsonResponder.mediaType()).thenReturn("application/json");
-        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        when(request.getHeader("Accept")).thenReturn("custom/type");
+        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList("custom/type"));
         final Route route = routes.routeFor(RequestMethod.GET, "/car/{id}", acceptHeaders);
         router.process(new RouteContext(route, request, response, routes));
     }
@@ -543,12 +542,14 @@ public class DefaultRouteProcessorTest {
     }
 
     private void instrumentResponders() {
-        when(jsonResponder.accepts(MediaType.JSON.toString())).thenReturn(true);
-        when(jsonResponder.mediaType()).thenReturn(MediaType.JSON.toString());
         when(mvcResponder.accepts(MediaType.HTML.toString())).thenReturn(true);
-        when(mvcResponder.mediaType()).thenReturn(MediaType.HTML.toString());
-        final Iterator<Responder> iterator = new HashSet<Responder>(Arrays.asList(mvcResponder, jsonResponder)).iterator();
-        when(responders.iterator()).thenReturn(iterator);
+        when(mvcResponder.accepts(MediaType.ANY.toString())).thenReturn(true);
+        when(jsonResponder.accepts(MediaType.JSON.toString())).thenReturn(true);
+        final List<Responder> responders = new LinkedList<Responder>();
+        responders.add(mvcResponder);
+        responders.add(jsonResponder);
+        when(this.responderInstance.iterator()).thenReturn(responders.iterator());
+        this.responders = new Responders(responderInstance);
     }
-
+    
 }
