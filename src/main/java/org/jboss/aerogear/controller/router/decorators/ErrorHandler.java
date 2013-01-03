@@ -17,7 +17,6 @@
 
 package org.jboss.aerogear.controller.router.decorators;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 
 import javax.decorator.Decorator;
@@ -25,18 +24,14 @@ import javax.decorator.Delegate;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.router.ControllerFactory;
+import org.jboss.aerogear.controller.router.Responders;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
 import org.jboss.aerogear.controller.router.error.ErrorRoute;
 import org.jboss.aerogear.controller.spi.HttpStatusAwareException;
-import org.jboss.aerogear.controller.view.ErrorViewResolver;
-import org.jboss.aerogear.controller.view.View;
-import org.jboss.aerogear.controller.view.ViewResolver;
 
 import com.google.common.base.Throwables;
 
@@ -53,54 +48,48 @@ public class ErrorHandler implements RouteProcessor {
     private final RouteProcessor delegate;
     private final ControllerFactory controllerFactory;
     private final BeanManager beanManager;
-    private final ViewResolver errorViewResolver;
+    private final Responders responders;
     
     @Inject
-    public ErrorHandler(final @Delegate RouteProcessor delegate, final ViewResolver viewResolver, 
+    public ErrorHandler(final @Delegate RouteProcessor delegate, final Responders responders,
             final ControllerFactory controllerFactory, final BeanManager beanManager) {
         this.delegate = delegate;
         this.controllerFactory = controllerFactory;
         this.beanManager = beanManager;
-        errorViewResolver = new ErrorViewResolver(viewResolver);
+        this.responders = responders;
     }
 
     @Override
-    public void process(RouteContext routeContext) throws Exception {
+    public void process(final RouteContext routeContext) throws Exception {
         try {
             delegate.process(routeContext);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             if (t instanceof HttpStatusAwareException) {
                 routeContext.getResponse().setStatus(((HttpStatusAwareException) t).getStatus());
             }
             final Throwable rootCause = Throwables.getRootCause(t);
             final Route errorRoute = routeContext.getRoutes().routeFor(rootCause);
-            invokeErrorRoute(errorRoute, rootCause);
-            forwardErrorToView(errorRoute, rootCause, routeContext.getRequest(), routeContext.getResponse());
+            final RouteContext errorContext = new RouteContext(errorRoute, routeContext.getRequest(), routeContext.getResponse(), routeContext.getRoutes());
+            final Object result = invokeErrorRoute(errorContext, rootCause);
+            routeContext.getRequest().setAttribute(ErrorRoute.DEFAULT.getExceptionAttrName(), rootCause);
+            responders.respond(errorContext, result);
         }
     }
     
-    private void invokeErrorRoute(final Route errorRoute, final Throwable t) throws ServletException {
+    private Object invokeErrorRoute(final RouteContext routeContext, final Throwable t) throws ServletException {
+        final Route errorRoute = routeContext.getRoute();
+        Object response = null;
         try {
             final Method targetMethod = errorRoute.getTargetMethod();
             if (targetMethod.getParameterTypes().length == 0) {
-                targetMethod.invoke(getController(errorRoute));
+                response =  targetMethod.invoke(getController(errorRoute));
             } else {
-                targetMethod.invoke(getController(errorRoute), t);
+                response = targetMethod.invoke(getController(errorRoute), t);
             }
         } catch (final Exception e) {
             throw new ServletException(e.getMessage(), e);
         }
-    }
-    
-    private void forwardErrorToView(final Route errorRoute, final Throwable rootCause, 
-            final HttpServletRequest request, final HttpServletResponse response) throws ServletException {
-        try {
-            final View view = new View(errorViewResolver.resolveViewPathFor(errorRoute), rootCause);
-            request.setAttribute(ErrorRoute.DEFAULT.getExceptionAttrName(), view.getModel());
-            request.getRequestDispatcher(view.getViewPath()).forward(request, response);
-        } catch (IOException e) {
-            throw new ServletException(e.getMessage(), e);
-        }
+        return response != null ? response : t;
     }
     
     private Object getController(Route route) {
