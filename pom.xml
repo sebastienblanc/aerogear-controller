@@ -171,11 +171,20 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>10.0</version>
+        </dependency>
+        <dependency>
             <groupId>br.com.caelum</groupId>
             <artifactId>iogi</artifactId>
             <version>0.9.1</version>
             <scope>compile</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.jmock</groupId>
                     <artifactId>jmock-legacy</artifactId>

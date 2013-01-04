@@ -39,4 +39,9 @@ public class JsonResponder extends AbstractRestResponder {
         om.writeValue(routeContext.getResponse().getWriter(), entity);
     }
 
+    @Override
+    public String mediaType() {
+        return MediaType.JSON.toString();
+    }
+
 }

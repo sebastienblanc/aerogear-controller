@@ -4,9 +4,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.fest.assertions.Fail;
@@ -20,7 +18,7 @@ public class DefaultRouteTest {
     private static final Method TARGET_METHOD = indexMethod(TARGET_CLASS, "index");
     
     @Test
-    public void construct() throws Exception {
+    public void defaults() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
@@ -148,7 +146,7 @@ public class DefaultRouteTest {
         final String expected = "DefaultRoute[path=/car/{id}, " +
             "targetClass=class org.jboss.aerogear.controller.SampleController, " +
             "targetMethod=public void org.jboss.aerogear.controller.SampleController.index(), " +
-            "roles=[], throwables=[]]";
+            "produces=[text/html], parameters=[], roles=[], throwables=[]]";
         assertThat(route.toString()).isEqualTo(expected);
     }
     

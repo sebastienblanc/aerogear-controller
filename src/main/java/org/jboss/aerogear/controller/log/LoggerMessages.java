@@ -1,15 +1,19 @@
 package org.jboss.aerogear.controller.log;
 
+import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletException;
+
 import org.jboss.aerogear.controller.router.RequestMethod;
+import org.jboss.aerogear.controller.router.Responder;
+import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.parameter.Parameter;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
 import org.jboss.logging.MessageBundle;
 import org.jboss.logging.Messages;
-
-import javax.servlet.ServletException;
 
 /**
  * A JBoss-Logging MessageBundle containing translated Strings, Exceptions etc.
@@ -25,6 +29,18 @@ public interface LoggerMessages {
     ServletException mustRunInsideAContainer();
 
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 4, value = "method: '%s', requested URI: '%s', Accept: '%s'")
+    @Message(id = 4, value = "No route found for method: '%s', requested URI: '%s', Accept: '%s'")
     RuntimeException routeNotFound(RequestMethod method, String requestURI, Set<String> acceptHeaders);
+    
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 9, value = "oops, multivalued params not supported yet. Parameter name: '%s'")
+    RuntimeException multivaluedParamsUnsupported(String parameterName);
+    
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 10, value = "Parameter: '%s' was missing from Request destined for route: '%s'")
+    RuntimeException missingParameterInRequest(Parameter<?> parameter, Route route);
+    
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 11, value = "No Responder was found that matched the Accept Header: '%s'. The following Responders are registered: '%s'")
+    RuntimeException noResponderForRequestedMediaType(String acceptHeader, Map<String, Responder> responders);
 }

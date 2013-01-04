@@ -17,25 +17,19 @@
 
 package org.jboss.aerogear.controller.router;
 
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+
+import static org.jboss.aerogear.controller.router.parameter.Parameters.extractArguments;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.aerogear.controller.log.AeroGearLogger;
+import org.jboss.aerogear.controller.log.LoggerMessages;
 import org.jboss.aerogear.controller.util.RequestUtils;
-import org.jboss.aerogear.controller.util.StringUtils;
-
-import br.com.caelum.iogi.Iogi;
-import br.com.caelum.iogi.parameters.Parameter;
-import br.com.caelum.iogi.reflection.Target;
-import br.com.caelum.iogi.util.DefaultLocaleProvider;
-import br.com.caelum.iogi.util.NullDependencyProvider;
 
 import com.google.common.collect.Sets;
 
@@ -53,9 +47,8 @@ import com.google.common.collect.Sets;
 public class DefaultRouteProcessor implements RouteProcessor {
     
     private BeanManager beanManager;
-    private final Iogi iogi = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
     private ControllerFactory controllerFactory;
-    private Set<Responder> responders = new LinkedHashSet<Responder>();
+    private final Map<String, Responder> responders = new HashMap<String, Responder>();
     
     public DefaultRouteProcessor() {
     }
@@ -65,74 +58,31 @@ public class DefaultRouteProcessor implements RouteProcessor {
         this.beanManager = beanManager;
         this.controllerFactory = controllerFactory;
         for (Responder responder : responders) {
-            this.responders.add(responder);
+            this.responders.put(responder.mediaType(), responder);
         }
     }
 
     @Override
     public void process(RouteContext routeContext) throws Exception {
-        final HttpServletRequest request = routeContext.getRequest();
-        final String requestPath = routeContext.getRequestPath();
         final Route route = routeContext.getRoute();
-        Object[] params;
-
-        if (route.isParameterized()) {
-            params = extractPathParameters(requestPath, route);
-        } else {
-            params = extractParameters(request, route);
-        }
-        Object result = route.getTargetMethod().invoke(getController(route), params);
+        final Object[] arguments = extractArguments(routeContext);
+        final Object result = route.getTargetMethod().invoke(getController(route), arguments);
         
-        final Set<String> acceptHeaders = RequestUtils.extractAcceptHeader(request);
+        final Set<String> acceptHeaders = RequestUtils.extractAcceptHeader(routeContext.getRequest());
         for (String mediaType : Sets.intersection(route.produces(), acceptHeaders)) {
-            if (respond(mediaType, result, routeContext)) {
+            if (responders.containsKey(mediaType)) {
+                responders.get(mediaType).respond(result, routeContext);
                 return;
             }
         }
+        
         if (acceptHeaders.contains(MediaType.ANY.toString())) {
-            respond(MediaType.ANY.toString(), result, routeContext);
+            responders.get(route.produces().iterator().next()).respond(result, routeContext);
+        } else {
+            throw LoggerMessages.MESSAGES.noResponderForRequestedMediaType(routeContext.getRequest().getHeader("Accept"), responders);
         }
     }
     
-    private boolean respond(final String mediaType, final Object result, final RouteContext routeContext) throws Exception {
-        for (Responder responder : responders) {
-            if (responder.accepts(mediaType)) {
-                responder.respond(result, routeContext);
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private Object[] extractPathParameters(String requestPath, Route route) {
-        // TODO: extract this from Resteasy
-        final int paramOffset = route.getPath().indexOf('{');
-        final CharSequence param = requestPath.subSequence(paramOffset, requestPath.length());
-        return new Object[]{param.toString()};
-    }
-
-    private Object[] extractParameters(HttpServletRequest request, Route route) {
-        LinkedList<Parameter> parameters = new LinkedList<Parameter>();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            String[] value = entry.getValue();
-            if (value.length == 1) {
-                parameters.add(new Parameter(entry.getKey(), value[0]));
-            } else {
-                AeroGearLogger.LOGGER.multivaluedParamsUnsupported();
-            }
-        }
-        Class<?>[] parameterTypes = route.getTargetMethod().getParameterTypes();
-        if (parameterTypes.length == 1) {
-            Class<?> parameterType = parameterTypes[0];
-            Target<?> target = Target.create(parameterType, StringUtils.downCaseFirst(parameterType.getSimpleName()));
-            Object instantiate = iogi.instantiate(target, parameters.toArray(new Parameter[parameters.size()]));
-            return new Object[]{instantiate};
-        }
-
-        return new Object[0];  
-    }
-
     private Object getController(Route route) {
         return controllerFactory.createController(route.getTargetClass(), beanManager);
     }

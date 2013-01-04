@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router.rest;
+package org.jboss.aerogear.controller.router.parameter;
 
-public class Entity {
+import static org.fest.assertions.Assertions.assertThat;
 
-    private String name;
-    private int age;
+import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.junit.Test;
+
+public class ParameterTest {
     
-    public Entity() {
-    }
-    
-    public Entity(final String name, final int age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
+    @Test
+    public void pathParameter() {
+        final Parameter<String> parameter = new Parameter<String>(Parameter.Type.REQUEST, String.class);
+        assertThat(parameter.getParameterType()).isEqualTo(Parameter.Type.REQUEST);
+        assertThat(parameter.getType()).isEqualTo(String.class);
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-    
 }

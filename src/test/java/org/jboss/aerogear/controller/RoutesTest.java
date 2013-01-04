@@ -1,7 +1,10 @@
 package org.jboss.aerogear.controller;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.jboss.aerogear.controller.router.RequestMethod.GET;
+import static org.jboss.aerogear.controller.router.RequestMethod.POST;
+
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,34 +15,7 @@ import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.router.error.ErrorTarget;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.jboss.aerogear.controller.router.RequestMethod.GET;
-import static org.jboss.aerogear.controller.router.RequestMethod.POST;
-
 public class RoutesTest {
-
-    @Test
-    public void basicRoute() {
-        Routes routes = new AbstractRoutingModule() {
-            @Override
-            public void configuration() {
-                route()
-                        .from("/home")
-                        .on(GET)
-                        .to(SampleController.class).index();
-                route()
-                        .from("/client/:name")
-                        .on(GET)
-                        .to(SampleController.class).client(":name");
-                route()
-                        .from("/lol")
-                        .on(GET, POST)
-                        .to(SampleController.class).lol();
-
-            }
-        }.build();
-
-    }
 
     @Test
     public void routesWithParameters() {
@@ -77,7 +53,7 @@ public class RoutesTest {
                 route()
                         .from("/car/{id}")
                         .on(GET)
-                        .to(SampleController.class).find(pathParam("id"));
+                        .to(SampleController.class).find(param("id"));
             }
         }.build();
         assertThat(routes.hasRouteFor(GET, "/car/1", MediaType.defaultAcceptHeader())).isTrue();
@@ -91,8 +67,27 @@ public class RoutesTest {
                 route()
                         .from("/car/{id}")
                         .on(GET)
-                        .produces(MediaType.JSON.toString())
-                        .to(SampleController.class).find(pathParam("id"));
+                        .produces(MediaType.JSON)
+                        .produces("application/custom")
+                        .produces(MediaType.HTML)
+                        .to(SampleController.class).find(param("id"));
+            }
+        }.build();
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.toString(), "application/custom"));
+        Route route = routes.routeFor(GET, "/car/1", acceptHeaders);
+        assertThat(route.produces()).contains(MediaType.JSON.toString(), "application/custom", MediaType.HTML.toString());
+    }
+    
+    @Test
+    public void restfulRouteWithMultipleMediaTypes() {
+        Routes routes = new AbstractRoutingModule(){
+            @Override
+            public void configuration() {
+                route()
+                        .from("/car/{id}")
+                        .on(GET)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).find(param("id"));
             }
         }.build();
         final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.toString()));
@@ -147,26 +142,6 @@ public class RoutesTest {
         assertThat(genErrorRoute.getTargetMethod().getName()).isEqualTo("error");
     }
 
-    public static class Car {
-
-        private final String name;
-
-        public Car(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String toString() {
-            return "Car{" +
-                    "name='" + name + '\'' +
-                    '}';
-        }
-    }
-    
     public static class SuperException extends Exception {
         private static final long serialVersionUID = 1L;
     }

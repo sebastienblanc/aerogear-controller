@@ -3,6 +3,9 @@ package org.jboss.aerogear.controller.router;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.jboss.aerogear.controller.router.parameter.Parameters;
+
 /**
  * AbstractRoutingModule simplifies the process of configuring Routes by implementing
  * {@link RoutingModule} and providing helper methods.
@@ -58,36 +61,28 @@ public abstract class AbstractRoutingModule implements RoutingModule {
         return Routes.from(routes);
     }
 
-    /**
-     * Param is used when a target method takes a argument.
-     * </p>
-     * For example, lets say you have a target method named save, which takes a single argument of type Car.class,
-     * the following would enable you to configure the save method:
-     * <pre>
-     *     .to(SampleController.class).save(param(Car.class));
-     * </pre>
-     *
-     * @param clazz the type of the parameter that the target method accepts.
-     * @return T reference of type T but will always be null.
-     */
-    public static <T> T param(Class<T> clazz) {
+    public <T> T param(Class<T> type) {
+        addParameter(Parameters.param(type));
         return null;
     }
-
-    /**
-     * Used to specify that a parameter of a method is expected to be in the request path.
-     * </p>
-     * For example:<pre>{@code 
-     *     .from("/car/{id}")
-     *     .on(RequestMethod.GET)
-     *     .to(SampleController.class).find(pathParam("id"));
-     * }</pre>
-     * 
-     * @param id the id/name of the parameter
-     * @return {@code String} the same String that was passed in.
-     */
-    public static String pathParam(String id) {
-        return id;
+    
+    public String param(String id) {
+        addParameter(Parameters.param(id, String.class));
+        return null;
+    }
+    
+    public String param(String id, String defaultValue) {
+        addParameter(Parameters.param(id, defaultValue, String.class));
+        return null;
+    }
+    
+    private void addParameter(final Parameter<?> parameter) {
+        current().addParameter(parameter);
+    }
+    
+    private RouteDescriptor current() {
+        RouteDescriptorAccessor rda = (RouteDescriptorAccessor) routes.get(routes.size()-1);
+        return rda.getRouteDescriptor();
     }
     
 }

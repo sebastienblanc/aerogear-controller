@@ -2,7 +2,10 @@ package org.jboss.aerogear.controller.router;
 
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
+
+import org.jboss.aerogear.controller.router.parameter.Parameter;
 
 /**
  * An object that contains information required to route HTTP requests to a target class's method.
@@ -89,4 +92,12 @@ public interface Route {
      * @return  the media types that this routes can produce.
      */
     Set<String> produces();
+
+    /**
+     * Returns the Parameter's that this route accepts.
+     * 
+     * @return  the {@link Parameter}'s that this route accepts.
+     */
+    List<Parameter<?>> getParameters();
+    
 }

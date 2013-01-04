@@ -36,7 +36,7 @@ public class MvcResponder implements Responder {
 
     @Override
     public boolean accepts(final String mediaType) {
-        return MediaType.HTML.toString().equals(mediaType) || MediaType.ANY.toString().equals(mediaType);
+        return MediaType.HTML.toString().equals(mediaType);
     }
 
     @Override
@@ -48,6 +48,11 @@ public class MvcResponder implements Responder {
         }
         routeContext.getRequest().getRequestDispatcher(view.getViewPath()).forward(routeContext.getRequest(), routeContext.getResponse());
         
+    }
+
+    @Override
+    public String mediaType() {
+        return MediaType.HTML.toString();
     }
 
 }

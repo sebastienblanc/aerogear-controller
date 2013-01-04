@@ -11,11 +11,19 @@ public class SampleController {
     public void lol() {
     }
 
-    public void save(RoutesTest.Car car) {
-
+    public void save(Car car) {
+    }
+    
+    public void save(String color, String brand) {
+    }
+    
+    public void save(Car car, String metadata) {
     }
 
     public void find(String id) {
+    }
+    
+    public void find(String color, String brand) {
     }
 
     public void admin() {

@@ -15,35 +15,34 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router.rest;
+package org.jboss.aerogear.controller;
 
-public class Entity {
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
-    private String name;
-    private int age;
+
+public class Car {
     
-    public Entity() {
-    }
+    private final String color;
+    private final String brand;
     
-    public Entity(final String name, final int age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
+    @JsonCreator
+    public Car(@JsonProperty("color") final String color, @JsonProperty("brand") final String brand) {
+        this.color = color;
+        this.brand = brand;
     }
     
+    public String getColor() {
+        return color;
+    }
+    
+    public String getBrand() {
+        return brand;
+    }
+
+    @Override
+    public String toString() {
+        return "Car[color=" + color + ", brand=" + brand + "]";
+    }
+
 }
