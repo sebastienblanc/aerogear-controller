@@ -20,18 +20,8 @@ package org.jboss.aerogear.controller.router;
 
 import static org.jboss.aerogear.controller.router.parameter.Parameters.extractArguments;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
-
-import org.jboss.aerogear.controller.log.LoggerMessages;
-import org.jboss.aerogear.controller.util.RequestUtils;
-
-import com.google.common.collect.Sets;
 
 /**
  * Default implementation of {@link RouteProcessor}.
@@ -48,18 +38,16 @@ public class DefaultRouteProcessor implements RouteProcessor {
     
     private BeanManager beanManager;
     private ControllerFactory controllerFactory;
-    private final Map<String, Responder> responders = new HashMap<String, Responder>();
+    private Responders responders;
     
     public DefaultRouteProcessor() {
     }
     
     @Inject
-    public DefaultRouteProcessor(BeanManager beanManager, Instance<Responder> responders, ControllerFactory controllerFactory) {
+    public DefaultRouteProcessor(BeanManager beanManager, Responders responders, ControllerFactory controllerFactory) {
         this.beanManager = beanManager;
         this.controllerFactory = controllerFactory;
-        for (Responder responder : responders) {
-            this.responders.put(responder.mediaType(), responder);
-        }
+        this.responders = responders;
     }
 
     @Override
@@ -67,20 +55,7 @@ public class DefaultRouteProcessor implements RouteProcessor {
         final Route route = routeContext.getRoute();
         final Object[] arguments = extractArguments(routeContext);
         final Object result = route.getTargetMethod().invoke(getController(route), arguments);
-        
-        final Set<String> acceptHeaders = RequestUtils.extractAcceptHeader(routeContext.getRequest());
-        for (String mediaType : Sets.intersection(route.produces(), acceptHeaders)) {
-            if (responders.containsKey(mediaType)) {
-                responders.get(mediaType).respond(result, routeContext);
-                return;
-            }
-        }
-        
-        if (acceptHeaders.contains(MediaType.ANY.toString())) {
-            responders.get(route.produces().iterator().next()).respond(result, routeContext);
-        } else {
-            throw LoggerMessages.MESSAGES.noResponderForRequestedMediaType(routeContext.getRequest().getHeader("Accept"), responders);
-        }
+        responders.respond(routeContext, result);
     }
     
     private Object getController(Route route) {

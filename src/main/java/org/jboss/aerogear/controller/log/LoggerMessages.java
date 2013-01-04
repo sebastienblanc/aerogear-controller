@@ -1,12 +1,11 @@
 package org.jboss.aerogear.controller.log;
 
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletException;
 
 import org.jboss.aerogear.controller.router.RequestMethod;
-import org.jboss.aerogear.controller.router.Responder;
+import org.jboss.aerogear.controller.router.Responders;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
 import org.jboss.logging.LogMessage;
@@ -42,5 +41,5 @@ public interface LoggerMessages {
     
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 11, value = "No Responder was found that matched the Accept Header: '%s'. The following Responders are registered: '%s'")
-    RuntimeException noResponderForRequestedMediaType(String acceptHeader, Map<String, Responder> responders);
+    RuntimeException noResponderForRequestedMediaType(String acceptHeader, Responders responders);
 }
