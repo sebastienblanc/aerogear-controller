@@ -281,6 +281,30 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
+    public void testPathAndQueryParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars/{color}")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand", "BMW"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getParameterMap()).thenReturn(Collections.<String, String[]>emptyMap());
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars/blue");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars/blue", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("blue", "BMW");
+    }
+    
+    @Test
     public void testHeaderParmeters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
@@ -305,6 +329,30 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
+    public void testHeaderAndPathParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars/{color}")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getHeader("brand")).thenReturn("Ferrari");
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars/red");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars/red", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("red", "Ferrari");
+    }
+    
+    @Test
     public void testCookieParmeters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
@@ -320,6 +368,90 @@ public class DefaultRouteProcessorTest {
         when(colorCookie.getName()).thenReturn("color");
         when(colorCookie.getValue()).thenReturn("red");
         when(request.getCookies()).thenReturn(new Cookie[] {colorCookie});
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("red", "Ferrari");
+    }
+    
+    @Test
+    public void testCookieAndPathParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars/{color}")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Cookie colorCookie = mock(Cookie.class);
+        when(colorCookie.getName()).thenReturn("brand");
+        when(colorCookie.getValue()).thenReturn("Ferrari");
+        when(request.getCookies()).thenReturn(new Cookie[] {colorCookie});
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars/red");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars/red", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("red", "Ferrari");
+    }
+    
+    @Test
+    public void testQueryAndCookieParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Cookie colorCookie = mock(Cookie.class);
+        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
+        requestParamMap.put("color", new String[] {"red"});
+        when(request.getParameterMap()).thenReturn(requestParamMap);
+        when(colorCookie.getName()).thenReturn("brand");
+        when(colorCookie.getValue()).thenReturn("Ferrari");
+        when(request.getCookies()).thenReturn(new Cookie[] {colorCookie});
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars", MediaType.defaultAcceptHeader());
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).find("red", "Ferrari");
+    }
+    
+    @Test
+    public void testQueryAndHeaderParmeters() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.GET)
+                        .to(SampleController.class).find(param("color"), param("brand"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
+        requestParamMap.put("color", new String[] {"red"});
+        when(request.getHeader("brand")).thenReturn("Ferrari");
+        when(request.getParameterMap()).thenReturn(requestParamMap);
         final SampleController controller = spy(new SampleController());
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());

@@ -72,9 +72,6 @@ public class Parameters {
                 if (addIfPresent(extractParam(routeContext, requestParameter), args)) {
                     break;
                 }
-                if (addIfPresent(extractPathParam(routeContext), args)) {
-                    break;
-                } 
                 if (addIfPresent(extractHeaderParam(routeContext, requestParameter), args)) {
                     break;
                 }
@@ -84,6 +81,9 @@ public class Parameters {
                 if (addIfPresent(requestParameter.getDefaultValue(), args)) {
                     break;
                 }
+                if (addIfPresent(extractPathParam(routeContext), args)) {
+                    break;
+                } 
                 throw LoggerMessages.MESSAGES.missingParameterInRequest(requestParameter, routeContext.getRoute());
             }
         }
