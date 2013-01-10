@@ -1,9 +1,11 @@
 package org.jboss.aerogear.controller.log;
 
+import java.util.Collection;
 import java.util.Set;
 
 import javax.servlet.ServletException;
 
+import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Responders;
 import org.jboss.aerogear.controller.router.Route;
@@ -42,4 +44,8 @@ public interface LoggerMessages {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 11, value = "No Responder was found that matched the Accept Header: '%s'. The following Responders are registered: '%s'")
     RuntimeException noResponderForRequestedMediaType(String acceptHeader, Responders responders);
+    
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 12, value = "No Consumer found for Parameter: '%s'. The registered Consumers were: '%s'. Please add a Consumer for one the media types supported by the route: %s.")
+    RuntimeException noConsumerForMediaType(Parameter<?> parameter, Collection<Consumer> consumers, Set<String> supportedMediaTypes);
 }

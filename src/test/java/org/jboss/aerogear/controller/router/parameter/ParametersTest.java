@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.junit.Before;
@@ -104,7 +105,7 @@ public class ParametersTest {
         when(route.getParameters()).thenReturn(asList(Parameters.param("id", String.class)));
         when(route.getPath()).thenReturn("/cars/{id}");
         when(routeContext.getRequestPath()).thenReturn("/cars/2");
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("2");
     }
     
@@ -113,7 +114,7 @@ public class ParametersTest {
         when(request.getParameterMap()).thenReturn(RequestParams.param("name", "Newman").getParamMap());
         when(route.getParameters()).thenReturn(asList(Parameters.param("name", String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("Newman");
     }
     
@@ -122,7 +123,7 @@ public class ParametersTest {
         when(request.getParameterMap()).thenReturn(RequestParams.empty());
         when(route.getParameters()).thenReturn(asList(Parameters.param("name", "defaultName", String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("defaultName");
     }
     
@@ -130,7 +131,7 @@ public class ParametersTest {
     public void shouldThrowIfFormParamIsMissingFromRequest() throws Exception {
         when(route.getParameters()).thenReturn(asList(Parameters.param("name", null, String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        Parameters.extractArguments(routeContext);
+        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     @Test
@@ -139,7 +140,7 @@ public class ParametersTest {
         when(request.getParameterMap()).thenReturn(paramMap);
         when(route.getParameters()).thenReturn(asList(Parameters.param(Car.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class, String.class));
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0] instanceof Car).isTrue();
         assertThat(((Car)args[0]).getColor()).isEqualTo("red");
     }
@@ -151,7 +152,7 @@ public class ParametersTest {
         when(route.getParameters()).thenReturn(parameters);
         when(route.getPath()).thenReturn("/cars");
         when(routeContext.getRequestPath()).thenReturn("/cars");
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("headerValue");
     }
     
@@ -159,7 +160,7 @@ public class ParametersTest {
     public void extractHeaderParamWithDefaultValue() {
         final List<Parameter<?>> parameters = asList(Parameters.param("x-header", "defaultHeader", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("defaultHeader");
     }
     
@@ -167,7 +168,7 @@ public class ParametersTest {
     public void shouldThrowIsHeaderParamIsMissingFromRequest() {
         final List<Parameter<?>> parameters = asList(Parameters.param("x-header", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        Parameters.extractArguments(routeContext);
+        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     @Test
@@ -176,7 +177,7 @@ public class ParametersTest {
         final List<Parameter<?>> parameters = asList(Parameters.param("brand", String.class));
         parameters.add(Parameters.param("year", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("mini");
         assertThat(args[1]).isEqualTo("2006");
     }
@@ -186,7 +187,7 @@ public class ParametersTest {
         final List<Parameter<?>> parameters = asList(Parameters.param("brand", String.class));
         parameters.add(Parameters.param("year", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        Parameters.extractArguments(routeContext);
+        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     @Test
@@ -196,7 +197,7 @@ public class ParametersTest {
         parameters.add(Parameters.param("year", "2012", String.class));
         when(route.getParameters()).thenReturn(parameters);
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("mini");
         assertThat(args[1]).isEqualTo("2012");
     }
@@ -209,7 +210,7 @@ public class ParametersTest {
         when(request.getCookies()).thenReturn(new Cookie[] {cookie});
         final List<Parameter<?>> parameters = asList(Parameters.param("testCookie", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext);
+        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args[0]).isEqualTo("cookieValue");
     }
     
@@ -217,7 +218,7 @@ public class ParametersTest {
     public void extractCookieParamMissingFromRequest() {
         final List<Parameter<?>> parameters = asList(Parameters.param("testCookie", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        Parameters.extractArguments(routeContext);
+        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     private List<Parameter<?>> asList(final Parameter<?>... p) {

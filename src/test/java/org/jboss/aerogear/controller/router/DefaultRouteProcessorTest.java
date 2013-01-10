@@ -26,13 +26,18 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,12 +49,14 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.router.rest.JsonConsumer;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.junit.Before;
@@ -81,6 +88,9 @@ public class DefaultRouteProcessorTest {
     private JsonResponder jsonResponder;
     @Mock
     private MvcResponder mvcResponder;
+    @Mock 
+    private Instance<Consumer> consumers;
+    
     private Responders responders;
     private DefaultRouteProcessor router;
 
@@ -88,7 +98,8 @@ public class DefaultRouteProcessorTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         instrumentResponders();
-        router = new DefaultRouteProcessor(beanManager, responders, controllerFactory);
+        instrumentConsumers();
+        router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
         when(request.getHeader("Accept")).thenReturn("text/html");
     }
     
@@ -174,7 +185,7 @@ public class DefaultRouteProcessorTest {
         verify(jsonResponder).respond(anyObject(), any(RouteContext.class));
     }
     
-    
+    @Test
     public void testFormParmeters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
@@ -495,9 +506,9 @@ public class DefaultRouteProcessorTest {
             @Override
             public void configuration() {
                 route()
-                        .from("/car/{id}")
+                        .from("/car/{id}").roles("admin")
                         .on(RequestMethod.GET)
-                        .produces(MediaType.HTML, MediaType.JSON)
+                        .produces(MediaType.JSON)
                         .to(SampleController.class).find(param("id"));
             }
         };
@@ -541,6 +552,11 @@ public class DefaultRouteProcessorTest {
         verify(mvcResponder).respond(anyObject(), any(RouteContext.class));
     }
 
+    private void instrumentConsumers() {
+        final Iterator<Consumer> iterator = new HashSet<Consumer>(Arrays.asList(new JsonConsumer())).iterator();
+        when(consumers.iterator()).thenReturn(iterator);
+    }
+    
     private void instrumentResponders() {
         when(mvcResponder.accepts(MediaType.HTML.toString())).thenReturn(true);
         when(mvcResponder.accepts(MediaType.ANY.toString())).thenReturn(true);
@@ -552,4 +568,73 @@ public class DefaultRouteProcessorTest {
         this.responders = new Responders(responderInstance);
     }
     
+    @Test
+    public void testConsumes() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars").roles("admin")
+                        .on(RequestMethod.POST)
+                        .consumes(MediaType.JSON.toString())
+                        .produces(MediaType.JSON.toString())
+                        .to(SampleController.class).save(param(Car.class));
+            }
+        };
+        final Routes routes = routingModule.build();
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        when(request.getInputStream()).thenReturn(inputStream("{\"color\":\"red\", \"brand\":\"mini\"}"));
+        when(jsonResponder.accepts("application/json")).thenReturn(true);
+        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        final Route route = routes.routeFor(RequestMethod.POST, "/cars", acceptHeaders);
+        router.process(new RouteContext(route, request, response, routes));
+        verify(controller).save(any(Car.class));
+    }
+    
+    @Test (expected = RuntimeException.class) 
+    public void testNoConsumers() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars").roles("admin")
+                        .on(RequestMethod.POST)
+                        .consumes(MediaType.JSON.toString())
+                        .produces(MediaType.JSON.toString())
+                        .to(SampleController.class).save(param(Car.class));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(consumers.iterator()).thenReturn(new HashSet<Consumer>().iterator());
+        router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        final SampleController controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        when(request.getInputStream()).thenReturn(inputStream("{\"color\":\"red\", \"brand\":\"mini\"}"));
+        when(jsonResponder.accepts("application/json")).thenReturn(true);
+        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
+        final Route route = routes.routeFor(RequestMethod.POST, "/cars", acceptHeaders);
+        router.process(new RouteContext(route, request, response, routes));
+    }
+   
+    private ServletInputStream inputStream(final String json) {
+        final ByteArrayInputStream ba = new ByteArrayInputStream(json.getBytes());
+        return new ServletInputStream() {
+            @Override
+            public int read() throws IOException {
+                return ba.read();
+            }
+        };
+    }
+
 }

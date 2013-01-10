@@ -70,6 +70,13 @@ public class RouteBuilderImplTest {
         assertThat(rb.build().produces()).contains("application/json");
     }
     
+    @Test
+    public void testConsumes() {
+        final RouteBuilderImpl rb = new RouteBuilderImpl();
+        rb.from("/somepath").on(RequestMethod.GET).consumes("application/json").to(SampleController.class).index();
+        assertThat(rb.build().consumes()).contains("application/json");
+    }
+    
     private void assertCanHandle(final Route route, final Throwable... t) {
         for (Throwable throwable : t) {
             assertThat(route.canHandle(throwable)).isTrue();
