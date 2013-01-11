@@ -51,7 +51,7 @@ You can use immutable beans straight away as controller parameters:
             }
         }
 
-This can be populated by putting a route to it (preferrably via post, of course)
+This can be populated by putting a route to it (preferably via post, of course)
 
         route()
                .from("/cars")

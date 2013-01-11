@@ -101,7 +101,7 @@ public interface Route {
     List<Parameter<?>> getParameters();
     
     /**
-     * Returns the media types that this Route is capabile of consuming. 
+     * Returns the media types that this Route is capable of consuming.
      * 
      * @return  the media types that this routes can consuming.
      */

@@ -93,7 +93,7 @@ public class ParametersTest {
     @Test
     public void extractIogiParamsNone() throws Exception {
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class));
-        final Map<String, String[]> paramMap = RequestParams.param("name", "Herbi").getParamMap();
+        final Map<String, String[]> paramMap = RequestParams.param("name", "Herbie").getParamMap();
         when(request.getParameterMap()).thenReturn(paramMap);
         final Optional<?> optional = Parameters.extractIogiParam(routeContext);
         assertThat(optional.isPresent()).isFalse();

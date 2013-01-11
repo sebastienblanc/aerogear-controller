@@ -27,7 +27,7 @@ import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.MediaType;
 
 /**
- * Concreate Consumer that is able to unmarshall a Http request body into a Java representation.
+ * Concrete Consumer that is able to unmarshall a Http request body into a Java representation.
  * </p>
  * JSON support is provided by Jackson.
  */

@@ -186,7 +186,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testFormParmeters() throws Exception {
+    public void testFormParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -213,7 +213,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testFormParmetersWithOneDefaultValue() throws Exception {
+    public void testFormParametersWithOneDefaultValue() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -239,7 +239,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testEntityFormParmeter() throws Exception {
+    public void testEntityFormParameter() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -266,7 +266,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testQueryParmeters() throws Exception {
+    public void testQueryParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -292,7 +292,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testPathAndQueryParmeters() throws Exception {
+    public void testPathAndQueryParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -316,7 +316,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testHeaderParmeters() throws Exception {
+    public void testHeaderParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -340,7 +340,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testHeaderAndPathParmeters() throws Exception {
+    public void testHeaderAndPathParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -364,7 +364,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testCookieParmeters() throws Exception {
+    public void testCookieParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -391,7 +391,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testCookieAndPathParmeters() throws Exception {
+    public void testCookieAndPathParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -418,7 +418,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testQueryAndCookieParmeters() throws Exception {
+    public void testQueryAndCookieParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -448,7 +448,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testQueryAndHeaderParmeters() throws Exception {
+    public void testQueryAndHeaderParameters() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
