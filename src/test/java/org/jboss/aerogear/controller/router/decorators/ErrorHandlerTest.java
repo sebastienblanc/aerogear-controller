@@ -21,6 +21,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -114,6 +115,7 @@ public class ErrorHandlerTest {
             public void configuration() throws Exception {
                 route()
                         .on(IllegalStateException.class)
+                        .produces(mockJsp())
                         .to(SampleController.class).errorPage();
                 route()
                         .from("/home")
@@ -137,6 +139,7 @@ public class ErrorHandlerTest {
             public void configuration() throws Exception {
                 route()
                         .on(SampleControllerException.class, IllegalStateException.class)
+                        .produces(mockJsp())
                         .to(SampleController.class).error(param(Exception.class));
                 route()
                         .from("/home")
@@ -166,14 +169,14 @@ public class ErrorHandlerTest {
             }
         };
         final Routes routes = routingModule.build();
+        final Responders responders = mock(Responders.class);
         final Route route = routes.routeFor(RequestMethod.GET, "/home", acceptHeaders(MediaType.HTML.getMediaType()));
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, responders, controllerFactory, beanManager);
         doThrow(SampleControllerException.class).when(routeProcessor).process(any(RouteContext.class));
         when(controllerFactory.createController(eq(ErrorTarget.class), eq(beanManager))).thenReturn(errorTarget);
         errorHandler.process(new RouteContext(route, request, response, routes));
         verify(errorTarget).error(any(SampleControllerException.class));
-        verify(jspResponder).respond(anyObject(), any(RouteContext.class));
-        verify(jsonResponder, never()).respond(anyObject(), any(RouteContext.class));
+        verify(responders).respond(any(RouteContext.class), anyObject());
     }
     
     @Test 

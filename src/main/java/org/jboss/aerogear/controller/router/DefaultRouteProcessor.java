@@ -39,7 +39,6 @@ import javax.inject.Inject;
  */
 public class DefaultRouteProcessor implements RouteProcessor {
     
-
     private BeanManager beanManager;
     private ControllerFactory controllerFactory;
     private Responders responders;

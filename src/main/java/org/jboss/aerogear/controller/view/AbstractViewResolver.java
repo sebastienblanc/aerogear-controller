@@ -31,7 +31,7 @@ import org.jboss.aerogear.controller.router.Route;
 public abstract class AbstractViewResolver implements ViewResolver {
 
     private static final String DEFAULT_PREFIX = "/WEB-INF/pages";
-    private String suffix;
+    private final String suffix;
     
     public AbstractViewResolver(final String suffix) {
         this.suffix = suffix;

@@ -85,14 +85,13 @@ public class Responders {
         return false;
     }
     
-    private boolean respondAny(final Set<MediaType> mediaTypes, final Object result, final RouteContext routeContext) throws Exception {
+    private void respondAny(final Set<MediaType> mediaTypes, final Object result, final RouteContext routeContext) throws Exception {
         for (MediaType mediaType : mediaTypes) {
             if (respond(mediaType, result, routeContext)) {
-                return true;
+                break;
             }
-            responders.values().iterator().next().respond(result, routeContext);
         }
-        return false;
+        //responders.values().iterator().next().respond(result, routeContext);
     }
     
     @Override
