@@ -91,7 +91,6 @@ public class Responders {
                 break;
             }
         }
-        //responders.values().iterator().next().respond(result, routeContext);
     }
     
     @Override
