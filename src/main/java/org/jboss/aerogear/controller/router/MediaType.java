@@ -41,10 +41,6 @@ public class MediaType {
         return mediaType;
     }
 
-    public Class<? extends Responder> getResponderClass() {
-        return responderClass;
-    }
-
     @Override
     public String toString() {
         return "MediaType[type=" + mediaType + ", responderClass=" + responderClass + "]";
