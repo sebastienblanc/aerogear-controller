@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.view;
+package org.jboss.aerogear.controller.router.error;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.jboss.aerogear.controller.router.Route;
-import org.jboss.aerogear.controller.router.error.ErrorTarget;
+import org.jboss.aerogear.controller.view.ViewResolver;
 
 /**
  * A {@link ViewResolver} that decorates a ViewResolver to enable short-circuiting

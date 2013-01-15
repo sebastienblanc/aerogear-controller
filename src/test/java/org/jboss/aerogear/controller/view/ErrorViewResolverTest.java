@@ -27,6 +27,7 @@ import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteDescriptor;
 import org.jboss.aerogear.controller.router.error.ErrorRoute;
+import org.jboss.aerogear.controller.router.error.ErrorViewResolver;
 import org.junit.Test;
 
 public class ErrorViewResolverTest {

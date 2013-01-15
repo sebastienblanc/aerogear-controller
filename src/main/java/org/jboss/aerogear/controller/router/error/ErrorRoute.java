@@ -46,7 +46,9 @@ public enum ErrorRoute {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0])
             .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)))
-            .on(RequestMethod.GET).to(ErrorTarget.class).error(null);
+            .on(RequestMethod.GET)
+            .produces(ErrorViewResponder.MEDIA_TYPE)
+            .to(ErrorTarget.class).error(null);
         route = new DefaultRoute(rd);
     }
     
