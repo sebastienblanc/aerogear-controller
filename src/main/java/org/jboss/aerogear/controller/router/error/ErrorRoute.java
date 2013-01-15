@@ -48,7 +48,7 @@ public enum ErrorRoute {
             .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)))
             .on(RequestMethod.GET)
             .produces(ErrorViewResponder.MEDIA_TYPE)
-            .to(ErrorTarget.class).error(null);
+            .to(ErrorTarget.class).error(param(Throwable.class));
         route = new DefaultRoute(rd);
     }
     
@@ -69,6 +69,10 @@ public enum ErrorRoute {
      */
     public String getExceptionAttrName() {
         return exceptionAttributeName;
+    }
+    
+    private <T> T param(Class<T> type) {
+        return null;
     }
     
 
