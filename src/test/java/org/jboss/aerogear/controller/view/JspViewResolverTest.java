@@ -1,6 +1,6 @@
-/**
+/*
  * JBoss, Home of Professional Open Source
- * Copyright Red Hat, Inc., and individual contributors
+ * Copyright 2012, Red Hat, Inc., and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -17,39 +17,33 @@
 
 package org.jboss.aerogear.controller.view;
 
-
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
-import java.lang.reflect.Method;
-
+import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.router.Route;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DefaultViewResolverTest {
+public class JspViewResolverTest {
+    
+    @Mock
+    private Route route;
+    
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Mock
-	private Route route;
-	
-	@Test
-	public void resolveViewPathFor() throws Exception {
-		Class clazz = Plane.class;
-		Method method = Plane.class.getMethod("index");
-		
-		when(route.getTargetMethod()).thenReturn(method);
-		when(route.getTargetClass()).thenReturn(clazz);
-		
-		String path = new JspViewResolver().resolveViewPathFor(route);
-		assertThat(path).isEqualTo("/WEB-INF/pages/Plane/index.jsp");
-	}
+    @Test
+    public void resolveViewForPath() throws Exception {
+        final ViewResolver resolver = new JspViewResolver();
+        doReturn(SampleController.class).when(route).getTargetClass();
+        doReturn(SampleController.class.getMethod("index")).when(route).getTargetMethod();
+        final String resolved = resolver.resolveViewPathFor(route);
+        assertThat(resolved).isEqualTo("/WEB-INF/pages/SampleController/index.jsp");
+    }
 
-	private class Plane {
-		public void index() {
-
-		}
-	}
 }

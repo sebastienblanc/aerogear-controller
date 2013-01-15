@@ -17,32 +17,71 @@
 
 package org.jboss.aerogear.controller.router;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import org.jboss.aerogear.controller.router.rest.JsonResponder;
+import org.jboss.aerogear.controller.view.HtmlViewResponder;
+import org.jboss.aerogear.controller.view.JspViewResponder;
 
-/**
- * Media types supported out-of-the-box with AeroGear Controller.
- */
-public enum MediaType {
-    HTML("text/html"), 
-    JSON("application/json"),
-    ANY("*/*");
+public class MediaType {
     
-    private String type;
+    public static final MediaType HTML = new MediaType("text/html", HtmlViewResponder.class);
+    public static final MediaType JSP = new MediaType(HTML.getMediaType(), JspViewResponder.class);
+    public static final MediaType JSON = new MediaType("application/json", JsonResponder.class);
+    
+    public static final String ANY = "*/*";
+    
+    private final String mediaType;
+    private final Class<? extends Responder> responderClass;
 
-    private MediaType(final String type) {
-        this.type = type;
+    public MediaType(final String mediaType, final Class<? extends Responder> responderClass) {
+        this.mediaType = mediaType;
+        this.responderClass = responderClass;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    @Override
+    public String toString() {
+        return "MediaType[type=" + mediaType + ", responderClass=" + responderClass + "]";
     }
     
     @Override
-    public String toString() {
-        return type;
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((mediaType == null) ? 0 : mediaType.hashCode());
+        result = prime * result + ((responderClass == null) ? 0 : responderClass.getName().hashCode());
+        return result;
     }
-    
-    public static Set<String> defaultAcceptHeader() {
-        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(HTML.toString())));
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MediaType other = (MediaType) obj;
+        if (mediaType == null) { 
+            if (other.mediaType != null) {
+                return false;
+            }
+        } else if (!mediaType.equals(other.mediaType)) {
+            return false;
+        }
+        if (responderClass == null) {
+            if (other.responderClass != null) {
+                return false;
+            }
+        } else if (!responderClass.getName().equals(other.responderClass.getName())) {
+            return false;
+        }
+        return true;
     }
 
 }

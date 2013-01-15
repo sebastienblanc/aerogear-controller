@@ -15,44 +15,45 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router;
+package org.jboss.aerogear.controller.view;
 
-import javax.inject.Inject;
-
-import org.jboss.aerogear.controller.view.View;
-import org.jboss.aerogear.controller.view.ViewResolver;
+import org.jboss.aerogear.controller.router.MediaType;
+import org.jboss.aerogear.controller.router.Responder;
+import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
- * A Responder that "responds" to request by forwarding them to a {@link View}.
+ * A Responder that "responds" to requests by forwarding them to a {@link View}.
+ * 
+ * @see ViewResolver
  */
-public class MvcResponder implements Responder {
+public class AbstractViewResponder implements Responder {
     
-    private ViewResolver viewResolver;
-
-    @Inject
-    public MvcResponder(final ViewResolver viewResolver) {
+    private final ViewResolver viewResolver;
+    private final MediaType mediaType;
+    
+    public AbstractViewResponder(final ViewResolver viewResolver, final MediaType mediaType) {
         this.viewResolver = viewResolver;
+        this.mediaType = mediaType;
     }
 
     @Override
     public boolean accepts(final String mediaType) {
-        return MediaType.HTML.toString().equals(mediaType);
+        return this.mediaType.getMediaType().equals(mediaType);
     }
 
     @Override
     public void respond(final Object entity, final RouteContext routeContext) throws Exception {
-        String viewPath = viewResolver.resolveViewPathFor(routeContext.getRoute());
-        View view = new View(viewPath, entity);
+        final String viewPath = viewResolver.resolveViewPathFor(routeContext.getRoute());
+        final View view = new View(viewPath, entity);
         if (view.hasModelData()) {
             routeContext.getRequest().setAttribute(view.getModelName(), view.getModel());
         }
         routeContext.getRequest().getRequestDispatcher(view.getViewPath()).forward(routeContext.getRequest(), routeContext.getResponse());
-        
     }
 
     @Override
-    public String mediaType() {
-        return MediaType.HTML.toString();
+    public MediaType mediaType() {
+        return mediaType;
     }
-
+    
 }

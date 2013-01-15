@@ -17,6 +17,11 @@
 
 package org.jboss.aerogear.controller.router.rest;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Responder;
@@ -28,20 +33,27 @@ import org.jboss.aerogear.controller.router.RouteContext;
  * This implementation uses Jackson for JSON support.
  */
 public class JsonResponder extends AbstractRestResponder {
+    
+    private final ObjectMapper mapper;
 
     public JsonResponder() {
-        super(MediaType.JSON.toString());
+        super(MediaType.JSON);
+        mapper = new ObjectMapper();
     }
 
     @Override
     public void writeResponse(final Object entity, final RouteContext routeContext) throws Exception {
-        final ObjectMapper om = new ObjectMapper();
-        om.writeValue(routeContext.getResponse().getWriter(), entity);
-    }
-
-    @Override
-    public String mediaType() {
-        return MediaType.JSON.toString();
+        if (entity instanceof ResponseHeaders) {
+            final HttpServletResponse response = routeContext.getResponse();
+            final ResponseHeaders responseHeaders = (ResponseHeaders) entity;
+            final Map<String, String> headers = responseHeaders.headers();
+            for (Entry<String, String> entrySet : headers.entrySet()) {
+                response.setHeader(entrySet.getKey(), entrySet.getValue());
+            }
+        }
+        if (entity != null) {
+            mapper.writeValue(routeContext.getResponse().getWriter(), entity);
+        }
     }
 
 }
