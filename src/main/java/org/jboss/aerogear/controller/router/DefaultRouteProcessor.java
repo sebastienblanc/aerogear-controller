@@ -17,7 +17,7 @@
 
 package org.jboss.aerogear.controller.router;
 
-import static org.jboss.aerogear.controller.router.parameter.Parameters.extractArguments;
+import static org.jboss.aerogear.controller.util.ParameterExtractor.extractArguments;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jboss.aerogear.controller.router.parameter.Parameter;
-import org.jboss.aerogear.controller.router.parameter.Parameters;
 
 /**
  * AbstractRoutingModule simplifies the process of configuring Routes by implementing
@@ -82,17 +81,17 @@ public abstract class AbstractRoutingModule implements RoutingModule {
     }
 
     public <T> T param(Class<T> type) {
-        addParameter(Parameters.param(type));
+        addParameter(Parameter.param(type));
         return null;
     }
     
     public String param(String id) {
-        addParameter(Parameters.param(id, String.class));
+        addParameter(Parameter.param(id, String.class));
         return null;
     }
     
     public String param(String id, String defaultValue) {
-        addParameter(Parameters.param(id, defaultValue, String.class));
+        addParameter(Parameter.param(id, defaultValue, String.class));
         return null;
     }
     

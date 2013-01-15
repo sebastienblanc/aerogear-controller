@@ -15,21 +15,7 @@
  * limitations under the License.
  */
 
-package org.jboss.aerogear.controller.router.parameter;
-
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.Cookie;
-
-import org.jboss.aerogear.controller.log.AeroGearLogger;
-import org.jboss.aerogear.controller.log.LoggerMessages;
-import org.jboss.aerogear.controller.router.Consumer;
-import org.jboss.aerogear.controller.router.RouteContext;
-import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.util.StringUtils;
+package org.jboss.aerogear.controller.util;
 
 import br.com.caelum.iogi.Iogi;
 import br.com.caelum.iogi.reflection.Target;
@@ -38,29 +24,30 @@ import br.com.caelum.iogi.util.NullDependencyProvider;
 
 import com.google.common.base.Optional;
 
-public class Parameters {
-    
+import org.jboss.aerogear.controller.log.AeroGearLogger;
+import org.jboss.aerogear.controller.log.LoggerMessages;
+import org.jboss.aerogear.controller.router.Consumer;
+import org.jboss.aerogear.controller.router.RouteContext;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
+import org.jboss.aerogear.controller.util.StringUtils;
+import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.jboss.aerogear.controller.router.parameter.RequestParameter;
+
+import javax.servlet.http.Cookie;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+
+public class ParameterExtractor {
+
     private static final Iogi IOGI = new Iogi(new NullDependencyProvider(), new DefaultLocaleProvider());
-    
-    private Parameters() {
-    }
-    
-    public static <T> Parameter<T> param(final Class<T> type) {
-        return new Parameter<T>(Parameter.Type.ENTITY, type);
-    }
-    
-    public static <T> Parameter<T> param(final String name, final Class<T> type) {
-        return new RequestParameter<T>(name, Parameter.Type.REQUEST, type);
-    }
-    
-    public static <T> Parameter<T> param(final String name, final T defaultValue, final Class<T> type) {
-        return new RequestParameter<T>(name, Parameter.Type.REQUEST, defaultValue, type);
-    }
-    
+
     /**
      * Extracts the arguments from the current request for the target route.
-     * 
-     * @param routeContext the {@link RouteContext}.
+     *
+     * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext}.
      * @return {@code Object[]} an array of Object matching the route targets parameters.
      */
     public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) {
@@ -97,7 +84,7 @@ public class Parameters {
         }
         return args;
     }
-    
+
     private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter, final Map<String, Consumer> consumers) {
         final Set<String> mediaTypes = routeContext.getRoute().consumes();
         for (String mediaType : mediaTypes) {
@@ -108,12 +95,11 @@ public class Parameters {
         }
         throw LoggerMessages.MESSAGES.noConsumerForMediaType(parameter, consumers.values(), mediaTypes);
     }
-            
 
     /**
      * Extracts a path parameter from the passed in request path.
-     * 
-     * @param routeContext  the {@link RouteContext} to extract a path parameter from.
+     *
+     * @param routeContext  the {@link org.jboss.aerogear.controller.router.RouteContext} to extract a path parameter from.
      * @return {@code Optional<String>}  containing the extracted path param if present in the request path.
      */
     public static Optional<String> extractPathParam(final RouteContext routeContext) {
@@ -130,8 +116,8 @@ public class Parameters {
      * </p>
      * For example, having form parameters named 'car.color', 'car.brand', this method
      * would try to use those values to instantiate a new Car instance.
-     * 
-     * @return {@link Optional}  may contain the instantiated instance, else isPresent will return false.
+     *
+     * @return {@link com.google.common.base.Optional}  may contain the instantiated instance, else isPresent will return false.
      */
     public static Optional<?> extractIogiParam(final RouteContext routeContext) {
         final LinkedList<br.com.caelum.iogi.parameters.Parameter> parameters = new LinkedList<br.com.caelum.iogi.parameters.Parameter>();
@@ -159,11 +145,11 @@ public class Parameters {
         }
         return false;
     }
-    
+
     private static Optional<?> extractHeaderParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
         return Optional.fromNullable(routeContext.getRequest().getHeader(parameter.getName()));
     }
-    
+
     private static Optional<?> extractCookieParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
         final Cookie[] cookies = routeContext.getRequest().getCookies();
         if (cookies != null) {
@@ -175,7 +161,7 @@ public class Parameters {
         }
         return Optional.absent();
     }
-    
+
     private static Optional<?> extractParam(final RouteContext routeContext, final RequestParameter<?> parameter) {
         final String[] values = routeContext.getRequest().getParameterMap().get(parameter.getName());
         if (values != null) {
@@ -187,5 +173,4 @@ public class Parameters {
         }
         return Optional.absent();
     }
-
 }
