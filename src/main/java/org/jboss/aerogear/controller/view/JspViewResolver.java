@@ -1,6 +1,5 @@
 package org.jboss.aerogear.controller.view;
 
-import org.jboss.aerogear.controller.router.MediaType;
 
 
 /**

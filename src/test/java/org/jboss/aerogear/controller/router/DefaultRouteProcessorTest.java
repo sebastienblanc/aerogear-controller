@@ -16,18 +16,23 @@
  */
 package org.jboss.aerogear.controller.router;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,13 +56,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
-import org.jboss.aerogear.controller.router.rest.JsonConsumer;
+import org.jboss.aerogear.controller.router.parameter.MissingRequestParameterException;
 import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
+import org.jboss.aerogear.controller.router.rest.JsonConsumer;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.view.HtmlViewResponder;
 import org.jboss.aerogear.controller.view.JspViewResponder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -93,12 +101,15 @@ public class DefaultRouteProcessorTest {
     
     private Responders responders;
     private DefaultRouteProcessor router;
+    private SampleController controller;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         instrumentResponders();
         instrumentConsumers();
+        controller = spy(new SampleController());
+        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
         when(request.getHeader("Accept")).thenReturn("text/html");
     }
@@ -115,14 +126,12 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
         doThrow(new ServletException()).when(securityProvider).isRouteAllowed(route);
     
         when(route.isSecured()).thenReturn(true);
         //TODO it must be fixed with Mockito
         securityProvider.isRouteAllowed(route);
     
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -146,8 +155,6 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -171,8 +178,6 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -198,12 +203,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
-        requestParamMap.put("color", new String[] {"red"});
-        requestParamMap.put("brand", new String[] {"Ferrari"});
-        when(request.getParameterMap()).thenReturn(requestParamMap);
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "red").param("brand", "Ferrari").asMap());
         when(request.getMethod()).thenReturn(RequestMethod.POST.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -226,11 +226,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
-        requestParamMap.put("color", new String[] {"gray"});
-        when(request.getParameterMap()).thenReturn(requestParamMap);
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "gray").asMap());
         when(request.getMethod()).thenReturn(RequestMethod.POST.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -253,12 +249,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
-        requestParamMap.put("car.color", new String[] {"Blue"});
-        requestParamMap.put("car.brand", new String[] {"BMW"});
-        when(request.getParameterMap()).thenReturn(requestParamMap);
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getParameterMap()).thenReturn(new RequestParams("car.color", "Blue").param("car.brand", "BMW").asMap());
         when(request.getMethod()).thenReturn(RequestMethod.POST.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -281,11 +272,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
-        requestParamMap.put("color", new String[] {"red"});
-        when(request.getParameterMap()).thenReturn(requestParamMap);
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "red").asMap());
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -308,9 +295,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        when(request.getParameterMap()).thenReturn(Collections.<String, String[]>emptyMap());
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getParameterMap()).thenReturn(new RequestParams().asMap());
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -334,8 +319,6 @@ public class DefaultRouteProcessorTest {
         };
         final Routes routes = routingModule.build();
         when(request.getHeader("color")).thenReturn("red");
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -359,8 +342,6 @@ public class DefaultRouteProcessorTest {
         };
         final Routes routes = routingModule.build();
         when(request.getHeader("brand")).thenReturn("Ferrari");
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -387,8 +368,6 @@ public class DefaultRouteProcessorTest {
         when(colorCookie.getName()).thenReturn("color");
         when(colorCookie.getValue()).thenReturn("red");
         when(request.getCookies()).thenReturn(new Cookie[] {colorCookie});
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -415,8 +394,6 @@ public class DefaultRouteProcessorTest {
         when(colorCookie.getName()).thenReturn("brand");
         when(colorCookie.getValue()).thenReturn("Ferrari");
         when(request.getCookies()).thenReturn(new Cookie[] {colorCookie});
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -440,14 +417,10 @@ public class DefaultRouteProcessorTest {
         };
         final Routes routes = routingModule.build();
         final Cookie colorCookie = mock(Cookie.class);
-        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
-        requestParamMap.put("color", new String[] {"red"});
-        when(request.getParameterMap()).thenReturn(requestParamMap);
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "red").asMap());
         when(colorCookie.getName()).thenReturn("brand");
         when(colorCookie.getValue()).thenReturn("Ferrari");
         when(request.getCookies()).thenReturn(new Cookie[] {colorCookie});
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -470,12 +443,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
-        requestParamMap.put("color", new String[] {"red"});
-        when(request.getHeader("brand")).thenReturn("Ferrari");
-        when(request.getParameterMap()).thenReturn(requestParamMap);
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "red").param("brand", "Ferrari").asMap());
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -499,8 +467,6 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -524,11 +490,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
-        requestParamMap.put("color", new String[] {"gray"});
-        when(request.getParameterMap()).thenReturn(requestParamMap);
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "gray").asMap());
         when(request.getMethod()).thenReturn(RequestMethod.POST.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -552,9 +514,7 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
         when(request.getHeader("Accept")).thenReturn(MediaType.ANY);
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -579,8 +539,6 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -611,8 +569,6 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -638,8 +594,6 @@ public class DefaultRouteProcessorTest {
             }
         };
         final Routes routes = routingModule.build();
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -667,8 +621,6 @@ public class DefaultRouteProcessorTest {
         final Routes routes = routingModule.build();
         when(consumers.iterator()).thenReturn(new HashSet<Consumer>().iterator());
         router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
-        final SampleController controller = spy(new SampleController());
-        when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -676,9 +628,172 @@ public class DefaultRouteProcessorTest {
         when(request.getHeader("Accept")).thenReturn("application/json");
         when(request.getInputStream()).thenReturn(inputStream("{\"color\":\"red\", \"brand\":\"mini\"}"));
         when(jsonResponder.accepts("application/json")).thenReturn(true);
-        final Set<String> acceptHeaders = new LinkedHashSet<String>(Arrays.asList(MediaType.JSON.toString()));
-        final Route route = routes.routeFor(RequestMethod.POST, "/cars", acceptHeaders);
+        final Route route = routes.routeFor(RequestMethod.POST, "/cars", acceptHeaders(MediaType.JSON.getMediaType()));
         router.process(new RouteContext(route, request, response, routes));
+    }
+    
+    @Test
+    public void testPagedEndpointWithDefaults() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/ints")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).findByWithDefaults(param(PaginationInfo.class), param("color"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "blue").asMap());
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/ints");
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/abc/ints"));
+        when(request.getQueryString()).thenReturn("color=blue");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        final StringWriter stringWriter = new StringWriter();
+        when(response.getWriter()).thenReturn(printWriter(stringWriter));
+        final Route route = routes.routeFor(RequestMethod.GET, "/ints", acceptHeaders(MediaType.JSON.getMediaType()));
+        final JsonResponder spy = spy(new JsonResponder());
+        final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
+        when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
+        final Responders responders = new Responders(responderInstance);
+        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        router.process(new RouteContext(route, request, response, routes));
+        verify(response).setHeader(eq("AG-Links-Next"), anyString());
+        verify(response, never()).setHeader(eq("AG-Links-Previous"), anyString());
+    }
+    
+    @Test
+    public void testPagedEndpointFirstPage() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/ints")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).findBy(param(PaginationInfo.class), param("color"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getParameterMap()).thenReturn(new RequestParams("offset", "0").param("limit", "5").param("color", "blue").asMap());
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/ints");
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/abc/ints"));
+        when(request.getQueryString()).thenReturn("offset=0&color=blue&limit=5");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        final StringWriter stringWriter = new StringWriter();
+        when(response.getWriter()).thenReturn(printWriter(stringWriter));
+        final Route route = routes.routeFor(RequestMethod.GET, "/ints", acceptHeaders(MediaType.JSON.getMediaType()));
+        final JsonResponder spy = spy(new JsonResponder());
+        final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
+        when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
+        final Responders responders = new Responders(responderInstance);
+        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        router.process(new RouteContext(route, request, response, routes));
+        verify(response).setHeader(eq("AG-Links-Next"), anyString());
+        verify(response, never()).setHeader(eq("AG-Links-Previous"), anyString());
+    }
+    
+    @Test
+    public void testPagedEndpointMiddlePage() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/ints")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).findBy(param(PaginationInfo.class), param("color"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getParameterMap()).thenReturn(new RequestParams("offset", "5").param("limit", "5").param("color", "blue").asMap());
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/ints");
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/abc/ints"));
+        when(request.getQueryString()).thenReturn("color=blue&offset=5&limit=5");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        final StringWriter stringWriter = new StringWriter();
+        when(response.getWriter()).thenReturn(printWriter(stringWriter));
+        final Route route = routes.routeFor(RequestMethod.GET, "/ints", acceptHeaders(MediaType.JSON.getMediaType()));
+        final JsonResponder spy = spy(new JsonResponder());
+        final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
+        when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
+        final Responders responders = new Responders(responderInstance);
+        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        router.process(new RouteContext(route, request, response, routes));
+        verify(response).setHeader("AG-Links-Previous", "http://localhost:8080/abc/ints?color=blue&offset=0&limit=5");
+        verify(response).setHeader("AG-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=5");
+    }
+    
+    @Test
+    public void testPagedEndpointBeyondLastPage() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/ints")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).findByWithCustomParamNames(param(PaginationInfo.class), param("brand"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getParameterMap()).thenReturn(new RequestParams("myoffset", "50").param("mylimit", "5").param("brand", "BMW").asMap());
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/ints");
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/abc/ints"));
+        when(request.getQueryString()).thenReturn("brand=BMW&myoffset=0&mylimit=5");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        final StringWriter stringWriter = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(stringWriter));
+        final Route route = routes.routeFor(RequestMethod.GET, "/ints", acceptHeaders(MediaType.JSON.getMediaType()));
+        final JsonResponder spy = spy(new JsonResponder());
+        final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
+        when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
+        final Responders responders = new Responders(responderInstance);
+        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        router.process(new RouteContext(route, request, response, routes));
+        verify(response).setHeader("TS-Links-Previous", "http://localhost:8080/abc/ints?brand=BMW&myoffset=45&mylimit=5");
+        verify(response, never()).setHeader(eq("TS-Links-Next"), anyString());
+        assertThat(stringWriter.toString()).isEqualTo("[]");
+        verify(response, never()).setStatus(anyInt());
+    }
+    
+    @Test (expected = MissingRequestParameterException.class) 
+    public void testMissingQueryParameter() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/cars")
+                        .on(RequestMethod.GET)
+                        .produces(mockDefault())
+                        .to(SampleController.class).find(param("color"), param("brand", "Ferrari"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getParameterMap()).thenReturn(new RequestParams().asMap());
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/cars");
+        final Route route = routes.routeFor(RequestMethod.GET, "/cars", acceptHeaders(MediaType.HTML.getMediaType()));
+        router.process(new RouteContext(route, request, response, routes));
+    }    
+    
+    private PrintWriter printWriter(StringWriter writer) {
+        return new PrintWriter(writer);
     }
    
     private ServletInputStream inputStream(final String json) {
@@ -724,6 +839,26 @@ public class DefaultRouteProcessorTest {
 
     private Set<String> acceptHeaders(String... mediaTypes) {
         return new HashSet<String>(Arrays.asList(mediaTypes));
+    }
+    
+    private static class RequestParams {
+        private Map<String, String[]> params = new HashMap<String, String[]>();
+        
+        public RequestParams() {
+        }
+        
+        public RequestParams(final String key, final String value) {
+            params.put(key, new String[]{value});
+        }
+        
+        public RequestParams param(final String key, final String value) {
+            params.put(key, new String[]{value});
+            return this;
+        }
+        
+        public Map<String, String[]> asMap() {
+            return params;
+        }
     }
     
     private class CustomResponder extends AbstractRestResponder {

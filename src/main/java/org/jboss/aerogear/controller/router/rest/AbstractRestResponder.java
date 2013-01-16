@@ -17,6 +17,9 @@
 
 package org.jboss.aerogear.controller.router.rest;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.router.MediaType;
@@ -65,6 +68,13 @@ public abstract class AbstractRestResponder implements Responder {
         final HttpServletResponse response = routeContext.getResponse();
         response.setContentType(mediaType.getMediaType());
         response.setCharacterEncoding("UTF-8");
+        if (entity instanceof ResponseHeaders) {
+            final ResponseHeaders responseHeaders = (ResponseHeaders) entity;
+            final Map<String, String> headers = responseHeaders.headers();
+            for (Entry<String, String> entrySet : headers.entrySet()) {
+                response.setHeader(entrySet.getKey(), entrySet.getValue());
+            }
+        }
         writeResponse(entity, routeContext);
     }
     

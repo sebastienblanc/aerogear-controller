@@ -17,6 +17,17 @@
 
 package org.jboss.aerogear.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.jboss.aerogear.controller.router.error.ErrorResponse;
+import org.jboss.aerogear.controller.router.error.JsonErrorResponse;
+import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
+
 public class SampleController {
 
     public void index() {
@@ -42,6 +53,32 @@ public class SampleController {
     
     public void find(String color, String brand) {
     }
+    
+    @Paginated
+    public List<Integer> findBy(PaginationInfo pinfo, String query) {
+        return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
+    }
+    
+    @Paginated(defaultOffset = 0, defaultLimit = 5)
+    public List<Integer> findByWithDefaults(PaginationInfo pinfo, String query) {
+        return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
+    }
+    
+    @Paginated (offsetParamName = "myoffset", limitParamName = "mylimit", customHeadersPrefix = "TS-")
+    public List<Integer> findByWithCustomParamNames(PaginationInfo pinfo, String query) {
+        return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
+    }
+    
+    private List<Integer> ints(final int offset, final int limit, final int total) {
+        final ArrayList<Integer> ints = new ArrayList<Integer>();
+        if (offset >= total) {
+            return ints;
+        }
+        for (int i = 0; i < limit; i++) {
+            ints.add(i);
+        }
+        return ints;
+    }
 
     public void admin() {
     }
@@ -58,6 +95,10 @@ public class SampleController {
     }
 
     public void errorPage() {
+    }
+
+    public ErrorResponse errorResponse() {
+        return new JsonErrorResponse(HttpServletResponse.SC_NOT_FOUND).json(Collections.emptyList());
     }
     
     public void superException() {

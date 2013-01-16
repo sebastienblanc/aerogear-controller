@@ -23,14 +23,17 @@ import static org.mockito.Mockito.when;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.Routes;
+import org.jboss.aerogear.controller.router.error.ErrorResponseImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -83,6 +86,23 @@ public class JsonResponderTest {
         verify(response).setContentType(MediaType.JSON.getMediaType());
         verify(response).setHeader("Entity-Name", "Larry");
         verify(response).setHeader("Entity-Age", "38");
+    }
+    
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void errorResponse() throws Exception {
+        final StringWriter stringWriter = new StringWriter();
+        final PrintWriter printWriter = new PrintWriter(stringWriter);
+        when(response.getWriter()).thenReturn(printWriter);
+        
+        ErrorResponseImpl errorResponse = new ErrorResponseImpl(HttpServletResponse.SC_NOT_FOUND, new Exception("not found"));
+        new JsonResponder().respond(errorResponse, routeContext);
+        verify(response).getWriter();
+        verify(response).setCharacterEncoding("UTF-8");
+        final ObjectMapper mapper = new ObjectMapper();
+        final Map readValue = mapper.readValue(stringWriter.toString(), Map.class);
+        assertThat(readValue.get("message")).isEqualTo("not found");
+        verify(response).setContentType(MediaType.JSON.getMediaType());
     }
 
 }

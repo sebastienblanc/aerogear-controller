@@ -17,6 +17,13 @@
 
 package org.jboss.aerogear.controller.router;
 
+import static org.jboss.aerogear.controller.router.parameter.Parameters.param;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.CallbackFilter;
 import net.sf.cglib.proxy.Enhancer;
@@ -24,14 +31,14 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import net.sf.cglib.proxy.NoOp;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import org.jboss.aerogear.controller.router.RouteBuilder.TargetEndpoint;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.jboss.aerogear.controller.router.parameter.Parameters;
+import org.jboss.aerogear.controller.router.rest.pagination.NullPagingStrategy;
+import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
+import org.jboss.aerogear.controller.router.rest.pagination.Pagination.OffsetStrategyBuilder;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
+import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
 
 /**
  * Describes/configures a single route in AeroGear controller.
@@ -47,6 +54,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private final List<Parameter<?>> parameters = new LinkedList<Parameter<?>>();
     private MediaType[] produces;
     private Set<Class<? extends Throwable>> throwables;
+    private OffsetStrategyBuilder offsetBuilder;
     private final static FinalizeFilter FINALIZE_FILTER = new FinalizeFilter();
 
     public RouteDescriptor() {
@@ -116,6 +124,12 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
 
         @Override
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+            if (method.getAnnotation(Paginated.class) != null) {
+                final Paginated paginated = method.getAnnotation(Paginated.class);
+                routeDescriptor.parameters.remove(Parameters.param(PaginationInfo.class));
+                routeDescriptor.addParameter(param(paginated.offsetParamName(), String.valueOf(paginated.defaultOffset()), String.class));
+                routeDescriptor.addParameter(param(paginated.limitParamName(), String.valueOf(paginated.defaultLimit()), String.class));
+            }
             this.routeDescriptor.targetMethod = method;
             this.routeDescriptor.args = args;
             return null;
@@ -162,6 +176,13 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     
     public List<String> getConsumes() {
         return consumes;
+    }
+    
+    public PagingStrategy getPagingStrategy() {
+        if (offsetBuilder != null) {
+            return offsetBuilder.build();
+        }
+        return NullPagingStrategy.INSTANCE;
     }
     
     public void addParameter(final Parameter<?> parameter) {

@@ -25,8 +25,9 @@ import javax.servlet.ServletException;
 import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Responders;
-import org.jboss.aerogear.controller.router.Route;
+import org.jboss.aerogear.controller.router.parameter.MissingRequestParameterException;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.jboss.aerogear.controller.router.rest.pagination.PagingRequestException;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
@@ -55,8 +56,8 @@ public interface LoggerMessages {
     RuntimeException multivaluedParamsUnsupported(String parameterName);
     
     @LogMessage(level = Logger.Level.ERROR)
-    @Message(id = 10, value = "Parameter: '%s' was missing from Request destined for route: '%s'")
-    RuntimeException missingParameterInRequest(Parameter<?> parameter, Route route);
+    @Message(id = 10, value = "Parameter: '%s' was missing from Request")
+    MissingRequestParameterException missingParameterInRequest(String paramName);
     
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 11, value = "No Responder was found that matched the Accept Header: '%s'. The following Responders are registered: '%s'")
@@ -65,4 +66,9 @@ public interface LoggerMessages {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 12, value = "No Consumer found for Parameter: '%s'. The registered Consumers were: '%s'. Please add a Consumer for one the media types supported by the route: %s.")
     RuntimeException noConsumerForMediaType(Parameter<?> parameter, Collection<Consumer> consumers, Set<String> supportedMediaTypes);
+    
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 13, value = "Invalid Paging Request: offset '%s', limit '%s'" )
+    PagingRequestException invalidPagingRequest(long offset, long limit);
+    
 }

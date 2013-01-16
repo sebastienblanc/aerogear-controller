@@ -17,8 +17,8 @@
 
 package org.jboss.aerogear.controller.router.parameter;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +28,7 @@ import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.log.LoggerMessages;
 import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.RouteContext;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
 import org.jboss.aerogear.controller.util.StringUtils;
 
 import br.com.caelum.iogi.Iogi;
@@ -62,36 +63,39 @@ public class Parameters {
      * @param routeContext the {@link RouteContext}.
      * @return {@code Object[]} an array of Object matching the route targets parameters.
      */
-    public static Object[] extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) {
-        final List<Object> args = new LinkedList<Object>();
+    public static Map<String, Object> extractArguments(final RouteContext routeContext, final Map<String, Consumer> consumers) {
+        final Map<String, Object> args = new LinkedHashMap<String, Object>();
         for (Parameter<?> parameter : routeContext.getRoute().getParameters()) {
             switch (parameter.getParameterType()) {
             case ENTITY:
-                if (!addIfPresent(extractIogiParam(routeContext), args)) {
-                    args.add(extractBody(routeContext, parameter, consumers));
+                if (PaginationInfo.class.isAssignableFrom(parameter.getType())) {
+                    break;
+                }
+                if (!addIfPresent(extractIogiParam(routeContext), "entity", args)) {
+                    args.put("entity", extractBody(routeContext, parameter, consumers));
                 }
                 break;
             case REQUEST:
                 final RequestParameter<?> requestParameter = (RequestParameter<?>) parameter;
-                if (addIfPresent(extractParam(routeContext, requestParameter), args)) {
+                if (addIfPresent(extractParam(routeContext, requestParameter), requestParameter.getName(), args)) {
                     break;
                 }
-                if (addIfPresent(extractHeaderParam(routeContext, requestParameter), args)) {
+                if (addIfPresent(extractHeaderParam(routeContext, requestParameter), requestParameter.getName(), args)) {
                     break;
                 }
-                if (addIfPresent(extractCookieParam(routeContext, requestParameter), args)) {
+                if (addIfPresent(extractCookieParam(routeContext, requestParameter), requestParameter.getName(), args)) {
                     break;
                 }
-                if (addIfPresent(requestParameter.getDefaultValue(), args)) {
+                if (addIfPresent(requestParameter.getDefaultValue(), requestParameter.getName(), args)) {
                     break;
                 }
-                if (addIfPresent(extractPathParam(routeContext), args)) {
+                if (addIfPresent(extractPathParam(routeContext), requestParameter.getName(), args)) {
                     break;
                 } 
-                throw LoggerMessages.MESSAGES.missingParameterInRequest(requestParameter, routeContext.getRoute());
+                throw LoggerMessages.MESSAGES.missingParameterInRequest(requestParameter.getName());
             }
         }
-        return args.toArray();
+        return args;
     }
     
     private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter, final Map<String, Consumer> consumers) {
@@ -148,9 +152,9 @@ public class Parameters {
         return Optional.absent();
     }
     
-    private static boolean addIfPresent(final Optional<?> op, final List<Object> args) {
+    private static boolean addIfPresent(final Optional<?> op, final String paramName, final Map<String, Object> args) {
         if (op.isPresent()) {
-            args.add(op.get());
+            args.put(paramName, op.get());
             return true;
         }
         return false;

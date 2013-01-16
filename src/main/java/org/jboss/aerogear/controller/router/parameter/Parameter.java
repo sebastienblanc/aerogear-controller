@@ -51,4 +51,38 @@ public class Parameter <T> {
         return "Parameter[type=" + parameterType + ", type=" + type + "]";
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((parameterType == null) ? 0 : parameterType.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.getName().hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Parameter<?> other = (Parameter<?>) obj;
+        if (parameterType != other.parameterType) {
+            return false;
+        }
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.getName().equals(other.type.getName())) {
+            return false;
+        }
+        return true;
+    }
+
 }
