@@ -34,7 +34,7 @@ public class NullPagingStrategy implements PagingStrategy {
     }
 
     @Override
-    public PaginationInfo getPagingationInfo() {
+    public PaginationInfo getPaginationInfo() {
         throw new UnsupportedOperationException("Should never be called on a Null Object instance");
     }
 

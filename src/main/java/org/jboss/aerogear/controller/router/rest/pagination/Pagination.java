@@ -19,7 +19,7 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 /**
  * Factory utility methods for creating PagingStrategies. 
  */
-public class Pagination {
+public final class Pagination {
     
     private Pagination() {
     }

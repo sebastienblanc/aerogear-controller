@@ -78,7 +78,7 @@ public @interface Paginated {
      * XYZ-Links-Previous "http://server/app/resource?offset=0?limit=5"
      * </pre>
      * 
-     * @return {@code String} the prefix to be used for next/previoius HTTP response headers. Defaults to 'AG-'.
+     * @return {@code String} the prefix to be used for next/previous HTTP response headers. Defaults to 'AG-'.
      */
     String customHeadersPrefix() default "AG-";
 }

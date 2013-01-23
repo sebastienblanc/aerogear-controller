@@ -41,12 +41,8 @@ public class OffsetPagingStrategy implements PagingStrategy {
     
     public static final String DEFAULT_OFFSET_PARAM_NAME = "offset";
     public static final String DEFAULT_LIMIT_PARAM_NAME = "limit";
-    private PaginationInfo pagingInfo;
+    private final PaginationInfo pagingInfo;
     private final Optional<String> headerPrefix;
-    
-    public OffsetPagingStrategy(final PaginationInfo paginationInfo) {
-        this(paginationInfo, Optional.<String>absent());
-    }
     
     public OffsetPagingStrategy(final PaginationInfo paginationInfo, final String headerPrefix) {
         this(paginationInfo, Optional.fromNullable(headerPrefix));
@@ -91,7 +87,7 @@ public class OffsetPagingStrategy implements PagingStrategy {
     }
 
     @Override
-    public PaginationInfo getPagingationInfo() {
+    public PaginationInfo getPaginationInfo() {
         return pagingInfo;
     }
     

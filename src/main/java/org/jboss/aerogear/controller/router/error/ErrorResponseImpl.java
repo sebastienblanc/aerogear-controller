@@ -18,8 +18,8 @@ package org.jboss.aerogear.controller.router.error;
 
 public class ErrorResponseImpl implements ErrorResponse {
     
-    private int statusCode;
-    private Object content;
+    private final int statusCode;
+    private final Object content;
 
     public ErrorResponseImpl(final int statusCode, final Object content) {
         this.statusCode = statusCode;

@@ -24,7 +24,7 @@ import org.jboss.aerogear.controller.router.RouteContext;
 public interface PagingStrategy {
     
     /**
-     * Process allows for manipulating the result of an endpoint target method invokation. 
+     * Process allows for manipulating the result of an endpoint target method invocation. 
      * 
      * @param result the result returned from the target endpoint method.
      * @param routeContext the {@link RouteContext}.
@@ -37,6 +37,6 @@ public interface PagingStrategy {
      * 
      * @return {@link PaginationInfo} for the current request.
      */
-    PaginationInfo getPagingationInfo();
+    PaginationInfo getPaginationInfo();
 
 }

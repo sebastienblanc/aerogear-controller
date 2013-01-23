@@ -79,11 +79,11 @@ public class DefaultRouteProcessor implements RouteProcessor {
     private void processPaged(RouteContext routeContext, Map<String, Object> arguments) throws Exception {
         final Route route = routeContext.getRoute();
         final PagingStrategy pagingStrategy = getPagingStrategy(route, arguments);
-        final PaginationInfo pagingationInfo = pagingStrategy.getPagingationInfo();
-        arguments.remove(pagingationInfo.getOffsetParamName());
-        arguments.remove(pagingationInfo.getLimitParamName());
+        final PaginationInfo paginationInfo = pagingStrategy.getPaginationInfo();
+        arguments.remove(paginationInfo.getOffsetParamName());
+        arguments.remove(paginationInfo.getLimitParamName());
         final List<Object> pagingArgs = new LinkedList<Object>();
-        pagingArgs.add(pagingationInfo);
+        pagingArgs.add(paginationInfo);
         pagingArgs.addAll(arguments.values());
         final Object result = route.getTargetMethod().invoke(getController(route), pagingArgs.toArray());
         responders.respond(routeContext, pagingStrategy.process(result, routeContext));
