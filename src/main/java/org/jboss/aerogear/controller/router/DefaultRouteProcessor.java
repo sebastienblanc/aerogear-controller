@@ -80,13 +80,18 @@ public class DefaultRouteProcessor implements RouteProcessor {
         final Route route = routeContext.getRoute();
         final PagingStrategy pagingStrategy = getPagingStrategy(route, arguments);
         final PaginationInfo paginationInfo = pagingStrategy.getPaginationInfo();
-        arguments.remove(paginationInfo.getOffsetParamName());
-        arguments.remove(paginationInfo.getLimitParamName());
-        final List<Object> pagingArgs = new LinkedList<Object>();
-        pagingArgs.add(paginationInfo);
-        pagingArgs.addAll(arguments.values());
+        final List<Object> pagingArgs = merge(paginationInfo, arguments);
         final Object result = route.getTargetMethod().invoke(getController(route), pagingArgs.toArray());
         responders.respond(routeContext, pagingStrategy.process(result, routeContext));
+    }
+    
+    private List<Object> merge(final PaginationInfo paginationInfo, final Map<String, Object> arguments) {
+        final List<Object> methodArguments = new LinkedList<Object>();
+        arguments.remove(paginationInfo.getOffsetParamName());
+        arguments.remove(paginationInfo.getLimitParamName());
+        methodArguments.add(paginationInfo);
+        methodArguments.addAll(arguments.values());
+        return methodArguments;
     }
     
     public PagingStrategy getPagingStrategy(final Route route, final Map<String, Object> args) {
