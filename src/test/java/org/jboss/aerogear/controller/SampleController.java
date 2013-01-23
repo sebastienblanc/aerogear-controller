@@ -59,12 +59,22 @@ public class SampleController {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
     
-    @Paginated(defaultOffset = 0, defaultLimit = 5)
+    @Paginated
     public List<Integer> findByWithDefaults(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
     
-    @Paginated (offsetParamName = "myoffset", limitParamName = "mylimit", customHeadersPrefix = "TS-")
+    @Paginated (webLinking = false)
+    public List<Integer> findByWithCustomHeadersDefaultPrefix(PaginationInfo pinfo, String query) {
+        return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
+    }
+    
+    @Paginated (webLinking = false, customHeadersPrefix = "Test-")
+    public List<Integer> findByWithCustomHeadersPrefix(PaginationInfo pinfo, String query) {
+        return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
+    }
+    
+    @Paginated (offsetParamName = "myoffset", limitParamName = "mylimit", customHeadersPrefix = "TS-", webLinking = false)
     public List<Integer> findByWithCustomParamNames(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
@@ -74,7 +84,8 @@ public class SampleController {
         if (offset >= total) {
             return ints;
         }
-        for (int i = 0; i < limit; i++) {
+        int maxResults = offset + limit;
+        for (int i = offset; i < maxResults; i++) {
             ints.add(i);
         }
         return ints;

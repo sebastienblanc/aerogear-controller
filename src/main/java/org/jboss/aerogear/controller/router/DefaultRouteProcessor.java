@@ -97,9 +97,15 @@ public class DefaultRouteProcessor implements RouteProcessor {
     public PagingStrategy getPagingStrategy(final Route route, final Map<String, Object> args) {
         final Paginated paginated = route.getTargetMethod().getAnnotation(Paginated.class);
         final String customHeader = paginated.customHeadersPrefix();
-        return Pagination.offset(paginated.offsetParamName(), (String) args.get(paginated.offsetParamName()))
-                .limitParam(paginated.limitParamName(), (String) args.get(paginated.limitParamName()))
-                .customHeadersPrefix(customHeader).build();
+        return Pagination.offset(paginated.offsetParamName(), argAsString(args, paginated.offsetParamName()))
+                .limitParam(paginated.limitParamName(), argAsString(args, paginated.limitParamName()))
+                .customHeadersPrefix(customHeader)
+                .webLinking(paginated.webLinking())
+                .build();
+    }
+    
+    private String argAsString(final Map<String, Object> args, final String argName) {
+        return (String) args.get(argName);
     }
     
     private boolean hasPaginatedAnnotation(final Method targetMethod) {

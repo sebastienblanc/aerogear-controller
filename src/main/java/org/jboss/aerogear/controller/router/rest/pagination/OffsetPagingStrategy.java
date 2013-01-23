@@ -44,6 +44,10 @@ public class OffsetPagingStrategy implements PagingStrategy {
     private final PaginationInfo pagingInfo;
     private final Optional<String> headerPrefix;
     
+    public OffsetPagingStrategy(final PaginationInfo paginationInfo) {
+        this(paginationInfo, Optional.<String>absent());
+    }
+    
     public OffsetPagingStrategy(final PaginationInfo paginationInfo, final String headerPrefix) {
         this(paginationInfo, Optional.fromNullable(headerPrefix));
     }

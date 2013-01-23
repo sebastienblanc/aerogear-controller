@@ -25,6 +25,7 @@ public class PagingMetadata {
     
     public static final String DEFAULT_HEADER_PREFIX = "AG-";
     private final Links links;
+    private final WebLinking webLinking;
     private final PagingProperties params;
     private final Optional<String> headerPrefix;
     
@@ -40,6 +41,7 @@ public class PagingMetadata {
         this.params = params;
         this.headerPrefix = headerPrefix;
         links = new Links(requestPathParser, params);
+        webLinking = new WebLinking(links);
     }
 
     public Links getLinks() {
@@ -55,14 +57,25 @@ public class PagingMetadata {
             if (resultsSize == params.limit()) {
                 headers.put(headerPrefix.get() + "Links-Next", links.getNext());
             }
-        } 
+        } else {
+            if (params.isFirstOffset()) {
+                headers.put(webLinking.getLinkHeaderName(), webLinking.getNext());
+            } else if (resultsSize < params.limit())  {
+                headers.put(webLinking.getLinkHeaderName(), webLinking.getPrevious());
+            } else {
+                headers.put(webLinking.getLinkHeaderName(), webLinking.getLinkHeaders());
+            }
+        }
         return headers;
+    }
+    
+    public WebLinking getWebLinking() {
+        return webLinking;
     }
     
     @Override
     public String toString() {
-        return "PagingMetadata[params=" + params + ", links=" + links + ", headerPrefix=" + headerPrefix + "]";
-        
+        return "PagingMetadata[params=" + params + ", links=" + links + ", headerPrefix=" + headerPrefix + ", webLinking=" + webLinking + "]";
     }
     
 }

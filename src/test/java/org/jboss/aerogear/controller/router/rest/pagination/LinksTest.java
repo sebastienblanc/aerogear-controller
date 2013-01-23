@@ -18,6 +18,7 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import org.jboss.aerogear.controller.router.rest.pagination.Links;
 import org.junit.Test;
 
 public class LinksTest {

@@ -77,8 +77,17 @@ public @interface Paginated {
      * XYZ-Links-Next "http://server/app/resource?offset=5?limit=5"
      * XYZ-Links-Previous "http://server/app/resource?offset=0?limit=5"
      * </pre>
+     * Note, that this value is only used when Web Linking is disabled (webLinking = false).
      * 
      * @return {@code String} the prefix to be used for next/previous HTTP response headers. Defaults to 'AG-'.
      */
     String customHeadersPrefix() default "AG-";
+    
+    /**
+     * Determines if <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">Web Linking</a>
+     * should be used.
+     * 
+     * @return {@code true} if Web Linking should be used, or false if custom HTTP headers should be used.
+     */
+    boolean webLinking() default true;
 }
