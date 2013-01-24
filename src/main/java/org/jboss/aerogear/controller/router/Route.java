@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.aerogear.controller.router.parameter.Parameter;
+import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
 
 /**
  * An object that contains information required to route HTTP requests to a target class's method.
@@ -123,4 +124,11 @@ public interface Route {
      * @return  the media types that this routes can consuming.
      */
     Set<String> consumes();
+    
+    /**
+     * Returns the PagingStrategy for this Route's target endpoint method if it was configured for pagination.
+     * 
+     * @return {code PagingStrategy} the paging strategy to be used.
+     */
+    PagingStrategy pagingStrategy();
 }

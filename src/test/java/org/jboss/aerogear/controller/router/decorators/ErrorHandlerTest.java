@@ -17,11 +17,11 @@
 
 package org.jboss.aerogear.controller.router.decorators;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,6 +29,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -186,24 +188,31 @@ public class ErrorHandlerTest {
             public void configuration() throws Exception {
                 route()
                         .on(IllegalStateException.class)
-                        .produces(mockJson())
-                        .to(SampleController.class).errorPage();
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).errorResponse();
                 route()
                         .from("/home")
                         .on(RequestMethod.GET, RequestMethod.POST)
-                        .produces(mockJson())
+                        .produces(MediaType.JSON)
                         .to(SampleController.class).throwIllegalStateException();
             }
         };
         final Routes routes = routingModule.build();
         when(request.getHeader("Accept")).thenReturn(MediaType.JSON.getMediaType());
         final Route route = routes.routeFor(RequestMethod.GET, "/home", new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType())));
+        final JsonResponder spyJsonResponder = spy(new JsonResponder());
+        final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spyJsonResponder));
+        when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
+        final Responders responders = new Responders(responderInstance);
         final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, responders, controllerFactory, beanManager);
         doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
+        final StringWriter stringWriter = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(stringWriter));
         errorHandler.process(new RouteContext(route, request, response, routes));
-        verify(controller).errorPage();
-        verify(jspResponder, never()).respond(anyObject(), any(RouteContext.class));
-        verify(jsonResponder).respond(anyObject(), any(RouteContext.class));
+        verify(controller).errorResponse();
+        verify(spyJsonResponder).respond(anyObject(), any(RouteContext.class));
+        verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+        assertThat(stringWriter.toString()).isEqualTo("[]");
     }
     
     private void configureExceptionTestMocks(final SampleController controller) {

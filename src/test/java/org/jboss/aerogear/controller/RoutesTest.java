@@ -32,7 +32,6 @@ import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.Routes;
 import org.jboss.aerogear.controller.router.error.ErrorTarget;
 import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
-import org.jboss.aerogear.controller.view.AbstractViewResolver;
 import org.junit.Test;
 
 public class RoutesTest {

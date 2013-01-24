@@ -105,8 +105,8 @@ public class ParametersTest {
         when(route.getParameters()).thenReturn(asList(Parameters.param("id", String.class)));
         when(route.getPath()).thenReturn("/cars/{id}");
         when(routeContext.getRequestPath()).thenReturn("/cars/2");
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("2");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("id")).isEqualTo("2");
     }
     
     @Test
@@ -114,8 +114,8 @@ public class ParametersTest {
         when(request.getParameterMap()).thenReturn(RequestParams.param("name", "Newman").getParamMap());
         when(route.getParameters()).thenReturn(asList(Parameters.param("name", String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("Newman");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("name")).isEqualTo("Newman");
     }
     
     @Test
@@ -123,8 +123,8 @@ public class ParametersTest {
         when(request.getParameterMap()).thenReturn(RequestParams.empty());
         when(route.getParameters()).thenReturn(asList(Parameters.param("name", "defaultName", String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("defaultName");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("name")).isEqualTo("defaultName");
     }
     
     @Test (expected = RuntimeException.class)
@@ -140,9 +140,9 @@ public class ParametersTest {
         when(request.getParameterMap()).thenReturn(paramMap);
         when(route.getParameters()).thenReturn(asList(Parameters.param(Car.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class, String.class));
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0] instanceof Car).isTrue();
-        assertThat(((Car)args[0]).getColor()).isEqualTo("red");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("entity") instanceof Car).isTrue();
+        assertThat(((Car)args.get("entity")).getColor()).isEqualTo("red");
     }
     
     @Test
@@ -152,16 +152,16 @@ public class ParametersTest {
         when(route.getParameters()).thenReturn(parameters);
         when(route.getPath()).thenReturn("/cars");
         when(routeContext.getRequestPath()).thenReturn("/cars");
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("headerValue");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("x-header")).isEqualTo("headerValue");
     }
     
     @Test
     public void extractHeaderParamWithDefaultValue() {
         final List<Parameter<?>> parameters = asList(Parameters.param("x-header", "defaultHeader", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("defaultHeader");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("x-header")).isEqualTo("defaultHeader");
     }
     
     @Test (expected = RuntimeException.class)
@@ -177,9 +177,9 @@ public class ParametersTest {
         final List<Parameter<?>> parameters = asList(Parameters.param("brand", String.class));
         parameters.add(Parameters.param("year", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("mini");
-        assertThat(args[1]).isEqualTo("2006");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("brand")).isEqualTo("mini");
+        assertThat(args.get("year")).isEqualTo("2006");
     }
     
     @Test (expected = RuntimeException.class)
@@ -197,9 +197,9 @@ public class ParametersTest {
         parameters.add(Parameters.param("year", "2012", String.class));
         when(route.getParameters()).thenReturn(parameters);
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("mini");
-        assertThat(args[1]).isEqualTo("2012");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("brand")).isEqualTo("mini");
+        assertThat(args.get("year")).isEqualTo("2012");
     }
     
     @Test
@@ -210,8 +210,8 @@ public class ParametersTest {
         when(request.getCookies()).thenReturn(new Cookie[] {cookie});
         final List<Parameter<?>> parameters = asList(Parameters.param("testCookie", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Object[] args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
-        assertThat(args[0]).isEqualTo("cookieValue");
+        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        assertThat(args.get("testCookie")).isEqualTo("cookieValue");
     }
     
     @Test (expected = RuntimeException.class)

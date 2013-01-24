@@ -17,15 +17,11 @@
 
 package org.jboss.aerogear.controller.router.rest;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Responder;
 import org.jboss.aerogear.controller.router.RouteContext;
+import org.jboss.aerogear.controller.router.error.ErrorResponse;
 
 /**
  * A RESTFul {@link Responder} that is able to return JSON responses.
@@ -43,17 +39,19 @@ public class JsonResponder extends AbstractRestResponder {
 
     @Override
     public void writeResponse(final Object entity, final RouteContext routeContext) throws Exception {
-        if (entity instanceof ResponseHeaders) {
-            final HttpServletResponse response = routeContext.getResponse();
-            final ResponseHeaders responseHeaders = (ResponseHeaders) entity;
-            final Map<String, String> headers = responseHeaders.headers();
-            for (Entry<String, String> entrySet : headers.entrySet()) {
-                response.setHeader(entrySet.getKey(), entrySet.getValue());
+        if (entity instanceof ErrorResponse) {
+            final ErrorResponse errorResponse = (ErrorResponse) entity;
+            routeContext.getResponse().setStatus(errorResponse.statusCode());
+            writeJsonResponse(errorResponse.content(), routeContext);
+        } else {
+            if (entity != null) {
+                writeJsonResponse(entity, routeContext);
             }
         }
-        if (entity != null) {
-            mapper.writeValue(routeContext.getResponse().getWriter(), entity);
-        }
+    }
+    
+    private void writeJsonResponse(final Object entity, final RouteContext routeContext) throws Exception {
+        mapper.writeValue(routeContext.getResponse().getWriter(), entity);
     }
 
 }
