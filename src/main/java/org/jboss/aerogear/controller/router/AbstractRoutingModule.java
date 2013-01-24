@@ -43,6 +43,9 @@ import org.jboss.aerogear.controller.router.parameter.Parameters;
  * 
  */
 public abstract class AbstractRoutingModule implements RoutingModule {
+    public static final MediaType JSON = MediaType.JSON;
+    public static final MediaType JSP = MediaType.JSP;
+    public static final MediaType HTML = MediaType.HTML;
     private final List<RouteBuilder> routes = new LinkedList<RouteBuilder>();
     
     /**

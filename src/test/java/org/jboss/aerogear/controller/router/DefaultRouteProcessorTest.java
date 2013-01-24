@@ -563,7 +563,7 @@ public class DefaultRouteProcessorTest {
                 route()
                         .from("/cars").roles("admin")
                         .on(RequestMethod.POST)
-                        .consumes(MediaType.JSON.getMediaType())
+                        .consumes(JSON)
                         .produces(mockJson())
                         .to(SampleController.class).save(param(Car.class));
             }
@@ -613,7 +613,7 @@ public class DefaultRouteProcessorTest {
                 route()
                         .from("/cars").roles("admin")
                         .on(RequestMethod.POST)
-                        .consumes(MediaType.JSON.getMediaType())
+                        .consumes(JSON)
                         .produces(mockJson())
                         .to(SampleController.class).save(param(Car.class));
             }

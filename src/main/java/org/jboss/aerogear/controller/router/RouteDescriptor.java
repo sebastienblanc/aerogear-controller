@@ -174,6 +174,20 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
         return this;
     }
     
+    @Override
+    public TargetEndpoint consumes(MediaType... consumes) {
+        this.consumes.addAll(toStrings(consumes));
+        return this;
+    }
+    
+    private List<String> toStrings(MediaType... mediaTypes) {
+        final List<String> strings = new LinkedList<String>();
+        for (MediaType mediaType : mediaTypes) {
+            strings.add(mediaType.getMediaType());
+        }
+        return strings;
+    }
+    
     public List<String> getConsumes() {
         return consumes;
     }
