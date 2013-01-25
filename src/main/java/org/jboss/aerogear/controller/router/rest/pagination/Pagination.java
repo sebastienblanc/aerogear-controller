@@ -38,6 +38,7 @@ public final class Pagination {
         OffsetStrategyBuilder limitValue(String value);
         OffsetStrategyBuilder customHeaders();
         OffsetStrategyBuilder customHeadersPrefix(String prefix);
+        OffsetStrategyBuilder webLinking(boolean enabled);
         OffsetPagingStrategy build();
     }
     
@@ -48,6 +49,7 @@ public final class Pagination {
         private String headerPrefix;
         private String offsetParamValue;
         private String limitParamValue;
+        private boolean webLinking;
 
         @Override
         public OffsetStrategyBuilder offsetParam(final String paramName, String value) {
@@ -77,12 +79,18 @@ public final class Pagination {
         
         public OffsetPagingStrategy build() {
             final PaginationInfo info = new PaginationInfo(offsetParamName, offsetParamValue, limitParamName, limitParamValue);
-            return new OffsetPagingStrategy(info, headerPrefix);
+            return webLinking ? new OffsetPagingStrategy(info) : new OffsetPagingStrategy(info, headerPrefix);
         }
 
         @Override
         public OffsetStrategyBuilder limitValue(String value) {
             limitParamValue = value;
+            return this;
+        }
+
+        @Override
+        public OffsetStrategyBuilder webLinking(boolean enabled) {
+            webLinking = enabled;
             return this;
         }
 

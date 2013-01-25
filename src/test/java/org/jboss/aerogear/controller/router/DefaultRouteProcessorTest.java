@@ -65,7 +65,6 @@ import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.view.HtmlViewResponder;
 import org.jboss.aerogear.controller.view.JspViewResponder;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -633,7 +632,7 @@ public class DefaultRouteProcessorTest {
     }
     
     @Test
-    public void testPagedEndpointWithDefaults() throws Exception {
+    public void testPagedEndpointWithWebLinking() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -662,12 +661,11 @@ public class DefaultRouteProcessorTest {
         final Responders responders = new Responders(responderInstance);
         final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
         router.process(new RouteContext(route, request, response, routes));
-        verify(response).setHeader(eq("AG-Links-Next"), anyString());
-        verify(response, never()).setHeader(eq("AG-Links-Previous"), anyString());
+        verify(response).setHeader(eq("Link"), anyString());
     }
     
     @Test
-    public void testPagedEndpointFirstPage() throws Exception {
+    public void testPagedEndpointWithCustomHeadersDefaultPrefix() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() {
@@ -675,7 +673,42 @@ public class DefaultRouteProcessorTest {
                         .from("/ints")
                         .on(RequestMethod.GET)
                         .produces(MediaType.JSON)
-                        .to(SampleController.class).findBy(param(PaginationInfo.class), param("color"));
+                        .to(SampleController.class).findByWithCustomHeadersDefaultPrefix(param(PaginationInfo.class), param("color"));
+            }
+        };
+        final Routes routes = routingModule.build();
+        when(request.getParameterMap()).thenReturn(new RequestParams("color", "blue").asMap());
+        when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
+        when(request.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getContextPath()).thenReturn("/abc");
+        when(request.getRequestURI()).thenReturn("/abc/ints");
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/abc/ints"));
+        when(request.getQueryString()).thenReturn("color=blue");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+        final StringWriter stringWriter = new StringWriter();
+        when(response.getWriter()).thenReturn(printWriter(stringWriter));
+        final Route route = routes.routeFor(RequestMethod.GET, "/ints", acceptHeaders(MediaType.JSON.getMediaType()));
+        final JsonResponder spy = spy(new JsonResponder());
+        final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
+        when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
+        final Responders responders = new Responders(responderInstance);
+        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        router.process(new RouteContext(route, request, response, routes));
+        verify(response).setHeader("AG-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=10");
+        verify(response, never()).setHeader(eq("AG-Links-Previous"), anyString());
+        assertThat(stringWriter.toString()).isEqualTo("[0,1,2,3,4,5,6,7,8,9]");
+    }
+    
+    @Test
+    public void testPagedEndpointCustomHeadersPrefix() throws Exception {
+        final RoutingModule routingModule = new AbstractRoutingModule() {
+            @Override
+            public void configuration() {
+                route()
+                        .from("/ints")
+                        .on(RequestMethod.GET)
+                        .produces(MediaType.JSON)
+                        .to(SampleController.class).findByWithCustomHeadersPrefix(param(PaginationInfo.class), param("color"));
             }
         };
         final Routes routes = routingModule.build();
@@ -696,8 +729,9 @@ public class DefaultRouteProcessorTest {
         final Responders responders = new Responders(responderInstance);
         final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
         router.process(new RouteContext(route, request, response, routes));
-        verify(response).setHeader(eq("AG-Links-Next"), anyString());
-        verify(response, never()).setHeader(eq("AG-Links-Previous"), anyString());
+        verify(response, never()).setHeader(eq("Test-Links-Previous"), anyString());
+        verify(response).setHeader("Test-Links-Next", "http://localhost:8080/abc/ints?offset=5&color=blue&limit=5");
+        assertThat(stringWriter.toString()).isEqualTo("[0,1,2,3,4]");
     }
     
     @Test
@@ -709,7 +743,7 @@ public class DefaultRouteProcessorTest {
                         .from("/ints")
                         .on(RequestMethod.GET)
                         .produces(MediaType.JSON)
-                        .to(SampleController.class).findBy(param(PaginationInfo.class), param("color"));
+                        .to(SampleController.class).findByWithCustomHeadersPrefix(param(PaginationInfo.class), param("color"));
             }
         };
         final Routes routes = routingModule.build();
@@ -730,8 +764,9 @@ public class DefaultRouteProcessorTest {
         final Responders responders = new Responders(responderInstance);
         final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
         router.process(new RouteContext(route, request, response, routes));
-        verify(response).setHeader("AG-Links-Previous", "http://localhost:8080/abc/ints?color=blue&offset=0&limit=5");
-        verify(response).setHeader("AG-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=5");
+        verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/abc/ints?color=blue&offset=0&limit=5");
+        verify(response).setHeader("Test-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=5");
+        assertThat(stringWriter.toString()).isEqualTo("[5,6,7,8,9]");
     }
     
     @Test
@@ -767,7 +802,6 @@ public class DefaultRouteProcessorTest {
         verify(response).setHeader("TS-Links-Previous", "http://localhost:8080/abc/ints?brand=BMW&myoffset=45&mylimit=5");
         verify(response, never()).setHeader(eq("TS-Links-Next"), anyString());
         assertThat(stringWriter.toString()).isEqualTo("[]");
-        verify(response, never()).setStatus(anyInt());
     }
     
     @Test (expected = MissingRequestParameterException.class) 

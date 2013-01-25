@@ -84,7 +84,6 @@ public class OffsetPagingStrategyTest {
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(6, 7));
         strategy.process(results, routeContext);
         verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/app/cars?offset=0&color=red&limit=5");
-        verify(response, never()).setHeader(eq("Test-Links-Next"), anyString());
     }
     
     @Test
@@ -95,6 +94,18 @@ public class OffsetPagingStrategyTest {
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
         strategy.process(results, routeContext);
         verify(response).setHeader("AG-Links-Next", "http://localhost:8080/app/cars?color=red&limit=5&offset=5");
+    }
+    
+    @Test
+    public void weblinkingHeader() {
+        when(routeContext.getRequestPath()).thenReturn("cars");
+        when(request.getQueryString()).thenReturn("myoffset=0&mylimit=5&color=red");
+        final OffsetPagingStrategy strategy = Pagination.offset("myoffset", "5").limitParam("mylimit", "5").build();
+        final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
+        strategy.process(results, routeContext);
+        verify(response, never()).setHeader(eq("Test-Links-Previous"), anyString());
+        verify(response, never()).setHeader(eq("Test-Links-Next"), anyString());
+        verify(response).setHeader(eq("Link"), anyString());
     }
     
 }

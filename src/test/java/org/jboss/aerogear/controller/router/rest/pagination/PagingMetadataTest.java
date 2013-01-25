@@ -18,9 +18,11 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jboss.aerogear.controller.test.Util;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,6 +74,33 @@ public class PagingMetadataTest {
         metadata = new PagingMetadata(new PagingProperties(parseOffset(links.getPrevious()), 5), requestPathParser);
         links = metadata.getLinks();
         assertThat(links.getPrevious()).isEqualTo("cars?offset=0&limit=5");
+    }
+    
+    @Test
+    public void webLinkingFirst() {
+        final PagingMetadata metadata = new PagingMetadata(new PagingProperties(0, 10), requestPathParser);
+        final Map<String, String> responseHeaders = metadata.getHeaders(10);
+        final Map<String, String> headers = Util.parseWebLinkHeader(responseHeaders.get(WebLinking.LINK_HEADER));
+        assertThat(headers.get(WebLinking.NEXT)).isEqualTo("cars?offset=10&limit=10");
+        assertThat(headers.get(WebLinking.PREVIOUS)).isNull();
+    }
+    
+    @Test
+    public void webLinkingMiddle() {
+        final PagingMetadata metadata = new PagingMetadata(new PagingProperties(10, 5), requestPathParser);
+        final Map<String, String> responseHeaders = metadata.getHeaders(5);
+        final Map<String, String> headers = Util.parseWebLinkHeader(responseHeaders.get(WebLinking.LINK_HEADER));
+        assertThat(headers.get(WebLinking.PREVIOUS)).isEqualTo("cars?offset=5&limit=5");
+        assertThat(headers.get(WebLinking.NEXT)).isEqualTo("cars?offset=15&limit=5");
+    }
+    
+    @Test
+    public void webLinkingLast() {
+        final PagingMetadata metadata = new PagingMetadata(new PagingProperties(5, 5), requestPathParser);
+        final Map<String, String> responseHeaders = metadata.getHeaders(3);
+        final Map<String, String> headers = Util.parseWebLinkHeader(responseHeaders.get(WebLinking.LINK_HEADER));
+        assertThat(headers.get(WebLinking.PREVIOUS)).isEqualTo("cars?offset=0&limit=5");
+        assertThat(headers.get(WebLinking.NEXT)).isNull();
     }
     
     private int parseOffset(final String header) {
