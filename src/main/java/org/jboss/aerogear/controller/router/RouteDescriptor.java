@@ -17,7 +17,7 @@
 
 package org.jboss.aerogear.controller.router;
 
-import static org.jboss.aerogear.controller.router.parameter.Parameters.param;
+import static org.jboss.aerogear.controller.router.parameter.Parameter.param;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -33,7 +33,6 @@ import net.sf.cglib.proxy.NoOp;
 
 import org.jboss.aerogear.controller.router.RouteBuilder.TargetEndpoint;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
-import org.jboss.aerogear.controller.router.parameter.Parameters;
 import org.jboss.aerogear.controller.router.rest.pagination.NullPagingStrategy;
 import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
 import org.jboss.aerogear.controller.router.rest.pagination.Pagination.OffsetStrategyBuilder;
@@ -126,7 +125,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
             if (method.getAnnotation(Paginated.class) != null) {
                 final Paginated paginated = method.getAnnotation(Paginated.class);
-                routeDescriptor.parameters.remove(Parameters.param(PaginationInfo.class));
+                routeDescriptor.parameters.remove(param(PaginationInfo.class));
                 routeDescriptor.addParameter(param(paginated.offsetParamName(), String.valueOf(paginated.defaultOffset()), String.class));
                 routeDescriptor.addParameter(param(paginated.limitParamName(), String.valueOf(paginated.defaultLimit()), String.class));
             }

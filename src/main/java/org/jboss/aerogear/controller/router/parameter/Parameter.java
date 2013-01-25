@@ -24,7 +24,19 @@ package org.jboss.aerogear.controller.router.parameter;
  * @param T the type of this parameter.
  */
 public class Parameter <T> {
-    
+
+    public static <T> Parameter<T> param(final Class<T> type) {
+        return new Parameter<T>(Type.ENTITY, type);
+    }
+
+    public static <T> Parameter<T> param(final String name, final Class<T> type) {
+        return new RequestParameter<T>(name, Type.REQUEST, type);
+    }
+
+    public static <T> Parameter<T> param(final String name, final T defaultValue, final Class<T> type) {
+        return new RequestParameter<T>(name, Type.REQUEST, defaultValue, type);
+    }
+
     public enum Type {
         REQUEST,
         ENTITY,

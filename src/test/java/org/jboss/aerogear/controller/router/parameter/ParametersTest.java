@@ -37,6 +37,7 @@ import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
+import org.jboss.aerogear.controller.util.ParameterExtractor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -70,7 +71,7 @@ public class ParametersTest {
     public void extractPathParameter() {
         when(route.getPath()).thenReturn("/cars/{id}");
         when(routeContext.getRequestPath()).thenReturn("/cars/2");
-        final Optional<String> param = Parameters.extractPathParam(routeContext);
+        final Optional<String> param = ParameterExtractor.extractPathParam(routeContext);
         assertThat(param.get()).isEqualTo("2");
     }
     
@@ -78,7 +79,7 @@ public class ParametersTest {
     public void extractPathParameterButNoParamInRequest() {
         when(route.getPath()).thenReturn("/cars/{id}");
         when(routeContext.getRequestPath()).thenReturn("/c");
-        assertThat(Parameters.extractPathParam(routeContext).isPresent()).isFalse();
+        assertThat(ParameterExtractor.extractPathParam(routeContext).isPresent()).isFalse();
     }
     
     @Test
@@ -86,7 +87,7 @@ public class ParametersTest {
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class));
         final Map<String, String[]> paramMap = RequestParams.param("car.color", "red").add("car.brand","Ferrari").getParamMap();
         when(request.getParameterMap()).thenReturn(paramMap);
-        final Optional<?> optional = Parameters.extractIogiParam(routeContext);
+        final Optional<?> optional = ParameterExtractor.extractIogiParam(routeContext);
         assertThat(((Car)optional.get()).getColor()).isEqualTo("red");
     }
     
@@ -95,52 +96,52 @@ public class ParametersTest {
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class));
         final Map<String, String[]> paramMap = RequestParams.param("name", "Herbie").getParamMap();
         when(request.getParameterMap()).thenReturn(paramMap);
-        final Optional<?> optional = Parameters.extractIogiParam(routeContext);
+        final Optional<?> optional = ParameterExtractor.extractIogiParam(routeContext);
         assertThat(optional.isPresent()).isFalse();
     }
     
     @Test
     public void extractPathParam() {
         when(request.getParameterMap()).thenReturn(RequestParams.empty());
-        when(route.getParameters()).thenReturn(asList(Parameters.param("id", String.class)));
+        when(route.getParameters()).thenReturn(asList(Parameter.param("id", String.class)));
         when(route.getPath()).thenReturn("/cars/{id}");
         when(routeContext.getRequestPath()).thenReturn("/cars/2");
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("id")).isEqualTo("2");
     }
     
     @Test
     public void extractFormParams() throws Exception{
         when(request.getParameterMap()).thenReturn(RequestParams.param("name", "Newman").getParamMap());
-        when(route.getParameters()).thenReturn(asList(Parameters.param("name", String.class)));
+        when(route.getParameters()).thenReturn(asList(Parameter.param("name", String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("name")).isEqualTo("Newman");
     }
     
     @Test
     public void extractFormParamsWithDefaultValue() throws Exception{
         when(request.getParameterMap()).thenReturn(RequestParams.empty());
-        when(route.getParameters()).thenReturn(asList(Parameters.param("name", "defaultName", String.class)));
+        when(route.getParameters()).thenReturn(asList(Parameter.param("name", "defaultName", String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("name")).isEqualTo("defaultName");
     }
     
     @Test (expected = RuntimeException.class)
     public void shouldThrowIfFormParamIsMissingFromRequest() throws Exception {
-        when(route.getParameters()).thenReturn(asList(Parameters.param("name", null, String.class)));
+        when(route.getParameters()).thenReturn(asList(Parameter.param("name", null, String.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("client", String.class));
-        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     @Test
     public void extractFormParamIogi() throws Exception {
         final Map<String, String[]> paramMap = RequestParams.param("car.color", "red").add("car.brand","Ferrari").getParamMap();
         when(request.getParameterMap()).thenReturn(paramMap);
-        when(route.getParameters()).thenReturn(asList(Parameters.param(Car.class)));
+        when(route.getParameters()).thenReturn(asList(Parameter.param(Car.class)));
         when(route.getTargetMethod()).thenReturn(SampleController.class.getMethod("save", Car.class, String.class));
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("entity") instanceof Car).isTrue();
         assertThat(((Car)args.get("entity")).getColor()).isEqualTo("red");
     }
@@ -148,56 +149,56 @@ public class ParametersTest {
     @Test
     public void extractHeaderParam() {
         when(request.getHeader("x-header")).thenReturn("headerValue");
-        final List<Parameter<?>> parameters = asList(Parameters.param("x-header", "def", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("x-header", "def", String.class));
         when(route.getParameters()).thenReturn(parameters);
         when(route.getPath()).thenReturn("/cars");
         when(routeContext.getRequestPath()).thenReturn("/cars");
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("x-header")).isEqualTo("headerValue");
     }
     
     @Test
     public void extractHeaderParamWithDefaultValue() {
-        final List<Parameter<?>> parameters = asList(Parameters.param("x-header", "defaultHeader", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("x-header", "defaultHeader", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("x-header")).isEqualTo("defaultHeader");
     }
     
     @Test (expected = RuntimeException.class)
     public void shouldThrowIsHeaderParamIsMissingFromRequest() {
-        final List<Parameter<?>> parameters = asList(Parameters.param("x-header", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("x-header", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     @Test
     public void extractQueryParams() {
         when(request.getParameterMap()).thenReturn(RequestParams.param("brand", "mini").add("year", "2006").getParamMap());
-        final List<Parameter<?>> parameters = asList(Parameters.param("brand", String.class));
-        parameters.add(Parameters.param("year", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("brand", String.class));
+        parameters.add(Parameter.param("year", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("brand")).isEqualTo("mini");
         assertThat(args.get("year")).isEqualTo("2006");
     }
     
     @Test (expected = RuntimeException.class)
     public void shouldThrowIfQueryParamsMissingFromRequest() {
-        final List<Parameter<?>> parameters = asList(Parameters.param("brand", String.class));
-        parameters.add(Parameters.param("year", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("brand", String.class));
+        parameters.add(Parameter.param("year", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     @Test
     public void extractQueryParamsWithDefaultValue() {
         when(request.getParameterMap()).thenReturn(RequestParams.param("brand", "mini").getParamMap());
-        final List<Parameter<?>> parameters = asList(Parameters.param("brand", String.class));
-        parameters.add(Parameters.param("year", "2012", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("brand", String.class));
+        parameters.add(Parameter.param("year", "2012", String.class));
         when(route.getParameters()).thenReturn(parameters);
         when(route.getParameters()).thenReturn(parameters);
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("brand")).isEqualTo("mini");
         assertThat(args.get("year")).isEqualTo("2012");
     }
@@ -208,17 +209,17 @@ public class ParametersTest {
         when(cookie.getName()).thenReturn("testCookie");
         when(cookie.getValue()).thenReturn("cookieValue");
         when(request.getCookies()).thenReturn(new Cookie[] {cookie});
-        final List<Parameter<?>> parameters = asList(Parameters.param("testCookie", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("testCookie", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        final Map<String, Object> args = Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        final Map<String, Object> args = ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
         assertThat(args.get("testCookie")).isEqualTo("cookieValue");
     }
     
     @Test (expected = RuntimeException.class)
     public void extractCookieParamMissingFromRequest() {
-        final List<Parameter<?>> parameters = asList(Parameters.param("testCookie", String.class));
+        final List<Parameter<?>> parameters = asList(Parameter.param("testCookie", String.class));
         when(route.getParameters()).thenReturn(parameters);
-        Parameters.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
+        ParameterExtractor.extractArguments(routeContext, Collections.<String, Consumer>emptyMap());
     }
     
     private List<Parameter<?>> asList(final Parameter<?>... p) {
