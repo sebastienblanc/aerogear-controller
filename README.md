@@ -69,8 +69,9 @@ The car object will be automatically populated with the provided values - note t
             <input type="text" name="car.brand.owner"/>
 
 All the intermediate objects are created automatically.
+You can find a slightly better example at <https://github.com/aerogear/aerogear-controller-demo> 
 
-### error handling
+## Error handling
 You can configure a route as an error handler for a type of exception:
 
         route()
@@ -97,27 +98,31 @@ As mentioned previously in this document a view for ExceptionHandler would in th
 The exception is made available to the jsp page:
 
         ${requestScope['org.jboss.aerogear.controller.exception']}
+
         
-### Cross Origin Resource Sharing  (CORS) Support
-CORS is supported by default but can be disabled or configured differently by implementing a CDI Producer:
+## Cross Origin Resource Sharing  (CORS) Support
+[CORS](http://www.w3.org/TR/cors/) is supported by default but can be disabled, or configured differently by implementing a CDI Producer:
 
-        @Produces
-        public CorsConfiguration demoConfig() {
-            return CorsConfig.enableCorsSupport()
-                    .anyOrigin()
-                    .enableCookies()
-                    .exposeHeaders("header1")
-                    .maxAge(20)
-                    .enableAllRequestMethods()
-                    .validRequestHeaders("header1");
+    @Produces
+    public CorsConfiguration demoConfig() {
+        return CorsConfig.enableCorsSupport()
+                .anyOrigin()
+                .enableCookies()
+                .exposeHeaders("accept, links")
+                .maxAge(20)
+                .enableAllRequestMethods()
+                .validRequestHeaders("accept, links");
     }
+The CDI container will detect the above annotation and inject it into AeroGear Controller.    
+For more information regarding the configuration options available, please refer to the javadocs for 
+[CorsConfiguration](https://github.com/aerogear/aerogear-controller/blob/master/src/main/java/org/jboss/aerogear/controller/router/decorators/cors/CorsConfiguration.java)
 
-To disable CORS support
+### Disable CORS support ###
+Example of disabling CORS support:
 
-        @Produces
-        public CorsConfiguration demoConfig() {
-            return CorsConfig.disableCorsSupport();
-        }
+    @Produces
+    public CorsConfiguration demoConfig() {
+        return CorsConfig.disableCorsSupport();
+    }
    
 ---
-you can find a slightly better example at <https://github.com/aerogear/aerogear-controller-demo> 
