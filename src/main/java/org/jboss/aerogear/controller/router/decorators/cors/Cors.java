@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.aerogear.controller.util.StringUtils;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
@@ -351,11 +352,12 @@ public class Cors {
             return true;
         }
         
+        final Collection<String> lowerCaseValidHeaders = StringUtils.toLowerCase(validHeaders);
         final Iterable<String> headers = Splitter.on(',').trimResults().split(requestHeaders);
         boolean valid = Iterables.all(headers, new Predicate<String>() {
             @Override
             public boolean apply(final String header) {
-                return validHeaders.contains(header.toLowerCase());
+                return lowerCaseValidHeaders.contains(header.toLowerCase());
             }
         });
         return valid;

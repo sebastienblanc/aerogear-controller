@@ -260,7 +260,7 @@ public class CorsConfig implements CorsConfiguration {
         }
         
         public CorsConfiguration build() {
-            validRequestHeaders.add("origin");
+            validRequestHeaders.add("Origin");
             if (validRequestMethods.isEmpty()) {
                 enableAllRequestMethods();
             }
