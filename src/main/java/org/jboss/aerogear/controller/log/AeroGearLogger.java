@@ -18,6 +18,7 @@
 package org.jboss.aerogear.controller.log;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.jboss.aerogear.controller.router.RequestMethod;
@@ -53,7 +54,7 @@ public interface AeroGearLogger extends BasicLogger {
     
     @LogMessage(level = Logger.Level.INFO)
     @Message(id = 7, value = "CORS Bad Request Headers: Received '%s', allowed: '%s'")
-    void badCorsRequestHeaders(String actualHeaders, Set<String> allowedHeaders);
+    void badCorsRequestHeaders(String actualHeaders, List<String> allowedHeaders);
     
     @LogMessage(level = Logger.Level.INFO)
     @Message(id = 8, value = "CORS Bad Request Method: Received '%s', allowed: '%s'")

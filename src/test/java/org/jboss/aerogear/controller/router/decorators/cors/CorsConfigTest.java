@@ -31,7 +31,7 @@ public class CorsConfigTest {
         assertThat(config.allowCookies()).isFalse();
         assertThat(config.anyOrigin()).isFalse();
         assertThat(config.exposeHeaders()).isFalse();
-        assertThat(config.getExposeHeaders()).isNull();
+        assertThat(config.getExposeHeaders()).isEmpty();
         assertThat(config.hasMaxAge()).isTrue();
         assertThat(config.getMaxAge()).isEqualTo(0);
         assertThat(config.getValidRequestHeaders()).contains("origin");
@@ -46,12 +46,11 @@ public class CorsConfigTest {
     
     @Test
     public void exposeHeaders() throws Exception {
-        final String headers = "Header1, Header2";
         final CorsConfiguration config = CorsConfig.enableCorsSupport()
                 .echoOrigin()
                 .disableCookies()
-                .exposeHeaders(headers).build();
-        assertThat(config.getExposeHeaders()).isEqualTo(headers);
+                .exposeHeaders("Header1", "Header2").build();
+        assertThat(config.getExposeHeaders()).contains("Header1", "Header2");
     }
     
     @Test
@@ -117,8 +116,8 @@ public class CorsConfigTest {
                 .enableCookies()
                 .maxAge(10L)
                 .validRequestMethods(RequestMethod.GET)
-                .validRequestHeaders("Header1,Header2");
-        assertThat(config.getValidRequestHeaders()).contains("origin", "header1", "header2");
+                .validRequestHeaders("Header1", "Header2");
+        assertThat(config.getValidRequestHeaders()).contains("origin", "Header1", "Header2");
     }
     
     @Test

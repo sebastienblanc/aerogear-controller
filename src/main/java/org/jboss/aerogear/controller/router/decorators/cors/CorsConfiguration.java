@@ -17,6 +17,7 @@
 
 package org.jboss.aerogear.controller.router.decorators.cors;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -58,7 +59,7 @@ public interface CorsConfiguration {
      * 
      * @return {@code String} a comma separated string of headers to be exposed.
      */
-    String getExposeHeaders();
+    List<String> getExposeHeaders();
     
     /**
      * Determines is any origin, "*", is supported.
@@ -108,6 +109,6 @@ public interface CorsConfiguration {
      * 
      * @return {@code Set} of strings that represent the allowed Request Headers.
      */
-    Set<String> getValidRequestHeaders();
+    List<String> getValidRequestHeaders();
     
 }
