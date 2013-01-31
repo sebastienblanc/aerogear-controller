@@ -36,7 +36,7 @@ public class CorsTestUtil {
     }
     
     public static void setValidRequestHeaders(final CorsConfiguration config, final String... headers) {
-        when(config.getValidRequestHeaders()).thenReturn(asList(headers));
+        when(config.getValidRequestHeaders()).thenReturn(Arrays.asList(headers));
     }
     
     public static void setValidRequestMethods(final CorsConfiguration config, final String... methods) {
@@ -45,7 +45,7 @@ public class CorsTestUtil {
     
     public static void setExposeHeaders(final CorsConfiguration config, final String... headers) {
         when(config.exposeHeaders()).thenReturn(true);
-        when(config.getExposeHeaders()).thenReturn(Joiner.on(',').join(headers));
+        when(config.getExposeHeaders()).thenReturn(Arrays.asList(headers));
     }
     
     private static LinkedHashSet<String> asList(final String... values) {

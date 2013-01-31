@@ -161,13 +161,13 @@ public class CorsTest {
     @Test
     public void areRequestHeadersValid() {
         when(request.getHeader(Cors.RequestHeader.HEADERS.toString())).thenReturn("origin, X-Header2");
-        assertThat(cors.areRequestHeadersValid(new HashSet<String>(Arrays.asList("HEADER1", "x-header2", "origin")))).isTrue();
+        assertThat(cors.areRequestHeadersValid(Arrays.asList("HEADER1", "x-header2", "origin"))).isTrue();
     }
     
     @Test
     public void validateNullRequestHeaders() {
         when(request.getHeader(Cors.RequestHeader.HEADERS.toString())).thenReturn(null);
-        assertThat(cors.areRequestHeadersValid(Collections.<String>emptySet())).isTrue();
+        assertThat(cors.areRequestHeadersValid()).isTrue();
     }
     
     @Test

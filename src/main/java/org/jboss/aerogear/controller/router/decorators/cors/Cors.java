@@ -17,11 +17,12 @@
 
 package org.jboss.aerogear.controller.router.decorators.cors;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
@@ -209,7 +210,7 @@ public class Cors {
      * 
      * @return {@code Set} of allowed Request Headers.
      */
-    public Set<String> getAllowedRequestHeaders() {
+    public List<String> getAllowedRequestHeaders() {
         return corsConfig.getValidRequestHeaders();
     }
 
@@ -298,9 +299,9 @@ public class Cors {
      */
     public Cors setExposeHeaders(final HttpServletResponse response) {
         if (corsConfig.exposeHeaders()) {
-            final String headers = corsConfig.getExposeHeaders();
+            final List<String> headers = corsConfig.getExposeHeaders();
             if (headers != null) {
-                response.setHeader(ResponseHeader.EXPOSE_HEADERS.toString(), headers);
+                response.setHeader(ResponseHeader.EXPOSE_HEADERS.toString(), asString(headers));
             }
         }
         return this;
@@ -315,7 +316,7 @@ public class Cors {
     public Cors setAllowMethods(final HttpServletResponse response) {
         final Set<String> httpMethods = corsConfig.getValidRequestMethods();
         if (httpMethods != null) {
-            response.setHeader(ResponseHeader.ALLOW_METHODS.toString(), Joiner.on(",").join(httpMethods));
+            response.setHeader(ResponseHeader.ALLOW_METHODS.toString(), asString(httpMethods));
         }
         return this;
     }
@@ -344,7 +345,7 @@ public class Cors {
      * @param validHeaders a set of headers that are allowed.
      * @return {@code true} if the current request headers are supported.
      */
-    public boolean areRequestHeadersValid(final Set<String> validHeaders) {
+    public boolean areRequestHeadersValid(final List<String> validHeaders) {
         final String requestHeaders = request.getHeader(RequestHeader.HEADERS.headerName);
         if (requestHeaders == null) {
             return true;
@@ -376,8 +377,12 @@ public class Cors {
      * @return {@code Cors} to support methods chaining.
      */
     public Cors setAllowHeaders(final HttpServletResponse response) {
-        response.setHeader(ResponseHeader.ALLOW_HEADERS.toString(), Joiner.on(',').join(corsConfig.getValidRequestHeaders().toArray()));
+        response.setHeader(ResponseHeader.ALLOW_HEADERS.toString(), asString(corsConfig.getValidRequestHeaders()));
         return this;
+    }
+    
+    private String asString(final Collection<String> strings) {
+        return Joiner.on(',').join(strings);
     }
 
     private boolean hasHeader(final String name) {

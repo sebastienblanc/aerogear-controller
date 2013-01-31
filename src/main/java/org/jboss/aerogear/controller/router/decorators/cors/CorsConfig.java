@@ -17,9 +17,12 @@
 
 package org.jboss.aerogear.controller.router.decorators.cors;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.jboss.aerogear.controller.router.RequestMethod;
@@ -35,21 +38,21 @@ import com.google.common.base.Splitter;
 public class CorsConfig implements CorsConfiguration {
     
     private final boolean corsSupportEnabled;
-    private final String exposeHeaders;
     private final boolean anyOrigin;
     private final boolean allowCookies;
     private final long maxAge;
     private final Set<String> validRequestMethods;
-    private final Set<String> validRequestHeaders;
+    private final List<String> validRequestHeaders;
+    private final List<String> exposeHeaders;
     
     private CorsConfig(final Builder builder) {
         this.corsSupportEnabled = builder.corsSupportEnabled;
-        this.exposeHeaders = builder.exposeHeaders;
         this.anyOrigin = builder.anyOrigin;
         this.allowCookies = builder.allowCookies;
         this.maxAge = builder.maxAge;
         this.validRequestMethods = Collections.unmodifiableSet(builder.validRequestMethods);
-        this.validRequestHeaders = Collections.unmodifiableSet(builder.validRequestHeaders);
+        this.validRequestHeaders = Collections.unmodifiableList(builder.validRequestHeaders);
+        this.exposeHeaders = Collections.unmodifiableList(builder.exposeHeaders);
     }
     
     /**
@@ -81,12 +84,12 @@ public class CorsConfig implements CorsConfiguration {
     
     @Override
     public boolean exposeHeaders() {
-        return exposeHeaders != null;
+        return !exposeHeaders.isEmpty();
     }
     
     @Override
-    public String getExposeHeaders() {
-        return exposeHeaders;
+    public List<String> getExposeHeaders() {
+        return Collections.unmodifiableList(exposeHeaders);
     }
     
     @Override
@@ -115,8 +118,8 @@ public class CorsConfig implements CorsConfiguration {
     }
     
     @Override
-    public Set<String> getValidRequestHeaders() {
-        return validRequestHeaders;
+    public List<String> getValidRequestHeaders() {
+        return Collections.unmodifiableList(validRequestHeaders);
     }
     
     @Override
@@ -152,7 +155,7 @@ public class CorsConfig implements CorsConfiguration {
     }
     
     public interface ExposeHeaders extends MaxAge {
-        MaxAge exposeHeaders(String headers);
+        MaxAge exposeHeaders(String... headers);
         CorsConfiguration build();
     }
     
@@ -168,7 +171,7 @@ public class CorsConfig implements CorsConfiguration {
     }
     
     public interface ValidRequestHeaders {
-        CorsConfiguration validRequestHeaders(final String validHeaders);
+        CorsConfiguration validRequestHeaders(final String... validHeaders);
         CorsConfiguration build();
     }
     
@@ -177,9 +180,9 @@ public class CorsConfig implements CorsConfiguration {
         private boolean anyOrigin;
         private boolean allowCookies;
         private long maxAge;
-        private String exposeHeaders;
+        private List<String> exposeHeaders = new ArrayList<String>();
         private Set<String> validRequestMethods = new HashSet<String>();
-        private Set<String> validRequestHeaders = new HashSet<String>();
+        private List<String> validRequestHeaders = new ArrayList<String>();
         
         public Builder() {
         }
@@ -214,8 +217,8 @@ public class CorsConfig implements CorsConfiguration {
             return this;
         }
         
-        public MaxAge exposeHeaders(final String headers) {
-            exposeHeaders = headers;
+        public MaxAge exposeHeaders(final String... headers) {
+            exposeHeaders.addAll(Arrays.asList(headers));
             return this;
         }
         
@@ -234,8 +237,8 @@ public class CorsConfig implements CorsConfiguration {
             return this;
         }
         
-        public CorsConfiguration validRequestHeaders(final String validHeaders) {
-            validRequestHeaders.addAll(asSet(validHeaders, true));
+        public CorsConfiguration validRequestHeaders(final String... validHeaders) {
+            validRequestHeaders.addAll(Arrays.asList(validHeaders));
             return build();
         }
         
