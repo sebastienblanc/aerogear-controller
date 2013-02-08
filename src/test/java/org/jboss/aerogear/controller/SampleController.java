@@ -41,8 +41,9 @@ public class SampleController {
 
     public void save(Car car) {
     }
-
-    public void save(String color, String brand) {
+    
+    public Car save(String color, String brand) {
+        return new Car(color, brand);
     }
 
     public void save(Car car, String metadata) {

@@ -52,5 +52,9 @@ public class InvocationResult {
     public RouteContext getRouteContext() {
         return routeContext;
     }
+    
+    public String toString() {
+        return "InvocationResult[result=" + result + ", context=" + routeContext + "]";
+    }
 
 }
