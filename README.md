@@ -1,25 +1,33 @@
-# aerogear-controller - very lean mvc controller
+# AeroGear Controller
+[AeroGear](http://aerogear.org) Controller is a very lean mvc controller written in java. It focuses on the routing of HTTP request to plain java object endpoint
+and the handling of the results, by either forwarding the data to a view, or returning the data in the format requested by the caller.
 
-## how to create a new project
-
-### basic use case
-1. add the maven dependency
+## Installation
+1. Add the following maven dependency
 
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aerogear-controller</artifactId>
-            <version>1.0.0.M1</version>
+            <version>1.0.0.M8</version>
             <scope>compile</scope>
         </dependency>
+        
+1. Since AeroGear Controller uses CDI it is required that a ```beans.xml``` file exists in the ```WEB-INF``` folder
 
-1. create a pojo controller
+        <beans xmlns="http://java.sun.com/xml/ns/javaee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
+        </beans>  
+
+## Usage
+1. Create a pojo controller
 
         public class Home {
             public void index() {
             }
         }
 
-1. create a Java class containing the routes (must extend `AbstractRoutingModule`)
+1. Create a Java class containing the routes (must extend `AbstractRoutingModule`)
 
         public class Routes extends AbstractRoutingModule {
 
@@ -32,7 +40,7 @@
             }
         }
 
-1. create a jsp page at `/WEB-INF/pages/<Controller Class Name>/<method>.jsp`
+1. Create a jsp page at `/WEB-INF/pages/<Controller Class Name>/<method>.jsp`
 
         <!-- /WEB-INF/pages/Home/index.jsp -->
         <html>
@@ -41,7 +49,9 @@
             </body>
         </html>
         
-### populating parameters
+For information about creating RESTful routes, please refer to the [User Guide]((http://aergear.org/docs/guides/aerogear-controller/).
+        
+### Populating parameters
 
 You can use immutable beans straight away as controller parameters:
 
@@ -51,13 +61,12 @@ You can use immutable beans straight away as controller parameters:
             }
         }
 
-This can be populated by putting a route to it (preferably via post, of course)
+This can be populated by configuring a route to handle POST requests:
 
         route()
                .from("/cars")
                .on(RequestMethod.POST)
                .to(Store.class).save(param(Car.class));
-
 
 And you can use a simple html form for it, by just following the convention:
 
@@ -68,61 +77,20 @@ The car object will be automatically populated with the provided values - note t
 
             <input type="text" name="car.brand.owner"/>
 
-All the intermediate objects are created automatically.
-You can find a slightly better example at <https://github.com/aerogear/aerogear-controller-demo> 
+All the intermediate objects are created automatically.  
+  
 
-## Error handling
-You can configure a route as an error handler for a type of exception:
+## Documentation
+* [User Guide](http://aergear.org/docs/guides/aerogear-controller/)
+* [API](http://aerogear.org/docs/specs/aerogear-controller)
+* [REST API](http://aerogear.org/docs/specs/aerogear-rest-api)
 
-        route()
-               .on(YourException.class)
-               .to(ExceptionHandler.class).errorPage(); 
+## Community
+* [User Forum](https://community.jboss.org/en/aerogear?view=discussions)
+* [Developer Mailing List](http://aerogear-dev.1069024.n5.nabble.com)
 
-You can specify multiple exceptions if needed:
+## Issue Tracker
+* [JIRA](https://issues.jboss.org/browse/AEROGEAR/component/12315661#selectedTab=com.atlassian.jira.plugin.system.project%3Acomponent-issues-panel)
 
-        route()
-               .on(YourException.class, SomeOtherException.class)
-               .to(ExceptionHandler.class).errorPage();
-               
-If you'd like to log the exception in the error route, you can specify that the target method, errorPage() above, should 
-take a parameter:
-
-        route()
-               .on(YourException.class, SomeOtherException.class)
-               .to(ExceptionHandler.class).errorPage(param(Exception.class));
-
-As mentioned previously in this document a view for ExceptionHandler would in this case be located in:
-
-        /WEB-INF/pages/ExceptionHandler/errorPage.jsp   
-
-The exception is made available to the jsp page:
-
-        ${requestScope['org.jboss.aerogear.controller.exception']}
-
-        
-## Cross Origin Resource Sharing  (CORS) Support
-[CORS](http://www.w3.org/TR/cors/) is supported by default but can be disabled, or configured differently by implementing a CDI Producer:
-
-    @Produces
-    public CorsConfiguration demoConfig() {
-        return CorsConfig.enableCorsSupport()
-                .anyOrigin()
-                .enableCookies()
-                .exposeHeaders("accept, links")
-                .maxAge(20)
-                .enableAllRequestMethods()
-                .validRequestHeaders("accept, links");
-    }
-The CDI container will detect the above annotation and inject it into AeroGear Controller.    
-For more information regarding the configuration options available, please refer to the javadocs for 
-[CorsConfiguration](https://github.com/aerogear/aerogear-controller/blob/master/src/main/java/org/jboss/aerogear/controller/router/decorators/cors/CorsConfiguration.java)
-
-### Disable CORS support ###
-Example of disabling CORS support:
-
-    @Produces
-    public CorsConfiguration demoConfig() {
-        return CorsConfig.disableCorsSupport();
-    }
-   
----
+## Examples
+* [aerogear-controller-demo](https://github.com/aerogear/aerogear-controller-demo) 
