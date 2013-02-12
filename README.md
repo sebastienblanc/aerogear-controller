@@ -90,7 +90,7 @@ All the intermediate objects are created automatically.
 * [Developer Mailing List](http://aerogear-dev.1069024.n5.nabble.com)
 
 ## Issue Tracker
-* [JIRA](https://issues.jboss.org/browse/AEROGEAR/component/12315661#selectedTab=com.atlassian.jira.plugin.system.project%3Acomponent-issues-panel)
+* [JIRA](https://issues.jboss.org/browse/AEROGEAR)
 
 ## Examples
 * [aerogear-controller-demo](https://github.com/aerogear/aerogear-controller-demo) 
