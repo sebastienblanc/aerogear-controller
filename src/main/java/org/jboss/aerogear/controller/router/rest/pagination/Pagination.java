@@ -24,55 +24,55 @@ public final class Pagination {
     private Pagination() {
     }
     
-    public static OffsetStrategyBuilder offsetValue(String value) {
-        return offset(OffsetPagingStrategy.DEFAULT_OFFSET_PARAM_NAME, value);
+    public static PaginationInfoBuilder offsetValue(String value) {
+        return offset(PaginationInfo.DEFAULT_OFFSET_PARAM_NAME, value);
     }
     
-    public static OffsetStrategyBuilder offset(final String offsetParamName, final String value) {
-        return new OffsetStrategyBuilderImpl().offsetParam(offsetParamName, value);
+    public static PaginationInfoBuilder offset(final String offsetParamName, final String value) {
+        return new PaginationInfoBuilderImpl().offsetParam(offsetParamName, value);
     }
     
-    public static interface OffsetStrategyBuilder {
-        OffsetStrategyBuilder offsetParam(String paramName, String value);
-        OffsetStrategyBuilder limitParam(String paramName, String value);
-        OffsetStrategyBuilder limitValue(String value);
-        OffsetStrategyBuilder customHeaders();
-        OffsetStrategyBuilder customHeadersPrefix(String prefix);
-        OffsetStrategyBuilder webLinking(boolean enabled);
+    public static interface PaginationInfoBuilder {
+        PaginationInfoBuilder offsetParam(String paramName, String value);
+        PaginationInfoBuilder limitParam(String paramName, String value);
+        PaginationInfoBuilder limitValue(String value);
+        PaginationInfoBuilder customHeaders();
+        PaginationInfoBuilder customHeadersPrefix(String prefix);
+        PaginationInfoBuilder webLinking(boolean enabled);
         PaginationInfo build();
     }
     
-    public static class OffsetStrategyBuilderImpl implements OffsetStrategyBuilder {
+    public static class PaginationInfoBuilderImpl implements PaginationInfoBuilder {
         
-        private String offsetParamName = OffsetPagingStrategy.DEFAULT_OFFSET_PARAM_NAME;
-        private String limitParamName = OffsetPagingStrategy.DEFAULT_LIMIT_PARAM_NAME;
+        private String offsetParamName = PaginationInfo.DEFAULT_OFFSET_PARAM_NAME;
+        private String limitParamName = PaginationInfo.DEFAULT_LIMIT_PARAM_NAME;
         private String headerPrefix;
         private String offsetParamValue;
         private String limitParamValue;
         private boolean webLinking;
 
         @Override
-        public OffsetStrategyBuilder offsetParam(final String paramName, String value) {
+        public PaginationInfoBuilder offsetParam(final String paramName, String value) {
             offsetParamName = paramName;
             offsetParamValue = value;
             return this;
         }
         
         @Override
-        public OffsetStrategyBuilder limitParam(final String paramName, String value) {
+        public PaginationInfoBuilder limitParam(final String paramName, String value) {
             limitParamName = paramName;
             limitParamValue = value;
             return this;
         }
         
         @Override
-        public OffsetStrategyBuilder customHeadersPrefix(final String prefix) {
+        public PaginationInfoBuilder customHeadersPrefix(final String prefix) {
             this.headerPrefix = prefix;
             return this;
         }
         
         @Override
-        public OffsetStrategyBuilder customHeaders() {
+        public PaginationInfoBuilder customHeaders() {
             this.headerPrefix = PagingMetadata.DEFAULT_HEADER_PREFIX;
             return this;
         }
@@ -86,13 +86,13 @@ public final class Pagination {
         }
 
         @Override
-        public OffsetStrategyBuilder limitValue(String value) {
+        public PaginationInfoBuilder limitValue(String value) {
             limitParamValue = value;
             return this;
         }
 
         @Override
-        public OffsetStrategyBuilder webLinking(boolean enabled) {
+        public PaginationInfoBuilder webLinking(boolean enabled) {
             webLinking = enabled;
             return this;
         }

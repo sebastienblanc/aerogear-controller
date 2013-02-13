@@ -29,6 +29,9 @@ import com.google.common.base.Optional;
  */
 public class PaginationInfo {
     
+    public static final String DEFAULT_OFFSET_PARAM_NAME = "offset";
+    public static final String DEFAULT_LIMIT_PARAM_NAME = "limit";
+    
     private final String offsetParamName;
     private final String offsetParamValue;
     private final String limitParamName;

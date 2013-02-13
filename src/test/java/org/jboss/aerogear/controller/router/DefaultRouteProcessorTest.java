@@ -119,8 +119,9 @@ public class DefaultRouteProcessorTest {
     }
     
     private RouteProcessor createRouteProcessor(final Responders responders) {
-        final RouteProcessor routeProcessor = new DefaultRouteProcessor(beanManager, consumers, controllerFactory);
-        final RouteProcessor paginationHandler = new PaginationHandler(routeProcessor, pagingInstance, beanManager, consumers, controllerFactory);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor routeProcessor = new DefaultRouteProcessor(consumers, endpointInvoker);
+        final RouteProcessor paginationHandler = new PaginationHandler(routeProcessor, pagingInstance, consumers, endpointInvoker);
         return new ResponseHandler(paginationHandler, responders);
     }
     
@@ -630,7 +631,7 @@ public class DefaultRouteProcessorTest {
         };
         final Routes routes = routingModule.build();
         when(consumers.iterator()).thenReturn(new HashSet<Consumer>().iterator());
-        router = new DefaultRouteProcessor(beanManager, consumers, controllerFactory);
+        router = createRouteProcessor(responders);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");

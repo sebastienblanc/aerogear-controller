@@ -18,7 +18,6 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 
 import java.util.Map;
 
-import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
@@ -26,7 +25,16 @@ import org.jboss.aerogear.controller.router.RouteContext;
  */
 public interface PagingStrategy {
     
-    PaginationInfo getPaginationInfo(final Route route, final Map<String, Object> arguments);
+    /**
+     * Creates a PaginationInfo instance.
+     * 
+     * @param routeContext the {@link RouteContext} of the route being processed.
+     * @param arguments the extracted arguments from the current request.
+     * @return {@link PaginationInfo} the information requred for paging. How this information is gathered, be it
+     * from an Annotation on the target endpoint method, or by using separate request parameters is up to the concrete 
+     * implementation to decide.
+     */
+    PaginationInfo createPaginationInfo(final RouteContext routeContext, final Map<String, Object> arguments);
     
     /**
      * Allows for manipulating the result of an endpoint target method invocation. 

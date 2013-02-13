@@ -18,31 +18,15 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 
-/**
- * A PagingStrategy that uses an offset/limit to add HTTP headers to the response.
- * </p>
- * The current implementation adds the following HTTP headers:
- * <ul>
- * <li>AG-Next</li>
- * <li>AG-Previous</li>
- * </ul>
- * The above headers acts as links to the next/previous pages of data.
- */
-public class OffsetPagingStrategy implements PagingStrategy {
+public abstract class AbstractPagingStrategy implements PagingStrategy {
     
-    public static final String DEFAULT_OFFSET_PARAM_NAME = "offset";
-    public static final String DEFAULT_LIMIT_PARAM_NAME = "limit";
-    
-    public OffsetPagingStrategy() {
-    }
+    public abstract void setResponseHeaders(final PagingMetadata metadata, final HttpServletResponse response, final int resultSize);
     
     @Override
     public Object postProcess(final Object result, final RouteContext routeContext, final PaginationInfo pagingInfo) {
@@ -50,11 +34,8 @@ public class OffsetPagingStrategy implements PagingStrategy {
             return result;
         }
         final Collection<?> results = (Collection<?>) result;
-        final Map<String, String> headers = createMetadata(routeContext, pagingInfo).getHeaders(results.size());
-        final HttpServletResponse response = routeContext.getResponse();
-        for (Entry<String, String> entry : headers.entrySet()) {
-            response.setHeader(entry.getKey(), entry.getValue());
-        }
+        final PagingMetadata pagingMetadata = createMetadata(routeContext, pagingInfo);
+        setResponseHeaders(pagingMetadata, routeContext.getResponse(), results.size());
         return results;
     }
     
@@ -78,8 +59,8 @@ public class OffsetPagingStrategy implements PagingStrategy {
     }
 
     @Override
-    public PaginationInfo getPaginationInfo(final Route route, final Map<String, Object> args) {
-        final Paginated paginated = route.getTargetMethod().getAnnotation(Paginated.class);
+    public PaginationInfo createPaginationInfo(final RouteContext routeContext, final Map<String, Object> args) {
+        final Paginated paginated = routeContext.getRoute().getTargetMethod().getAnnotation(Paginated.class);
         final String customHeader = paginated.customHeadersPrefix();
         return Pagination.offset(paginated.offsetParamName(), argAsString(args, paginated.offsetParamName()))
                 .limitParam(paginated.limitParamName(), argAsString(args, paginated.limitParamName()))
@@ -91,6 +72,5 @@ public class OffsetPagingStrategy implements PagingStrategy {
     private String argAsString(final Map<String, Object> args, final String argName) {
         return (String) args.get(argName);
     }
-    
 
 }

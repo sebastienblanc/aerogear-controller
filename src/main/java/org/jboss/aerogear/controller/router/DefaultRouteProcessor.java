@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 /**
@@ -39,17 +38,15 @@ import javax.inject.Inject;
  */
 public class DefaultRouteProcessor implements RouteProcessor {
     
-    private BeanManager beanManager;
-    private ControllerFactory controllerFactory;
+    private EndpointInvoker endpointInvoker;
     private final Map<String, Consumer> consumers = new HashMap<String, Consumer>();
     
     public DefaultRouteProcessor() {
     }
     
     @Inject
-    public DefaultRouteProcessor(BeanManager beanManager, Instance<Consumer> consumers, ControllerFactory controllerFactory) {
-        this.beanManager = beanManager;
-        this.controllerFactory = controllerFactory;
+    public DefaultRouteProcessor(Instance<Consumer> consumers, EndpointInvoker endpointInvoker) {
+        this.endpointInvoker = endpointInvoker;
         for (Consumer consumer : consumers) {
             this.consumers.put(consumer.mediaType(), consumer);
         }
@@ -57,13 +54,8 @@ public class DefaultRouteProcessor implements RouteProcessor {
 
     @Override
     public ProcessResult process(RouteContext routeContext) throws Exception {
-        final Route route = routeContext.getRoute();
         final Map<String, Object> arguments = extractArguments(routeContext, consumers);
-        return new ProcessResult(route.getTargetMethod().invoke(getController(route), arguments.values().toArray()), routeContext);
+        return new ProcessResult(endpointInvoker.invoke(routeContext, arguments.values().toArray()), routeContext);
     }
     
-    private Object getController(Route route) {
-        return controllerFactory.createController(route.getTargetClass(), beanManager);
-    }
-
 }
