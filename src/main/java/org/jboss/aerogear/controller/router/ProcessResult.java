@@ -14,22 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jboss.aerogear.controller.router;
 
 
-/**
- * A RouteProcessor processes/handles a single Route in AeroGear Controller.
- * </p>
- */
-public interface RouteProcessor {
+public class ProcessResult {
     
-    /**
-     * Handles the actual invocation of the target or the passed-in {@link Route}.
-     * 
-     * @param routeContext the {@link RouteContext} for the current request.
-     * @throws Exception if processing of the route causes an exception.
-     */
-    ProcessResult process(RouteContext routeContext) throws Exception;
+    private Object result;
+    private RouteContext routeContext;
+
+    public ProcessResult(final Object result, final RouteContext routeContext) {
+        this.result = result;
+        this.routeContext = routeContext;
+    }
+
+    public Object getResult() {
+        return result;
+    }
+
+    public RouteContext getRouteContext() {
+        return routeContext;
+    }
+    
+    
 
 }

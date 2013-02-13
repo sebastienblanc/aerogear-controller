@@ -49,40 +49,38 @@ public class DefaultRouteProcessor implements RouteProcessor {
     
     private BeanManager beanManager;
     private ControllerFactory controllerFactory;
-    private Responders responders;
     private final Map<String, Consumer> consumers = new HashMap<String, Consumer>();
     
     public DefaultRouteProcessor() {
     }
     
     @Inject
-    public DefaultRouteProcessor(BeanManager beanManager, Instance<Consumer> consumers, Responders responders, ControllerFactory controllerFactory) {
+    public DefaultRouteProcessor(BeanManager beanManager, Instance<Consumer> consumers, ControllerFactory controllerFactory) {
         this.beanManager = beanManager;
         this.controllerFactory = controllerFactory;
-        this.responders = responders;
         for (Consumer consumer : consumers) {
             this.consumers.put(consumer.mediaType(), consumer);
         }
     }
 
     @Override
-    public void process(RouteContext routeContext) throws Exception {
+    public ProcessResult process(RouteContext routeContext) throws Exception {
         final Route route = routeContext.getRoute();
         final Map<String, Object> arguments = extractArguments(routeContext, consumers);
         if (hasPaginatedAnnotation(route.getTargetMethod())) {
-            processPaged(routeContext, arguments);
+            return processPaged(routeContext, arguments);
         } else {
-            responders.respond(routeContext, route.getTargetMethod().invoke(getController(route), arguments.values().toArray()));
+            return new ProcessResult(route.getTargetMethod().invoke(getController(route), arguments.values().toArray()), routeContext);
         }
     }
     
-    private void processPaged(RouteContext routeContext, Map<String, Object> arguments) throws Exception {
+    private ProcessResult processPaged(RouteContext routeContext, Map<String, Object> arguments) throws Exception {
         final Route route = routeContext.getRoute();
         final PagingStrategy pagingStrategy = getPagingStrategy(route, arguments);
         final PaginationInfo paginationInfo = pagingStrategy.getPaginationInfo();
         final List<Object> pagingArgs = merge(paginationInfo, arguments);
         final Object result = route.getTargetMethod().invoke(getController(route), pagingArgs.toArray());
-        responders.respond(routeContext, pagingStrategy.process(result, routeContext));
+        return new ProcessResult(pagingStrategy.process(result, routeContext), routeContext);
     }
     
     private List<Object> merge(final PaginationInfo paginationInfo, final Map<String, Object> arguments) {

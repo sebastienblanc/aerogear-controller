@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 
 import org.jboss.aerogear.controller.router.ControllerFactory;
-import org.jboss.aerogear.controller.router.Responders;
+import org.jboss.aerogear.controller.router.ProcessResult;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
@@ -48,21 +48,19 @@ public class ErrorHandler implements RouteProcessor {
     private final RouteProcessor delegate;
     private final ControllerFactory controllerFactory;
     private final BeanManager beanManager;
-    private final Responders responders;
     
     @Inject
-    public ErrorHandler(final @Delegate RouteProcessor delegate, final Responders responders,
-            final ControllerFactory controllerFactory, final BeanManager beanManager) {
+    public ErrorHandler(final @Delegate RouteProcessor delegate, final ControllerFactory controllerFactory, 
+            final BeanManager beanManager) {
         this.delegate = delegate;
         this.controllerFactory = controllerFactory;
         this.beanManager = beanManager;
-        this.responders = responders;
     }
 
     @Override
-    public void process(final RouteContext routeContext) throws Exception {
+    public ProcessResult process(final RouteContext routeContext) throws Exception {
         try {
-            delegate.process(routeContext);
+            return delegate.process(routeContext);
         } catch (final Throwable t) {
             if (t instanceof HttpStatusAwareException) {
                 routeContext.getResponse().setStatus(((HttpStatusAwareException) t).getStatus());
@@ -72,7 +70,7 @@ public class ErrorHandler implements RouteProcessor {
             final RouteContext errorContext = new RouteContext(errorRoute, routeContext.getRequest(), routeContext.getResponse(), routeContext.getRoutes());
             final Object result = invokeErrorRoute(errorContext, rootCause);
             routeContext.getRequest().setAttribute(ErrorRoute.DEFAULT.getExceptionAttrName(), rootCause);
-            responders.respond(errorContext, result);
+            return new ProcessResult(result, errorContext);
         }
     }
     

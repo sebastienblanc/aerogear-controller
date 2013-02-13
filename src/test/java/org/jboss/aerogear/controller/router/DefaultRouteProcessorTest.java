@@ -18,7 +18,6 @@ package org.jboss.aerogear.controller.router;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -56,6 +55,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.router.decorators.ResponseHandler;
 import org.jboss.aerogear.controller.router.parameter.MissingRequestParameterException;
 import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
 import org.jboss.aerogear.controller.router.rest.JsonConsumer;
@@ -99,7 +99,7 @@ public class DefaultRouteProcessorTest {
     private HtmlViewResponder htmlResponder;
     
     private Responders responders;
-    private DefaultRouteProcessor router;
+    private RouteProcessor router;
     private SampleController controller;
 
     @Before
@@ -109,7 +109,7 @@ public class DefaultRouteProcessorTest {
         instrumentConsumers();
         controller = spy(new SampleController());
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
-        router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
         when(request.getHeader("Accept")).thenReturn("text/html");
     }
     
@@ -619,7 +619,7 @@ public class DefaultRouteProcessorTest {
         };
         final Routes routes = routingModule.build();
         when(consumers.iterator()).thenReturn(new HashSet<Consumer>().iterator());
-        router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        router = new DefaultRouteProcessor(beanManager, consumers, controllerFactory);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
         when(request.getServletContext()).thenReturn(servletContext);
         when(servletContext.getContextPath()).thenReturn("/abc");
@@ -659,7 +659,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader(eq("Link"), anyString());
     }
@@ -692,7 +692,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader("AG-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=10");
         verify(response, never()).setHeader(eq("AG-Links-Previous"), anyString());
@@ -727,7 +727,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response, never()).setHeader(eq("Test-Links-Previous"), anyString());
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/abc/ints?offset=5&color=blue&limit=5");
@@ -762,7 +762,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/abc/ints?color=blue&offset=0&limit=5");
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=5");
@@ -797,7 +797,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new DefaultRouteProcessor(beanManager, consumers, responders, controllerFactory);
+        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader("TS-Links-Previous", "http://localhost:8080/abc/ints?brand=BMW&myoffset=45&mylimit=5");
         verify(response, never()).setHeader(eq("TS-Links-Next"), anyString());

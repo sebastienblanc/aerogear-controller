@@ -23,6 +23,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 
+import org.jboss.aerogear.controller.router.ProcessResult;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
@@ -57,12 +58,12 @@ public class SecurityHandler implements RouteProcessor {
      * @throws Exception if access to the Route is denied.
      */
     @Override
-    public void process(final RouteContext routeContext) throws Exception {
+    public ProcessResult process(final RouteContext routeContext) throws Exception {
         final Route route = routeContext.getRoute();
         if (route.isSecured()) {
             securityProvider.isRouteAllowed(route);
         }
-        delegate.process(routeContext);
+        return delegate.process(routeContext);
     }
     
     private SecurityProvider defaultSecurityProvider() {

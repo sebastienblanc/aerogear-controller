@@ -20,6 +20,7 @@
        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
     <decorators>
         <class>org.jboss.aerogear.controller.router.decorators.cors.CorsHandler</class>
+        <class>org.jboss.aerogear.controller.router.decorators.ResponseHandler</class>
         <class>org.jboss.aerogear.controller.router.decorators.ErrorHandler</class>
         <class>org.jboss.aerogear.controller.router.decorators.SecurityHandler</class>
     </decorators>
