@@ -39,7 +39,7 @@ public final class Pagination {
         OffsetStrategyBuilder customHeaders();
         OffsetStrategyBuilder customHeadersPrefix(String prefix);
         OffsetStrategyBuilder webLinking(boolean enabled);
-        OffsetPagingStrategy build();
+        PaginationInfo build();
     }
     
     public static class OffsetStrategyBuilderImpl implements OffsetStrategyBuilder {
@@ -77,9 +77,12 @@ public final class Pagination {
             return this;
         }
         
-        public OffsetPagingStrategy build() {
-            final PaginationInfo info = new PaginationInfo(offsetParamName, offsetParamValue, limitParamName, limitParamValue);
-            return webLinking ? new OffsetPagingStrategy(info) : new OffsetPagingStrategy(info, headerPrefix);
+        public PaginationInfo build() {
+            if (webLinking) {
+                return new PaginationInfo(offsetParamName, offsetParamValue, limitParamName, limitParamValue);
+            } else {
+                return new PaginationInfo(offsetParamName, offsetParamValue, limitParamName, limitParamValue, headerPrefix);
+            }
         }
 
         @Override

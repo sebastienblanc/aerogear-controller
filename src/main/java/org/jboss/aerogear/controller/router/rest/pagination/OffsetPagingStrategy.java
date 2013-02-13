@@ -23,9 +23,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
-
-import com.google.common.base.Optional;
 
 /**
  * A PagingStrategy that uses an offset/limit to add HTTP headers to the response.
@@ -41,29 +40,17 @@ public class OffsetPagingStrategy implements PagingStrategy {
     
     public static final String DEFAULT_OFFSET_PARAM_NAME = "offset";
     public static final String DEFAULT_LIMIT_PARAM_NAME = "limit";
-    private final PaginationInfo pagingInfo;
-    private final Optional<String> headerPrefix;
     
-    public OffsetPagingStrategy(final PaginationInfo paginationInfo) {
-        this(paginationInfo, Optional.<String>absent());
+    public OffsetPagingStrategy() {
     }
     
-    public OffsetPagingStrategy(final PaginationInfo paginationInfo, final String headerPrefix) {
-        this(paginationInfo, Optional.fromNullable(headerPrefix));
-    }
-    
-    private OffsetPagingStrategy(final PaginationInfo paginationInfo, final Optional<String> headerPrefix) {
-        this.pagingInfo = paginationInfo;
-        this.headerPrefix = headerPrefix;
-    }
-
     @Override
-    public Object process(final Object result, final RouteContext routeContext) {
+    public Object postProcess(final Object result, final RouteContext routeContext, final PaginationInfo pagingInfo) {
         if (!(result instanceof Collection)) {
             return result;
         }
         final Collection<?> results = (Collection<?>) result;
-        final Map<String, String> headers = createMetadata(routeContext).getHeaders(results.size());
+        final Map<String, String> headers = createMetadata(routeContext, pagingInfo).getHeaders(results.size());
         final HttpServletResponse response = routeContext.getResponse();
         for (Entry<String, String> entry : headers.entrySet()) {
             response.setHeader(entry.getKey(), entry.getValue());
@@ -71,13 +58,13 @@ public class OffsetPagingStrategy implements PagingStrategy {
         return results;
     }
     
-    private PagingMetadata createMetadata(final RouteContext routeContext) {
+    private PagingMetadata createMetadata(final RouteContext routeContext, final PaginationInfo pagingInfo) {
         final RequestPathParser requestPathParser = new RequestPathParser(pagingInfo, getResourcePath(routeContext));
         final PagingProperties pagingProperties = new PagingProperties(pagingInfo.getOffset(), pagingInfo.getLimit());
-        if (headerPrefix.isPresent()) {
-            return new PagingMetadata(pagingProperties, requestPathParser, headerPrefix.get());
-        } else {
+        if (pagingInfo.webLinking()) {
             return new PagingMetadata(pagingProperties, requestPathParser);
+        } else {
+            return new PagingMetadata(pagingProperties, requestPathParser, pagingInfo.getHeaderPrefix().get());
         }
     }
     
@@ -91,8 +78,19 @@ public class OffsetPagingStrategy implements PagingStrategy {
     }
 
     @Override
-    public PaginationInfo getPaginationInfo() {
-        return pagingInfo;
+    public PaginationInfo getPaginationInfo(final Route route, final Map<String, Object> args) {
+        final Paginated paginated = route.getTargetMethod().getAnnotation(Paginated.class);
+        final String customHeader = paginated.customHeadersPrefix();
+        return Pagination.offset(paginated.offsetParamName(), argAsString(args, paginated.offsetParamName()))
+                .limitParam(paginated.limitParamName(), argAsString(args, paginated.limitParamName()))
+                .customHeadersPrefix(customHeader)
+                .webLinking(paginated.webLinking())
+                .build();
     }
     
+    private String argAsString(final Map<String, Object> args, final String argName) {
+        return (String) args.get(argName);
+    }
+    
+
 }

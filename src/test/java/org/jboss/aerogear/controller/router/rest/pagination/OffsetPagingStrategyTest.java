@@ -58,9 +58,9 @@ public class OffsetPagingStrategyTest {
     public void processFirst() {
         when(routeContext.getRequestPath()).thenReturn("cars");
         when(request.getQueryString()).thenReturn("myoffset=0&mylimit=5&color=red");
-        final OffsetPagingStrategy strategy = Pagination.offset("myoffset", "0").customHeadersPrefix("Test-").limitParam("mylimit", "5").build();
+        final PaginationInfo pagingInfo = Pagination.offset("myoffset", "0").customHeadersPrefix("Test-").limitParam("mylimit", "5").build();
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
-        strategy.process(results, routeContext);
+        new OffsetPagingStrategy().postProcess(results, routeContext, pagingInfo);
         verify(response, never()).setHeader(eq("Test-Links-Previous"), anyString());
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/app/cars?myoffset=5&mylimit=5&color=red");
     }
@@ -69,9 +69,9 @@ public class OffsetPagingStrategyTest {
     public void processMiddle() {
         when(routeContext.getRequestPath()).thenReturn("cars");
         when(request.getQueryString()).thenReturn("color=red&myoffset=5&mylimit=5");
-        final OffsetPagingStrategy strategy = Pagination.offset("myoffset", "5").customHeadersPrefix("Test-").limitParam("mylimit", "5").build();
+        final PaginationInfo pagingInfo = Pagination.offset("myoffset", "5").customHeadersPrefix("Test-").limitParam("mylimit", "5").build();
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(6, 7, 8, 9, 10));
-        strategy.process(results, routeContext);
+        new OffsetPagingStrategy().postProcess(results, routeContext, pagingInfo);
         verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/app/cars?color=red&myoffset=0&mylimit=5");
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/app/cars?color=red&myoffset=10&mylimit=5");
     }
@@ -80,9 +80,9 @@ public class OffsetPagingStrategyTest {
     public void processLast() {
         when(routeContext.getRequestPath()).thenReturn("cars");
         when(request.getQueryString()).thenReturn("offset=5&color=red&limit=5");
-        final OffsetPagingStrategy strategy = Pagination.offsetValue("5").limitValue("5").customHeadersPrefix("Test-").build();
+        final PaginationInfo pagingInfo = Pagination.offsetValue("5").limitValue("5").customHeadersPrefix("Test-").build();
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(6, 7));
-        strategy.process(results, routeContext);
+        new OffsetPagingStrategy().postProcess(results, routeContext, pagingInfo);
         verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/app/cars?offset=0&color=red&limit=5");
     }
     
@@ -90,9 +90,9 @@ public class OffsetPagingStrategyTest {
     public void missingPagingRequestParamButHasDefault() {
         when(routeContext.getRequestPath()).thenReturn("cars");
         when(request.getQueryString()).thenReturn("color=red&limit=5");
-        final OffsetPagingStrategy strategy = Pagination.offsetValue("0").limitValue("5").customHeaders().build();
+        final PaginationInfo pagingInfo = Pagination.offsetValue("0").limitValue("5").customHeaders().build();
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
-        strategy.process(results, routeContext);
+        new OffsetPagingStrategy().postProcess(results, routeContext, pagingInfo);
         verify(response).setHeader("AG-Links-Next", "http://localhost:8080/app/cars?color=red&limit=5&offset=5");
     }
     
@@ -100,9 +100,9 @@ public class OffsetPagingStrategyTest {
     public void weblinkingHeader() {
         when(routeContext.getRequestPath()).thenReturn("cars");
         when(request.getQueryString()).thenReturn("myoffset=0&mylimit=5&color=red");
-        final OffsetPagingStrategy strategy = Pagination.offset("myoffset", "5").limitParam("mylimit", "5").build();
+        final PaginationInfo pagingInfo = Pagination.offset("myoffset", "5").limitParam("mylimit", "5").webLinking(true).build();
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
-        strategy.process(results, routeContext);
+        new OffsetPagingStrategy().postProcess(results, routeContext, pagingInfo);
         verify(response, never()).setHeader(eq("Test-Links-Previous"), anyString());
         verify(response, never()).setHeader(eq("Test-Links-Next"), anyString());
         verify(response).setHeader(eq("Link"), anyString());

@@ -23,5 +23,6 @@
         <class>org.jboss.aerogear.controller.router.decorators.ResponseHandler</class>
         <class>org.jboss.aerogear.controller.router.decorators.ErrorHandler</class>
         <class>org.jboss.aerogear.controller.router.decorators.SecurityHandler</class>
+        <class>org.jboss.aerogear.controller.router.decorators.PaginationHandler</class>
     </decorators>
 </beans>

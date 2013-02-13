@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.jboss.aerogear.controller.router.parameter.Parameter;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
 
 
 /**
@@ -44,8 +43,6 @@ public class DefaultRoute implements Route {
     private final Set<MediaType> produces;
     private final Set<Class<? extends Throwable>> throwables;
     private final List<Parameter<?>> parameters;
-    private final PagingStrategy pagingStrategy;
-
 
     /**
      * Constructs a Route with the specified {@code RouteDescriptor} configuration options.
@@ -62,7 +59,6 @@ public class DefaultRoute implements Route {
         parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>>emptyList());
         produces = asSet(firstNonNull(descriptor.getProduces(), defaultMediaTypes()));
         throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
-        pagingStrategy = descriptor.getPagingStrategy();
     }
 
     @Override
@@ -192,11 +188,6 @@ public class DefaultRoute implements Route {
     
     private static MediaType[] defaultMediaTypes() {
         return new MediaType[] {MediaType.JSP};
-    }
-
-    @Override
-    public PagingStrategy pagingStrategy() {
-        return pagingStrategy;
     }
 
 }

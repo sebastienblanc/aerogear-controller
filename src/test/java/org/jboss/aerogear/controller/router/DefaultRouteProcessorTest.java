@@ -55,12 +55,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.router.decorators.PaginationHandler;
 import org.jboss.aerogear.controller.router.decorators.ResponseHandler;
 import org.jboss.aerogear.controller.router.parameter.MissingRequestParameterException;
 import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
 import org.jboss.aerogear.controller.router.rest.JsonConsumer;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
+import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.view.HtmlViewResponder;
 import org.jboss.aerogear.controller.view.JspViewResponder;
@@ -90,6 +92,8 @@ public class DefaultRouteProcessorTest {
     @Mock
     private Instance<Responder> responderInstance;
     @Mock
+    private Instance<PagingStrategy> pagingInstance;
+    @Mock
     private JsonResponder jsonResponder;
     @Mock
     private Instance<Consumer> consumers;
@@ -109,8 +113,15 @@ public class DefaultRouteProcessorTest {
         instrumentConsumers();
         controller = spy(new SampleController());
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
-        router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
+        when(pagingInstance.isUnsatisfied()).thenReturn(true);
+        router = createRouteProcessor(responders);
         when(request.getHeader("Accept")).thenReturn("text/html");
+    }
+    
+    private RouteProcessor createRouteProcessor(final Responders responders) {
+        final RouteProcessor routeProcessor = new DefaultRouteProcessor(beanManager, consumers, controllerFactory);
+        final RouteProcessor paginationHandler = new PaginationHandler(routeProcessor, pagingInstance, beanManager, consumers, controllerFactory);
+        return new ResponseHandler(paginationHandler, responders);
     }
     
     @Test(expected = ServletException.class)
@@ -659,7 +670,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
+        final RouteProcessor router = createRouteProcessor(responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader(eq("Link"), anyString());
     }
@@ -692,7 +703,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
+        final RouteProcessor router = createRouteProcessor(responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader("AG-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=10");
         verify(response, never()).setHeader(eq("AG-Links-Previous"), anyString());
@@ -727,7 +738,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
+        final RouteProcessor router = createRouteProcessor(responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response, never()).setHeader(eq("Test-Links-Previous"), anyString());
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/abc/ints?offset=5&color=blue&limit=5");
@@ -762,7 +773,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
+        final RouteProcessor router = createRouteProcessor(responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/abc/ints?color=blue&offset=0&limit=5");
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/abc/ints?color=blue&offset=10&limit=5");
@@ -797,7 +808,7 @@ public class DefaultRouteProcessorTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spy));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor router = new ResponseHandler(new DefaultRouteProcessor(beanManager, consumers, controllerFactory), responders);
+        final RouteProcessor router = createRouteProcessor(responders);
         router.process(new RouteContext(route, request, response, routes));
         verify(response).setHeader("TS-Links-Previous", "http://localhost:8080/abc/ints?brand=BMW&myoffset=45&mylimit=5");
         verify(response, never()).setHeader(eq("TS-Links-Next"), anyString());

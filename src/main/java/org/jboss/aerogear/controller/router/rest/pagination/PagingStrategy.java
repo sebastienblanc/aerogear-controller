@@ -16,6 +16,9 @@
  */
 package org.jboss.aerogear.controller.router.rest.pagination;
 
+import java.util.Map;
+
+import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
@@ -23,20 +26,16 @@ import org.jboss.aerogear.controller.router.RouteContext;
  */
 public interface PagingStrategy {
     
+    PaginationInfo getPaginationInfo(final Route route, final Map<String, Object> arguments);
+    
     /**
-     * Process allows for manipulating the result of an endpoint target method invocation. 
+     * Allows for manipulating the result of an endpoint target method invocation. 
      * 
      * @param result the result returned from the target endpoint method.
      * @param routeContext the {@link RouteContext}.
      * @return {@code Object} Either the unchanged result or a modified result depending on the underlying implementation.
      */
-    Object process(Object result, RouteContext routeContext);
+    Object postProcess(Object result, RouteContext routeContext, PaginationInfo pagingInfo);
     
-    /**
-     * Returns the {@code PaginationInfo} for the current request.
-     * 
-     * @return {@link PaginationInfo} for the current request.
-     */
-    PaginationInfo getPaginationInfo();
 
 }

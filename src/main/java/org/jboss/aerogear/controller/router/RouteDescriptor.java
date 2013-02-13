@@ -18,6 +18,7 @@
 package org.jboss.aerogear.controller.router;
 
 import static org.jboss.aerogear.controller.router.parameter.Parameter.param;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -33,11 +34,8 @@ import net.sf.cglib.proxy.NoOp;
 
 import org.jboss.aerogear.controller.router.RouteBuilder.TargetEndpoint;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
-import org.jboss.aerogear.controller.router.rest.pagination.NullPagingStrategy;
 import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
-import org.jboss.aerogear.controller.router.rest.pagination.Pagination.OffsetStrategyBuilder;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
 
 /**
  * Describes/configures a single route in AeroGear controller.
@@ -53,7 +51,6 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private final List<Parameter<?>> parameters = new LinkedList<Parameter<?>>();
     private MediaType[] produces;
     private Set<Class<? extends Throwable>> throwables;
-    private OffsetStrategyBuilder offsetBuilder;
     private final static FinalizeFilter FINALIZE_FILTER = new FinalizeFilter();
 
     public RouteDescriptor() {
@@ -189,13 +186,6 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     
     public List<String> getConsumes() {
         return consumes;
-    }
-    
-    public PagingStrategy getPagingStrategy() {
-        if (offsetBuilder != null) {
-            return offsetBuilder.build();
-        }
-        return NullPagingStrategy.INSTANCE;
     }
     
     public void addParameter(final Parameter<?> parameter) {

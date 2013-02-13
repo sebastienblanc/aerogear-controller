@@ -16,6 +16,8 @@
  */
 package org.jboss.aerogear.controller.router.rest.pagination;
 
+import com.google.common.base.Optional;
+
 /**
  * Holds information related to pagination in AeroGear Controller.
  * </p>
@@ -31,12 +33,36 @@ public class PaginationInfo {
     private final String offsetParamValue;
     private final String limitParamName;
     private final String limitParamValue;
+    private final boolean webLinking;
+    private final Optional<String> headerPrefix;
+    
+    public PaginationInfo(final String offsetParamName, 
+            final String offsetParamValue, 
+            final String limitParamName, 
+            final String limitParamValue) {
+        this(offsetParamName, offsetParamValue, limitParamName, limitParamValue, true, Optional.<String>absent());
+    }
+    
+    public PaginationInfo(final String offsetParamName, 
+            final String offsetParamValue, 
+            final String limitParamName, 
+            final String limitParamValue,
+            final String headerPrefix) {
+        this(offsetParamName, offsetParamValue, limitParamName, limitParamValue, false, Optional.of(headerPrefix));
+    }
 
-    public PaginationInfo(final String offsetParamName, final String offsetParamValue, final String limitParamName, final String limitParamValue) {
+    private PaginationInfo(final String offsetParamName, 
+            final String offsetParamValue, 
+            final String limitParamName, 
+            final String limitParamValue,
+            final boolean webLinking,
+            final Optional<String> headerPrefix) {
         this.offsetParamName = offsetParamName;
         this.offsetParamValue = offsetParamValue;
         this.limitParamName = limitParamName;
         this.limitParamValue = limitParamValue;
+        this.webLinking = webLinking;
+        this.headerPrefix = headerPrefix;
     }
 
     public String getOffsetParamName() {
@@ -55,10 +81,19 @@ public class PaginationInfo {
         return Integer.valueOf(limitParamValue);
     }
     
+    public boolean webLinking() {
+        return webLinking;
+    }
+    
     @Override
     public String toString() {
         return "PaginationInfo[offsetParamName=" + offsetParamName + ", offset=" + offsetParamValue + 
-                ", limitParamName=" + limitParamName + ", limit=" + limitParamValue + "]";
+                ", limitParamName=" + limitParamName + ", limit=" + limitParamValue + 
+                ", webLinking=" + webLinking + ", headerPrefix=" + headerPrefix + "]";
+    }
+    
+    public Optional<String> getHeaderPrefix() {
+        return headerPrefix;
     }
     
 }

@@ -19,20 +19,12 @@ package org.jboss.aerogear.controller.router;
 
 import static org.jboss.aerogear.controller.util.ParameterExtractor.extractArguments;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
-
-import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
-import org.jboss.aerogear.controller.router.rest.pagination.Pagination;
-import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
 
 /**
  * Default implementation of {@link RouteProcessor}.
@@ -67,47 +59,7 @@ public class DefaultRouteProcessor implements RouteProcessor {
     public ProcessResult process(RouteContext routeContext) throws Exception {
         final Route route = routeContext.getRoute();
         final Map<String, Object> arguments = extractArguments(routeContext, consumers);
-        if (hasPaginatedAnnotation(route.getTargetMethod())) {
-            return processPaged(routeContext, arguments);
-        } else {
-            return new ProcessResult(route.getTargetMethod().invoke(getController(route), arguments.values().toArray()), routeContext);
-        }
-    }
-    
-    private ProcessResult processPaged(RouteContext routeContext, Map<String, Object> arguments) throws Exception {
-        final Route route = routeContext.getRoute();
-        final PagingStrategy pagingStrategy = getPagingStrategy(route, arguments);
-        final PaginationInfo paginationInfo = pagingStrategy.getPaginationInfo();
-        final List<Object> pagingArgs = merge(paginationInfo, arguments);
-        final Object result = route.getTargetMethod().invoke(getController(route), pagingArgs.toArray());
-        return new ProcessResult(pagingStrategy.process(result, routeContext), routeContext);
-    }
-    
-    private List<Object> merge(final PaginationInfo paginationInfo, final Map<String, Object> arguments) {
-        final List<Object> methodArguments = new LinkedList<Object>();
-        arguments.remove(paginationInfo.getOffsetParamName());
-        arguments.remove(paginationInfo.getLimitParamName());
-        methodArguments.add(paginationInfo);
-        methodArguments.addAll(arguments.values());
-        return methodArguments;
-    }
-    
-    public PagingStrategy getPagingStrategy(final Route route, final Map<String, Object> args) {
-        final Paginated paginated = route.getTargetMethod().getAnnotation(Paginated.class);
-        final String customHeader = paginated.customHeadersPrefix();
-        return Pagination.offset(paginated.offsetParamName(), argAsString(args, paginated.offsetParamName()))
-                .limitParam(paginated.limitParamName(), argAsString(args, paginated.limitParamName()))
-                .customHeadersPrefix(customHeader)
-                .webLinking(paginated.webLinking())
-                .build();
-    }
-    
-    private String argAsString(final Map<String, Object> args, final String argName) {
-        return (String) args.get(argName);
-    }
-    
-    private boolean hasPaginatedAnnotation(final Method targetMethod) {
-        return targetMethod.getAnnotation(Paginated.class) != null;
+        return new ProcessResult(route.getTargetMethod().invoke(getController(route), arguments.values().toArray()), routeContext);
     }
     
     private Object getController(Route route) {
