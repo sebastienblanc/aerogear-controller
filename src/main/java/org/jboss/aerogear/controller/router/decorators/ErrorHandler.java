@@ -21,11 +21,10 @@ import java.lang.reflect.Method;
 
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 
-import org.jboss.aerogear.controller.router.ControllerFactory;
+import org.jboss.aerogear.controller.router.EndpointInvoker;
 import org.jboss.aerogear.controller.router.InvocationResult;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
@@ -46,15 +45,12 @@ import com.google.common.base.Throwables;
 public class ErrorHandler implements RouteProcessor {
     
     private final RouteProcessor delegate;
-    private final ControllerFactory controllerFactory;
-    private final BeanManager beanManager;
+    private EndpointInvoker endpointInvoker;
     
     @Inject
-    public ErrorHandler(final @Delegate RouteProcessor delegate, final ControllerFactory controllerFactory, 
-            final BeanManager beanManager) {
+    public ErrorHandler(final @Delegate RouteProcessor delegate, final EndpointInvoker endpointInvoker) {
         this.delegate = delegate;
-        this.controllerFactory = controllerFactory;
-        this.beanManager = beanManager;
+        this.endpointInvoker = endpointInvoker;
     }
 
     @Override
@@ -66,32 +62,25 @@ public class ErrorHandler implements RouteProcessor {
                 routeContext.getResponse().setStatus(((HttpStatusAwareException) t).getStatus());
             }
             final Throwable rootCause = Throwables.getRootCause(t);
-            final Route errorRoute = routeContext.getRoutes().routeFor(rootCause);
-            final RouteContext errorContext = new RouteContext(errorRoute, routeContext.getRequest(), routeContext.getResponse(), routeContext.getRoutes());
-            final Object result = invokeErrorRoute(errorContext, rootCause);
+            final RouteContext errorContext = errorContext(rootCause, routeContext);
+            final Object result = invokeErrorMethod(errorContext, rootCause);
             routeContext.getRequest().setAttribute(ErrorRoute.DEFAULT.getExceptionAttrName(), rootCause);
             return new InvocationResult(result, errorContext);
         }
     }
     
-    private Object invokeErrorRoute(final RouteContext routeContext, final Throwable t) throws ServletException {
-        final Route errorRoute = routeContext.getRoute();
-        Object response = null;
-        try {
-            final Method targetMethod = errorRoute.getTargetMethod();
-            if (targetMethod.getParameterTypes().length == 0) {
-                response =  targetMethod.invoke(getController(errorRoute));
-            } else {
-                response = targetMethod.invoke(getController(errorRoute), t);
-            }
-        } catch (final Exception e) {
-            throw new ServletException(e.getMessage(), e);
-        }
-        return response != null ? response : t;
+    private Object invokeErrorMethod(final RouteContext errorContext, final Throwable rootCause) throws Exception {
+        return endpointInvoker.invoke(errorContext, getMethodArguments(errorContext, rootCause));
     }
     
-    private Object getController(Route route) {
-        return controllerFactory.createController(route.getTargetClass(), beanManager);
+    private RouteContext errorContext(final Throwable rootCause, final RouteContext orgContext) {
+        final Route errorRoute = orgContext.getRoutes().routeFor(rootCause);
+        return new RouteContext(errorRoute, orgContext.getRequest(), orgContext.getResponse(), orgContext.getRoutes());
     }
-
+    
+    private Object[] getMethodArguments(final RouteContext routeContext, final Throwable t) throws ServletException {
+        final Method targetMethod = routeContext.getRoute().getTargetMethod();
+        return targetMethod.getParameterTypes().length == 0 ? new Object[]{}: new Object[]{t};
+    }
+    
 }

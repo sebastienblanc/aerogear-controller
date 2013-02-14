@@ -49,6 +49,7 @@ import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.SampleControllerException;
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 import org.jboss.aerogear.controller.router.ControllerFactory;
+import org.jboss.aerogear.controller.router.EndpointInvoker;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Responder;
@@ -127,7 +128,8 @@ public class ErrorHandlerTest {
         };
         final Routes routes = routingModule.build();
         final Route route = routes.routeFor(RequestMethod.GET, "/home", acceptHeaders(MediaType.HTML.getMediaType()));
-        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, controllerFactory, beanManager), responders);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
         errorHandler.process(new RouteContext(route, request, response, routes));
         verify(controller).errorPage();
@@ -149,7 +151,8 @@ public class ErrorHandlerTest {
                         .to(SampleController.class).throwSampleControllerException();
             }
         };
-        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, controllerFactory, beanManager), responders);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
         final Route route = routes.routeFor(RequestMethod.GET, "/home", acceptHeaders(MediaType.HTML.getMediaType()));
         errorHandler.process(new RouteContext(route, request, response, routingModule.build()));
@@ -173,7 +176,8 @@ public class ErrorHandlerTest {
         final Routes routes = routingModule.build();
         final Responders responders = mock(Responders.class);
         final Route route = routes.routeFor(RequestMethod.GET, "/home", acceptHeaders(MediaType.HTML.getMediaType()));
-        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, controllerFactory, beanManager), responders);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(SampleControllerException.class).when(routeProcessor).process(any(RouteContext.class));
         when(controllerFactory.createController(eq(ErrorTarget.class), eq(beanManager))).thenReturn(errorTarget);
         errorHandler.process(new RouteContext(route, request, response, routes));
@@ -204,7 +208,8 @@ public class ErrorHandlerTest {
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spyJsonResponder));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, controllerFactory, beanManager), responders);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
         final StringWriter stringWriter = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(stringWriter));
