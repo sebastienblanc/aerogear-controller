@@ -23,7 +23,7 @@ import org.jboss.aerogear.controller.router.RouteContext;
 /**
  * A strategy for implementing pagination in AeroGear Controller.
  */
-public interface PagingStrategy {
+public interface PaginationStrategy {
     
     /**
      * Creates a PaginationInfo instance.

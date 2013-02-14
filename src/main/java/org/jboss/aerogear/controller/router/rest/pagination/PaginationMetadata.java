@@ -21,23 +21,23 @@ import java.util.Map;
 
 import com.google.common.base.Optional;
 
-public class PagingMetadata {
+public class PaginationMetadata {
     
     public static final String DEFAULT_HEADER_PREFIX = "AG-";
     private final Links links;
     private final WebLinking webLinking;
-    private final PagingProperties params;
+    private final PaginationProperties params;
     private final Optional<String> headerPrefix;
     
-    public PagingMetadata(final PagingProperties paging, final RequestPathParser requestPathParser) {
+    public PaginationMetadata(final PaginationProperties paging, final RequestPathParser requestPathParser) {
         this(paging, requestPathParser, Optional.<String>absent());
     }
     
-    public PagingMetadata(final PagingProperties paging, final RequestPathParser requestPathParser, final String headerPrefix) {
+    public PaginationMetadata(final PaginationProperties paging, final RequestPathParser requestPathParser, final String headerPrefix) {
         this(paging, requestPathParser, Optional.of(headerPrefix));
     }
     
-    private PagingMetadata(final PagingProperties params, final RequestPathParser requestPathParser, final Optional<String> headerPrefix) {
+    private PaginationMetadata(final PaginationProperties params, final RequestPathParser requestPathParser, final Optional<String> headerPrefix) {
         this.params = params;
         this.headerPrefix = headerPrefix;
         links = new Links(requestPathParser, params);

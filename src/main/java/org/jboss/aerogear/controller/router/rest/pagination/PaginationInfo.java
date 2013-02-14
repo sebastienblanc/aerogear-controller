@@ -148,7 +148,7 @@ public class PaginationInfo {
         
         @Override
         public PaginationInfoBuilder customHeaders() {
-            this.headerPrefix = PagingMetadata.DEFAULT_HEADER_PREFIX;
+            this.headerPrefix = PaginationMetadata.DEFAULT_HEADER_PREFIX;
             return this;
         }
 

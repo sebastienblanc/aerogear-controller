@@ -24,9 +24,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.router.RouteContext;
 
-public abstract class AbstractPagingStrategy implements PagingStrategy {
+public abstract class AbstractPaginationStrategy implements PaginationStrategy {
     
-    public abstract void setResponseHeaders(final PagingMetadata metadata, final HttpServletResponse response, final int resultSize);
+    public abstract void setResponseHeaders(final PaginationMetadata metadata, final HttpServletResponse response, final int resultSize);
     
     @Override
     public Object postProcess(final Object result, final RouteContext routeContext, final PaginationInfo pagingInfo) {
@@ -34,18 +34,18 @@ public abstract class AbstractPagingStrategy implements PagingStrategy {
             return result;
         }
         final Collection<?> results = (Collection<?>) result;
-        final PagingMetadata pagingMetadata = createMetadata(routeContext, pagingInfo);
+        final PaginationMetadata pagingMetadata = createMetadata(routeContext, pagingInfo);
         setResponseHeaders(pagingMetadata, routeContext.getResponse(), results.size());
         return results;
     }
     
-    private PagingMetadata createMetadata(final RouteContext routeContext, final PaginationInfo pagingInfo) {
+    private PaginationMetadata createMetadata(final RouteContext routeContext, final PaginationInfo pagingInfo) {
         final RequestPathParser requestPathParser = new RequestPathParser(pagingInfo, getResourcePath(routeContext));
-        final PagingProperties pagingProperties = new PagingProperties(pagingInfo.getOffset(), pagingInfo.getLimit());
+        final PaginationProperties pagingProperties = new PaginationProperties(pagingInfo.getOffset(), pagingInfo.getLimit());
         if (pagingInfo.webLinking()) {
-            return new PagingMetadata(pagingProperties, requestPathParser);
+            return new PaginationMetadata(pagingProperties, requestPathParser);
         } else {
-            return new PagingMetadata(pagingProperties, requestPathParser, pagingInfo.getHeaderPrefix().get());
+            return new PaginationMetadata(pagingProperties, requestPathParser, pagingInfo.getHeaderPrefix().get());
         }
     }
     

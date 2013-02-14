@@ -32,7 +32,7 @@ public class Links {
     private final String next;
     private final Optional<String> last;
 
-    public Links(final RequestPathParser requestPathParser, final PagingProperties paging) {
+    public Links(final RequestPathParser requestPathParser, final PaginationProperties paging) {
         first = requestPathParser.replace(0, paging.limit());
         next = requestPathParser.replace(paging.nextOffset(), paging.limit());
         previous = requestPathParser.replace(paging.previousOffset(), paging.limit());

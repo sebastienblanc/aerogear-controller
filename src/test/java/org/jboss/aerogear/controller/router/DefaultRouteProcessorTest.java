@@ -62,7 +62,7 @@ import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
 import org.jboss.aerogear.controller.router.rest.JsonConsumer;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationStrategy;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 import org.jboss.aerogear.controller.view.HtmlViewResponder;
 import org.jboss.aerogear.controller.view.JspViewResponder;
@@ -92,7 +92,7 @@ public class DefaultRouteProcessorTest {
     @Mock
     private Instance<Responder> responderInstance;
     @Mock
-    private Instance<PagingStrategy> pagingInstance;
+    private Instance<PaginationStrategy> pagingInstance;
     @Mock
     private JsonResponder jsonResponder;
     @Mock

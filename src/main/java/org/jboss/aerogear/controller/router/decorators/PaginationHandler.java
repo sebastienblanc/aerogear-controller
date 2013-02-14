@@ -36,23 +36,23 @@ import org.jboss.aerogear.controller.router.EndpointInvoker;
 import org.jboss.aerogear.controller.router.ProcessResult;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
-import org.jboss.aerogear.controller.router.rest.pagination.AbstractPagingStrategy;
+import org.jboss.aerogear.controller.router.rest.pagination.AbstractPaginationStrategy;
 import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingMetadata;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationMetadata;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationStrategy;
 
 @Decorator
 public class PaginationHandler implements RouteProcessor {
     
     private final RouteProcessor delegate;
-    private final PagingStrategy pagingStrategy;
+    private final PaginationStrategy pagingStrategy;
     private final Map<String, Consumer> consumers = new HashMap<String, Consumer>();
     private final EndpointInvoker endpointInvoker;
     
     @Inject
     public PaginationHandler(final @Delegate RouteProcessor delegate, 
-            final Instance<PagingStrategy> pagingStrategies,
+            final Instance<PaginationStrategy> pagingStrategies,
             final Instance<Consumer> consumers,
             final EndpointInvoker endpointInvoker) {
         this.delegate = delegate;
@@ -89,10 +89,10 @@ public class PaginationHandler implements RouteProcessor {
         return targetMethod.getAnnotation(Paginated.class) != null;
     }
     
-    public static PagingStrategy defaultPagingStrategy() {
-        return new AbstractPagingStrategy() {
+    public static PaginationStrategy defaultPagingStrategy() {
+        return new AbstractPaginationStrategy() {
             @Override
-            public void setResponseHeaders(final PagingMetadata metadata, final HttpServletResponse response, final int resultSize) {
+            public void setResponseHeaders(final PaginationMetadata metadata, final HttpServletResponse response, final int resultSize) {
                 for (Entry<String, String> entry : metadata.getHeaders(resultSize).entrySet()) {
                     response.setHeader(entry.getKey(), entry.getValue());
                 }

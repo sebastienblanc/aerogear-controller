@@ -27,7 +27,7 @@ import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Responders;
 import org.jboss.aerogear.controller.router.parameter.MissingRequestParameterException;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingRequestException;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationRequestException;
 import org.jboss.logging.LogMessage;
 import org.jboss.logging.Logger;
 import org.jboss.logging.Message;
@@ -69,6 +69,6 @@ public interface LoggerMessages {
     
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 13, value = "Invalid Paging Request: offset '%s', limit '%s'" )
-    PagingRequestException invalidPagingRequest(long offset, long limit);
+    PaginationRequestException invalidPagingRequest(long offset, long limit);
     
 }

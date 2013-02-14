@@ -16,23 +16,23 @@
  */
 package org.jboss.aerogear.controller.router.rest.pagination;
 
-public class PagingRequestException extends RuntimeException {
+public class PaginationRequestException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public PagingRequestException() {
+    public PaginationRequestException() {
         super();
     }
 
-    public PagingRequestException(String message, Throwable cause) {
+    public PaginationRequestException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PagingRequestException(String message) {
+    public PaginationRequestException(String message) {
         super(message);
     }
 
-    public PagingRequestException(Throwable cause) {
+    public PaginationRequestException(Throwable cause) {
         super(cause);
     }
     

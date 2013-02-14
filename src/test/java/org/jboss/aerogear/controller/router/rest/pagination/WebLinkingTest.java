@@ -29,7 +29,7 @@ public class WebLinkingTest {
     public void weblinkinWithTotal() {
         final PaginationInfo pinfo = PaginationInfo.offset(0).limit(10).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?offset=0&limit=10");
-        final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit(), 100));
+        final Links links = new Links(requestPathParser, new PaginationProperties(pinfo.getOffset(), pinfo.getLimit(), 100));
         final WebLinking weblinking = new WebLinking(links);
         final String linkHeader = weblinking.getLinkHeaders();
         final Map<String, String> linksHeaders = Util.parseWebLinkHeader(linkHeader);
@@ -42,7 +42,7 @@ public class WebLinkingTest {
     public void weblinkingLimit5() {
         final PaginationInfo pinfo = PaginationInfo.offset(0).limit(5).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?offset=0&limit=5");
-        final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit()));
+        final Links links = new Links(requestPathParser, new PaginationProperties(pinfo.getOffset(), pinfo.getLimit()));
         final WebLinking weblinking = new WebLinking(links);
         final String linkHeader = weblinking.getLinkHeaders();
         final Map<String, String> linksHeaders = Util.parseWebLinkHeader(linkHeader);
@@ -54,7 +54,7 @@ public class WebLinkingTest {
     public void weblinkingDefaultOffset() {
         final PaginationInfo pinfo = PaginationInfo.offset(0).limit(5).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?limit=5");
-        final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit()));
+        final Links links = new Links(requestPathParser, new PaginationProperties(pinfo.getOffset(), pinfo.getLimit()));
         final WebLinking weblinking = new WebLinking(links);
         final String linkHeader = weblinking.getLinkHeaders();
         final Map<String, String> linksHeaders = Util.parseWebLinkHeader(linkHeader);
@@ -66,7 +66,7 @@ public class WebLinkingTest {
     public void weblinkingDefaultLimit() {
         final PaginationInfo pinfo = PaginationInfo.offset(0).limit(10).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?offset=10");
-        final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit()));
+        final Links links = new Links(requestPathParser, new PaginationProperties(pinfo.getOffset(), pinfo.getLimit()));
         final WebLinking weblinking = new WebLinking(links);
         final String linkHeader = weblinking.getLinkHeaders();
         final Map<String, String> linksHeaders = Util.parseWebLinkHeader(linkHeader);

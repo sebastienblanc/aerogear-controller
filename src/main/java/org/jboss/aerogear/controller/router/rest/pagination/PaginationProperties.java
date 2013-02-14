@@ -24,17 +24,17 @@ import com.google.common.base.Optional;
  * Properties related to the offset/limit pagination strategy.
  * <p/>
  */
-public class PagingProperties {
+public class PaginationProperties {
         
     private final int offset;
     private final int limit;
     private final Optional<Integer> total;
     
-    public PagingProperties(final int offset, final int limit) {
+    public PaginationProperties(final int offset, final int limit) {
         this(offset, limit, -1);
     }
         
-    public PagingProperties(final int offset, final int limit, final int total) {
+    public PaginationProperties(final int offset, final int limit, final int total) {
         checkValues(offset, limit);
         this.offset = offset;
         this.limit = limit;
