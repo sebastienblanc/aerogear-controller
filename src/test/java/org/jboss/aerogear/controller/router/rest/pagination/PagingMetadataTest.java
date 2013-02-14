@@ -33,7 +33,7 @@ public class PagingMetadataTest {
     
     @Before
     public void setup() {
-        final PaginationInfo paginationInfo = new PaginationInfo("offset", 0, "limit", 10);
+        final PaginationInfo paginationInfo = PaginationInfo.offset(0).limit(10).build();
         requestPathParser = new RequestPathParser(paginationInfo, "cars?offset=0&limit=10");
     }
 

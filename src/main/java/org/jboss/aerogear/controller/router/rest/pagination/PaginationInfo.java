@@ -51,7 +51,7 @@ public class PaginationInfo {
             final String limitParamName, 
             final int limit,
             final String headerPrefix) {
-        this(offsetParamName, offset, limitParamName, limit, false, Optional.of(headerPrefix));
+        this(offsetParamName, offset, limitParamName, limit, false, Optional.fromNullable(headerPrefix));
     }
 
     private PaginationInfo(final String offsetParamName, 
@@ -97,6 +97,81 @@ public class PaginationInfo {
     
     public Optional<String> getHeaderPrefix() {
         return headerPrefix;
+    }
+    
+    public static PaginationInfoBuilder offset(int value) {
+        return offset(PaginationInfo.DEFAULT_OFFSET_PARAM_NAME, value);
+    }
+    
+    public static PaginationInfoBuilder offset(final String offsetParamName, final int value) {
+        return new PaginationInfoBuilderImpl().offset(offsetParamName, value);
+    }
+    
+    public static interface PaginationInfoBuilder {
+        PaginationInfoBuilder offset(String paramName, int value);
+        PaginationInfoBuilder limit(String paramName, int value);
+        PaginationInfoBuilder limit(int value);
+        PaginationInfoBuilder customHeaders();
+        PaginationInfoBuilder customHeadersPrefix(String prefix);
+        PaginationInfoBuilder webLinking(boolean enabled);
+        PaginationInfo build();
+    }
+    
+    public static class PaginationInfoBuilderImpl implements PaginationInfoBuilder {
+        
+        private String offsetParamName = PaginationInfo.DEFAULT_OFFSET_PARAM_NAME;
+        private String limitParamName = PaginationInfo.DEFAULT_LIMIT_PARAM_NAME;
+        private String headerPrefix;
+        private int offset;
+        private int limit;
+        private boolean webLinking;
+
+        @Override
+        public PaginationInfoBuilder offset(final String paramName, final int value) {
+            offsetParamName = paramName;
+            offset = value;
+            return this;
+        }
+        
+        @Override
+        public PaginationInfoBuilder limit(final String paramName, final int value) {
+            limitParamName = paramName;
+            limit = value;
+            return this;
+        }
+        
+        @Override
+        public PaginationInfoBuilder customHeadersPrefix(final String prefix) {
+            this.headerPrefix = prefix;
+            return this;
+        }
+        
+        @Override
+        public PaginationInfoBuilder customHeaders() {
+            this.headerPrefix = PagingMetadata.DEFAULT_HEADER_PREFIX;
+            return this;
+        }
+
+        @Override
+        public PaginationInfoBuilder limit(int value) {
+            limit = value;
+            return this;
+        }
+
+        @Override
+        public PaginationInfoBuilder webLinking(boolean enabled) {
+            webLinking = enabled;
+            return this;
+        }
+        
+        public PaginationInfo build() {
+            if (webLinking) {
+                return new PaginationInfo(offsetParamName, offset, limitParamName, limit);
+            } else {
+                return new PaginationInfo(offsetParamName, offset, limitParamName, limit, headerPrefix);
+            }
+        }
+
     }
     
 }

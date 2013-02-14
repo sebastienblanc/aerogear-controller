@@ -62,7 +62,7 @@ public abstract class AbstractPagingStrategy implements PagingStrategy {
     public PaginationInfo createPaginationInfo(final RouteContext routeContext, final Map<String, Object> args) {
         final Paginated paginated = routeContext.getRoute().getTargetMethod().getAnnotation(Paginated.class);
         final String customHeader = paginated.customHeadersPrefix();
-        return Pagination.offset(paginated.offsetParamName(), argAsInt(args, paginated.offsetParamName()))
+        return PaginationInfo.offset(paginated.offsetParamName(), argAsInt(args, paginated.offsetParamName()))
                 .limit(paginated.limitParamName(), argAsInt(args, paginated.limitParamName()))
                 .customHeadersPrefix(customHeader)
                 .webLinking(paginated.webLinking())

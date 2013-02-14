@@ -27,7 +27,7 @@ public class WebLinkingTest {
 
     @Test
     public void weblinkinWithTotal() {
-        final PaginationInfo pinfo = new PaginationInfo("offset", 0, "limit", 10);
+        final PaginationInfo pinfo = PaginationInfo.offset(0).limit(10).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?offset=0&limit=10");
         final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit(), 100));
         final WebLinking weblinking = new WebLinking(links);
@@ -40,7 +40,7 @@ public class WebLinkingTest {
     
     @Test
     public void weblinkingLimit5() {
-        final PaginationInfo pinfo = new PaginationInfo("offset", 0, "limit", 5);
+        final PaginationInfo pinfo = PaginationInfo.offset(0).limit(5).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?offset=0&limit=5");
         final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit()));
         final WebLinking weblinking = new WebLinking(links);
@@ -52,7 +52,7 @@ public class WebLinkingTest {
     
     @Test
     public void weblinkingDefaultOffset() {
-        final PaginationInfo pinfo = new PaginationInfo("offset", 0, "limit", 5);
+        final PaginationInfo pinfo = PaginationInfo.offset(0).limit(5).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?limit=5");
         final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit()));
         final WebLinking weblinking = new WebLinking(links);
@@ -64,7 +64,7 @@ public class WebLinkingTest {
     
     @Test
     public void weblinkingDefaultLimit() {
-        final PaginationInfo pinfo = new PaginationInfo("offset", 0, "limit", 10);
+        final PaginationInfo pinfo = PaginationInfo.offset(0).limit(10).build();
         final RequestPathParser requestPathParser = new RequestPathParser(pinfo, "cars?offset=10");
         final Links links = new Links(requestPathParser, new PagingProperties(pinfo.getOffset(), pinfo.getLimit()));
         final WebLinking weblinking = new WebLinking(links);
