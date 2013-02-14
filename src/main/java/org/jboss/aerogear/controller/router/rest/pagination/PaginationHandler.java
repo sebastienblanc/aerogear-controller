@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.EndpointInvoker;
-import org.jboss.aerogear.controller.router.ProcessResult;
+import org.jboss.aerogear.controller.router.InvocationResult;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
@@ -58,13 +58,13 @@ public class PaginationHandler implements RouteProcessor {
     }
 
     @Override
-    public ProcessResult process(final RouteContext routeContext) throws Exception {
+    public InvocationResult process(final RouteContext routeContext) throws Exception {
         if (hasPaginatedAnnotation(routeContext.getRoute())) {
             final Map<String, Object> requestArgs = extractArguments(routeContext, consumers);
             final PaginationInfo paginationInfo = pagingStrategy.createPaginationInfo(routeContext, requestArgs);
             final Object[] args = pagingStrategy.preInvocation(paginationInfo, requestArgs);
             final Collection<?> results = (Collection<?>) endpointInvoker.invoke(routeContext, args);
-            return new ProcessResult(pagingStrategy.postInvocation(results, routeContext, paginationInfo), routeContext);
+            return new InvocationResult(pagingStrategy.postInvocation(results, routeContext, paginationInfo), routeContext);
         } else {
             return delegate.process(routeContext);
         }

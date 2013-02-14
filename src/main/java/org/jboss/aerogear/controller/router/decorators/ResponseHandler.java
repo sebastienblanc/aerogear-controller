@@ -21,7 +21,7 @@ import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.inject.Inject;
 
-import org.jboss.aerogear.controller.router.ProcessResult;
+import org.jboss.aerogear.controller.router.InvocationResult;
 import org.jboss.aerogear.controller.router.Responders;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
@@ -39,8 +39,8 @@ public class ResponseHandler implements RouteProcessor {
     }
 
     @Override
-    public ProcessResult process(final RouteContext routeContext) throws Exception {
-        final ProcessResult result = delegate.process(routeContext);
+    public InvocationResult process(final RouteContext routeContext) throws Exception {
+        final InvocationResult result = delegate.process(routeContext);
         responders.respond(result.getRouteContext(), result.getResult());
         return result;
     }

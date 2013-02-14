@@ -17,12 +17,12 @@
 package org.jboss.aerogear.controller.router;
 
 
-public class ProcessResult {
+public class InvocationResult {
     
     private Object result;
     private RouteContext routeContext;
 
-    public ProcessResult(final Object result, final RouteContext routeContext) {
+    public InvocationResult(final Object result, final RouteContext routeContext) {
         this.result = result;
         this.routeContext = routeContext;
     }

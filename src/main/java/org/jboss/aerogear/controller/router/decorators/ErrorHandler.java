@@ -26,7 +26,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 
 import org.jboss.aerogear.controller.router.ControllerFactory;
-import org.jboss.aerogear.controller.router.ProcessResult;
+import org.jboss.aerogear.controller.router.InvocationResult;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
@@ -58,7 +58,7 @@ public class ErrorHandler implements RouteProcessor {
     }
 
     @Override
-    public ProcessResult process(final RouteContext routeContext) throws Exception {
+    public InvocationResult process(final RouteContext routeContext) throws Exception {
         try {
             return delegate.process(routeContext);
         } catch (final Throwable t) {
@@ -70,7 +70,7 @@ public class ErrorHandler implements RouteProcessor {
             final RouteContext errorContext = new RouteContext(errorRoute, routeContext.getRequest(), routeContext.getResponse(), routeContext.getRoutes());
             final Object result = invokeErrorRoute(errorContext, rootCause);
             routeContext.getRequest().setAttribute(ErrorRoute.DEFAULT.getExceptionAttrName(), rootCause);
-            return new ProcessResult(result, errorContext);
+            return new InvocationResult(result, errorContext);
         }
     }
     

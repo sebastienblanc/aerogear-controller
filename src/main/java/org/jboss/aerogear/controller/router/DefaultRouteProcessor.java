@@ -53,9 +53,9 @@ public class DefaultRouteProcessor implements RouteProcessor {
     }
 
     @Override
-    public ProcessResult process(RouteContext routeContext) throws Exception {
+    public InvocationResult process(RouteContext routeContext) throws Exception {
         final Map<String, Object> arguments = extractArguments(routeContext, consumers);
-        return new ProcessResult(endpointInvoker.invoke(routeContext, arguments.values().toArray()), routeContext);
+        return new InvocationResult(endpointInvoker.invoke(routeContext, arguments.values().toArray()), routeContext);
     }
     
 }

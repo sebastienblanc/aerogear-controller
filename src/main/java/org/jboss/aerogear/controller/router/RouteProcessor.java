@@ -30,6 +30,6 @@ public interface RouteProcessor {
      * @param routeContext the {@link RouteContext} for the current request.
      * @throws Exception if processing of the route causes an exception.
      */
-    ProcessResult process(RouteContext routeContext) throws Exception;
+    InvocationResult process(RouteContext routeContext) throws Exception;
 
 }
