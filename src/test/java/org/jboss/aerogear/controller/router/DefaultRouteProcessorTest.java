@@ -55,12 +55,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
-import org.jboss.aerogear.controller.router.decorators.PaginationHandler;
 import org.jboss.aerogear.controller.router.decorators.ResponseHandler;
 import org.jboss.aerogear.controller.router.parameter.MissingRequestParameterException;
 import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
 import org.jboss.aerogear.controller.router.rest.JsonConsumer;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
+import org.jboss.aerogear.controller.router.rest.pagination.PaginationHandler;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationStrategy;
 import org.jboss.aerogear.controller.spi.SecurityProvider;

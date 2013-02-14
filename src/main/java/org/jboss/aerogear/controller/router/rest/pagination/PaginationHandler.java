@@ -14,14 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.aerogear.controller.router.decorators;
+package org.jboss.aerogear.controller.router.rest.pagination;
 
 import static org.jboss.aerogear.controller.util.ParameterExtractor.extractArguments;
 
-import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -34,13 +32,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.aerogear.controller.router.Consumer;
 import org.jboss.aerogear.controller.router.EndpointInvoker;
 import org.jboss.aerogear.controller.router.ProcessResult;
+import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
-import org.jboss.aerogear.controller.router.rest.pagination.AbstractPaginationStrategy;
-import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
-import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.router.rest.pagination.PaginationMetadata;
-import org.jboss.aerogear.controller.router.rest.pagination.PaginationStrategy;
 
 @Decorator
 public class PaginationHandler implements RouteProcessor {
@@ -65,28 +59,19 @@ public class PaginationHandler implements RouteProcessor {
 
     @Override
     public ProcessResult process(final RouteContext routeContext) throws Exception {
-        if (hasPaginatedAnnotation(routeContext.getRoute().getTargetMethod())) {
-            final Map<String, Object> arguments = extractArguments(routeContext, consumers);
-            final PaginationInfo paginationInfo = pagingStrategy.createPaginationInfo(routeContext, arguments);
-            final List<Object> pagingArgs = merge(paginationInfo, arguments);
-            final Object result = endpointInvoker.invoke(routeContext, pagingArgs.toArray());
-            return new ProcessResult(pagingStrategy.postProcess(result, routeContext, paginationInfo), routeContext);
+        if (hasPaginatedAnnotation(routeContext.getRoute())) {
+            final Map<String, Object> requestArgs = extractArguments(routeContext, consumers);
+            final PaginationInfo paginationInfo = pagingStrategy.createPaginationInfo(routeContext, requestArgs);
+            final Object[] args = pagingStrategy.preInvocation(paginationInfo, requestArgs);
+            final Collection<?> results = (Collection<?>) endpointInvoker.invoke(routeContext, args);
+            return new ProcessResult(pagingStrategy.postInvocation(results, routeContext, paginationInfo), routeContext);
         } else {
             return delegate.process(routeContext);
         }
     }
     
-    private List<Object> merge(final PaginationInfo paginationInfo, final Map<String, Object> arguments) {
-        final List<Object> methodArguments = new LinkedList<Object>();
-        arguments.remove(paginationInfo.getOffsetParamName());
-        arguments.remove(paginationInfo.getLimitParamName());
-        methodArguments.add(paginationInfo);
-        methodArguments.addAll(arguments.values());
-        return methodArguments;
-    }
-    
-    private boolean hasPaginatedAnnotation(final Method targetMethod) {
-        return targetMethod.getAnnotation(Paginated.class) != null;
+    private boolean hasPaginatedAnnotation(final Route route) {
+        return route.getTargetMethod().getAnnotation(Paginated.class) != null;
     }
     
     public static PaginationStrategy defaultPagingStrategy() {
