@@ -25,7 +25,7 @@ public class LinksTest {
 
     @Test
     public void links() {
-        final PaginationInfo paginationInfo = new PaginationInfo("offset", "0", "limit", "10");
+        final PaginationInfo paginationInfo = new PaginationInfo("offset", 0, "limit", 10);
         final RequestPathParser requestPathParser = new RequestPathParser(paginationInfo, "cars?offset=0&limit=10");
         final Links links = new Links(requestPathParser, new PagingProperties(0, 10, 100));
         assertThat(links.getFirst()).isEqualTo("cars?offset=0&limit=10");
@@ -36,7 +36,7 @@ public class LinksTest {
     
     @Test
     public void linksWithCustomParamName() {
-        final PaginationInfo paginationInfo = new PaginationInfo("offset", "0", "limit", "10");
+        final PaginationInfo paginationInfo = new PaginationInfo("offset", 0, "limit", 10);
         final RequestPathParser requestPathParser = new RequestPathParser(paginationInfo, "cars?myoffset=0&mylimit=10");
         final Links links = new Links(requestPathParser, new PagingProperties(0, 10, 100));
         assertThat(links.getFirst()).isEqualTo("cars?myoffset=0&mylimit=10");
@@ -47,7 +47,7 @@ public class LinksTest {
     
     @Test
     public void linksWithCustomParamNameAndExtraQueryParams() {
-        final PaginationInfo paginationInfo = new PaginationInfo("offset", "0", "limit", "10");
+        final PaginationInfo paginationInfo = new PaginationInfo("offset", 0, "limit", 10);
         final RequestPathParser requestPathParser = new RequestPathParser(paginationInfo, "cars?color=red&myoffset=0&brand=Audi&mylimit=10&year=2013");
         final Links links = new Links(requestPathParser, new PagingProperties(0, 10, 100));
         assertThat(links.getFirst()).isEqualTo("cars?color=red&myoffset=0&brand=Audi&mylimit=10&year=2013");

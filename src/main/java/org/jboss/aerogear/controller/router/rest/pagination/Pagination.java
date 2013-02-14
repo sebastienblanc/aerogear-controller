@@ -17,25 +17,25 @@
 package org.jboss.aerogear.controller.router.rest.pagination;
 
 /**
- * Factory utility methods for creating PagingStrategies. 
+ * Factory utility methods for creating PaginationInfo instances. 
  */
 public final class Pagination {
     
     private Pagination() {
     }
     
-    public static PaginationInfoBuilder offsetValue(String value) {
+    public static PaginationInfoBuilder offset(int value) {
         return offset(PaginationInfo.DEFAULT_OFFSET_PARAM_NAME, value);
     }
     
-    public static PaginationInfoBuilder offset(final String offsetParamName, final String value) {
-        return new PaginationInfoBuilderImpl().offsetParam(offsetParamName, value);
+    public static PaginationInfoBuilder offset(final String offsetParamName, final int value) {
+        return new PaginationInfoBuilderImpl().offset(offsetParamName, value);
     }
     
     public static interface PaginationInfoBuilder {
-        PaginationInfoBuilder offsetParam(String paramName, String value);
-        PaginationInfoBuilder limitParam(String paramName, String value);
-        PaginationInfoBuilder limitValue(String value);
+        PaginationInfoBuilder offset(String paramName, int value);
+        PaginationInfoBuilder limit(String paramName, int value);
+        PaginationInfoBuilder limit(int value);
         PaginationInfoBuilder customHeaders();
         PaginationInfoBuilder customHeadersPrefix(String prefix);
         PaginationInfoBuilder webLinking(boolean enabled);
@@ -47,21 +47,21 @@ public final class Pagination {
         private String offsetParamName = PaginationInfo.DEFAULT_OFFSET_PARAM_NAME;
         private String limitParamName = PaginationInfo.DEFAULT_LIMIT_PARAM_NAME;
         private String headerPrefix;
-        private String offsetParamValue;
-        private String limitParamValue;
+        private int offset;
+        private int limit;
         private boolean webLinking;
 
         @Override
-        public PaginationInfoBuilder offsetParam(final String paramName, String value) {
+        public PaginationInfoBuilder offset(final String paramName, final int value) {
             offsetParamName = paramName;
-            offsetParamValue = value;
+            offset = value;
             return this;
         }
         
         @Override
-        public PaginationInfoBuilder limitParam(final String paramName, String value) {
+        public PaginationInfoBuilder limit(final String paramName, final int value) {
             limitParamName = paramName;
-            limitParamValue = value;
+            limit = value;
             return this;
         }
         
@@ -76,18 +76,10 @@ public final class Pagination {
             this.headerPrefix = PagingMetadata.DEFAULT_HEADER_PREFIX;
             return this;
         }
-        
-        public PaginationInfo build() {
-            if (webLinking) {
-                return new PaginationInfo(offsetParamName, offsetParamValue, limitParamName, limitParamValue);
-            } else {
-                return new PaginationInfo(offsetParamName, offsetParamValue, limitParamName, limitParamValue, headerPrefix);
-            }
-        }
 
         @Override
-        public PaginationInfoBuilder limitValue(String value) {
-            limitParamValue = value;
+        public PaginationInfoBuilder limit(int value) {
+            limit = value;
             return this;
         }
 
@@ -95,6 +87,14 @@ public final class Pagination {
         public PaginationInfoBuilder webLinking(boolean enabled) {
             webLinking = enabled;
             return this;
+        }
+        
+        public PaginationInfo build() {
+            if (webLinking) {
+                return new PaginationInfo(offsetParamName, offset, limitParamName, limit);
+            } else {
+                return new PaginationInfo(offsetParamName, offset, limitParamName, limit, headerPrefix);
+            }
         }
 
     }

@@ -33,37 +33,37 @@ public class PaginationInfo {
     public static final String DEFAULT_LIMIT_PARAM_NAME = "limit";
     
     private final String offsetParamName;
-    private final String offsetParamValue;
+    private final int offset;
     private final String limitParamName;
-    private final String limitParamValue;
+    private final int limit;
     private final boolean webLinking;
     private final Optional<String> headerPrefix;
     
     public PaginationInfo(final String offsetParamName, 
-            final String offsetParamValue, 
+            final int offset, 
             final String limitParamName, 
-            final String limitParamValue) {
-        this(offsetParamName, offsetParamValue, limitParamName, limitParamValue, true, Optional.<String>absent());
+            final int limit) {
+        this(offsetParamName, offset, limitParamName, limit, true, Optional.<String>absent());
     }
     
     public PaginationInfo(final String offsetParamName, 
-            final String offsetParamValue, 
+            final int offset, 
             final String limitParamName, 
-            final String limitParamValue,
+            final int limit,
             final String headerPrefix) {
-        this(offsetParamName, offsetParamValue, limitParamName, limitParamValue, false, Optional.of(headerPrefix));
+        this(offsetParamName, offset, limitParamName, limit, false, Optional.of(headerPrefix));
     }
 
     private PaginationInfo(final String offsetParamName, 
-            final String offsetParamValue, 
+            final int offset, 
             final String limitParamName, 
-            final String limitParamValue,
+            final int limit,
             final boolean webLinking,
             final Optional<String> headerPrefix) {
         this.offsetParamName = offsetParamName;
-        this.offsetParamValue = offsetParamValue;
+        this.offset = offset;
         this.limitParamName = limitParamName;
-        this.limitParamValue = limitParamValue;
+        this.limit = limit;
         this.webLinking = webLinking;
         this.headerPrefix = headerPrefix;
     }
@@ -73,7 +73,7 @@ public class PaginationInfo {
     }
 
     public int getOffset() {
-        return Integer.valueOf(offsetParamValue);
+        return offset;
     }
 
     public String getLimitParamName() {
@@ -81,7 +81,7 @@ public class PaginationInfo {
     }
 
     public int getLimit() {
-        return Integer.valueOf(limitParamValue);
+        return Integer.valueOf(limit);
     }
     
     public boolean webLinking() {
@@ -90,8 +90,8 @@ public class PaginationInfo {
     
     @Override
     public String toString() {
-        return "PaginationInfo[offsetParamName=" + offsetParamName + ", offset=" + offsetParamValue + 
-                ", limitParamName=" + limitParamName + ", limit=" + limitParamValue + 
+        return "PaginationInfo[offsetParamName=" + offsetParamName + ", offset=" + offset + 
+                ", limitParamName=" + limitParamName + ", limit=" + limit + 
                 ", webLinking=" + webLinking + ", headerPrefix=" + headerPrefix + "]";
     }
     
