@@ -1,4 +1,4 @@
-# AeroGear Controller
+# AeroGear Controller - very lean mvc controller
 [AeroGear](http://aerogear.org) Controller is a very lean mvc controller written in java. It focuses on the routing of HTTP request to plain java object endpoint
 and the handling of the results, by either forwarding the data to a view, or returning the data in the format requested by the caller.
 
