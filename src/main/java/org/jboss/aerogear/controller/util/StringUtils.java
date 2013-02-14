@@ -17,6 +17,11 @@
 
 package org.jboss.aerogear.controller.util;
 
+import java.util.Collection;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+
 /**
  * Utility class containing methods used for processing Strings.
  */
@@ -48,4 +53,14 @@ public class StringUtils {
         // all uppercase: URL -> url
         return name.toLowerCase();
     }
+    
+    public static Collection<String> toLowerCase(Collection<String> strings) {
+        return Collections2.transform(strings, new Function<String, String>() {
+                public String apply(String str) {
+                    return str.toLowerCase();
+                }
+            }
+        );
+    }
+    
 }

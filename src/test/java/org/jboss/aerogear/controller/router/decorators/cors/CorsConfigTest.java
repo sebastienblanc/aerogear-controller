@@ -34,7 +34,7 @@ public class CorsConfigTest {
         assertThat(config.getExposeHeaders()).isEmpty();
         assertThat(config.hasMaxAge()).isTrue();
         assertThat(config.getMaxAge()).isEqualTo(0);
-        assertThat(config.getValidRequestHeaders()).contains("origin");
+        assertThat(config.getValidRequestHeaders()).contains("Origin");
         assertThat(config.getValidRequestMethods()).contains("GET", "PUT", "POST", "DELETE", "OPTIONS", "HEAD", "PATCH");
     }
     
@@ -117,7 +117,7 @@ public class CorsConfigTest {
                 .maxAge(10L)
                 .validRequestMethods(RequestMethod.GET)
                 .validRequestHeaders("Header1", "Header2");
-        assertThat(config.getValidRequestHeaders()).contains("origin", "Header1", "Header2");
+        assertThat(config.getValidRequestHeaders()).contains("Origin", "Header1", "Header2");
     }
     
     @Test

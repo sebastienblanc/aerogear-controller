@@ -22,7 +22,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -162,6 +161,14 @@ public class CorsTest {
     public void areRequestHeadersValid() {
         when(request.getHeader(Cors.RequestHeader.HEADERS.toString())).thenReturn("origin, X-Header2");
         assertThat(cors.areRequestHeadersValid(Arrays.asList("HEADER1", "x-header2", "origin"))).isTrue();
+    }
+    
+    @Test
+    public void areRequestHeadersValidCaseInsensitiveMatch() {
+        when(request.getHeader(Cors.RequestHeader.HEADERS.toString())).thenReturn("origin");
+        assertThat(cors.areRequestHeadersValid(Arrays.asList("Origin"))).isTrue();
+        when(request.getHeader(Cors.RequestHeader.HEADERS.toString())).thenReturn("oriGin");
+        assertThat(cors.areRequestHeadersValid(Arrays.asList("origiN"))).isTrue();
     }
     
     @Test
