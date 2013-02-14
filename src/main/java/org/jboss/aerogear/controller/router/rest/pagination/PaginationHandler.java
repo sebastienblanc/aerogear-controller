@@ -50,11 +50,11 @@ public class PaginationHandler implements RouteProcessor {
             final Instance<Consumer> consumers,
             final EndpointInvoker endpointInvoker) {
         this.delegate = delegate;
+        this.pagingStrategy = pagingStrategies.isUnsatisfied() ? defaultPagingStrategy(): pagingStrategies.get();
+        this.endpointInvoker = endpointInvoker;
         for (Consumer consumer : consumers) {
             this.consumers.put(consumer.mediaType(), consumer);
         }
-        this.pagingStrategy = pagingStrategies.isUnsatisfied() ? defaultPagingStrategy(): pagingStrategies.get();
-        this.endpointInvoker = endpointInvoker;
     }
 
     @Override
