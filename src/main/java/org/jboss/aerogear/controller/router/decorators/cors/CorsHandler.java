@@ -32,24 +32,23 @@ import org.jboss.aerogear.controller.router.Router;
 import org.jboss.aerogear.controller.util.RequestUtils;
 
 /**
- * CorsHandler is a CDI decorator that decorates {@link Router} adding <a href="http://www.w3.org/TR/cors/">CORS</a>
- * support.
+ * CorsHandler is a CDI decorator that decorates {@link Router} adding <a href="http://www.w3.org/TR/cors/">CORS</a> support.
  * 
  * @see Cors
  * @see CorsConfiguration
  */
 @Decorator
 public class CorsHandler implements Router {
-    
+
     private final Router delegate;
     private final CorsConfiguration corsConfig;
-    
+
     @Inject
     public CorsHandler(final @Delegate Router delegate, final Instance<CorsConfiguration> corsConfigInstance) {
         this.delegate = delegate;
         this.corsConfig = corsConfigInstance.isUnsatisfied() ? CorsConfig.defaultConfig() : corsConfigInstance.get();
     }
-    
+
     @Override
     public boolean hasRouteFor(final HttpServletRequest request) {
         if (corsConfig.isCorsSupportEnabled() && RequestUtils.extractMethod(request).equals(RequestMethod.OPTIONS)) {
@@ -59,7 +58,8 @@ public class CorsHandler implements Router {
     }
 
     @Override
-    public void dispatch(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) throws ServletException {
+    public void dispatch(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
+            throws ServletException {
         final Cors cors = new Cors(corsConfig, request);
         if (cors.canHandleRequest()) {
             if (cors.isPreflightRequest()) {
@@ -71,11 +71,9 @@ public class CorsHandler implements Router {
         }
         delegate.dispatch(request, response, chain);
     }
-    
+
     private void handleSimpleRequest(final Cors cors, final HttpServletResponse response) {
-        cors.setAllowCredentials(response)
-            .setOrigin(response)
-            .setExposeHeaders(response);
+        cors.setAllowCredentials(response).setOrigin(response).setExposeHeaders(response);
     }
 
     private void handlePreflight(final Cors cors, final HttpServletResponse response) {
@@ -83,20 +81,17 @@ public class CorsHandler implements Router {
         if (!cors.isRequestMethodValid()) {
             AeroGearLogger.LOGGER.badCorsRequestMethod(cors.getRequestMethod(), cors.getAllowedRequestMethods());
             return;
-        } 
-        
+        }
+
         if (cors.hasRequestHeaders()) {
             if (!cors.areRequestHeadersValid()) {
                 AeroGearLogger.LOGGER.badCorsRequestHeaders(cors.getRequestHeaders(), cors.getAllowedRequestHeaders());
                 return;
             } else {
                 cors.setAllowHeaders(response);
-            } 
+            }
         }
-        cors.setAllowMethods(response)
-            .setAllowCredentials(response)
-            .setOrigin(response)
-            .setMaxAge(response);
+        cors.setAllowMethods(response).setAllowCredentials(response).setOrigin(response).setMaxAge(response);
     }
 
 }

@@ -18,6 +18,7 @@
 package org.jboss.aerogear.controller.router;
 
 import static org.jboss.aerogear.controller.router.parameter.Parameter.param;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -33,11 +34,8 @@ import net.sf.cglib.proxy.NoOp;
 
 import org.jboss.aerogear.controller.router.RouteBuilder.TargetEndpoint;
 import org.jboss.aerogear.controller.router.parameter.Parameter;
-import org.jboss.aerogear.controller.router.rest.pagination.NullPagingStrategy;
 import org.jboss.aerogear.controller.router.rest.pagination.Paginated;
-import org.jboss.aerogear.controller.router.rest.pagination.Pagination.OffsetStrategyBuilder;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.router.rest.pagination.PagingStrategy;
 
 /**
  * Describes/configures a single route in AeroGear controller.
@@ -53,16 +51,13 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private final List<Parameter<?>> parameters = new LinkedList<Parameter<?>>();
     private MediaType[] produces;
     private Set<Class<? extends Throwable>> throwables;
-    private OffsetStrategyBuilder offsetBuilder;
     private final static FinalizeFilter FINALIZE_FILTER = new FinalizeFilter();
 
     public RouteDescriptor() {
     }
-    
+
     /**
-     * Set the path for this instance. 
-     * </p>
-     * A RouteDescriptor may have an empty path if it is an error route. 
+     * Set the path for this instance. </p> A RouteDescriptor may have an empty path if it is an error route.
      * 
      * @param path the from path for this route.
      */
@@ -87,7 +82,8 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     public <T> T to(Class<T> clazz) {
         this.targetClass = clazz;
         try {
-            Object o = Enhancer.create(clazz, null, FINALIZE_FILTER, new Callback[] {new MyMethodInterceptor(this), NoOp.INSTANCE});
+            Object o = Enhancer.create(clazz, null, FINALIZE_FILTER, new Callback[] { new MyMethodInterceptor(this),
+                    NoOp.INSTANCE });
             return (T) o;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -126,8 +122,10 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
             if (method.getAnnotation(Paginated.class) != null) {
                 final Paginated paginated = method.getAnnotation(Paginated.class);
                 routeDescriptor.parameters.remove(param(PaginationInfo.class));
-                routeDescriptor.addParameter(param(paginated.offsetParamName(), String.valueOf(paginated.defaultOffset()), String.class));
-                routeDescriptor.addParameter(param(paginated.limitParamName(), String.valueOf(paginated.defaultLimit()), String.class));
+                routeDescriptor.addParameter(param(paginated.offsetParamName(), String.valueOf(paginated.defaultOffset()),
+                        String.class));
+                routeDescriptor.addParameter(param(paginated.limitParamName(), String.valueOf(paginated.defaultLimit()),
+                        String.class));
             }
             this.routeDescriptor.targetMethod = method;
             this.routeDescriptor.args = args;
@@ -137,22 +135,19 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
 
     @Override
     public String toString() {
-        return "RouteDescriptor{" +
-                "path='" + path + '\'' +
-                ", targetMethod=" + targetMethod +
-                ", args=" + (args == null ? null : Arrays.asList(args)) +
-                '}';
+        return "RouteDescriptor{" + "path='" + path + '\'' + ", targetMethod=" + targetMethod + ", args="
+                + (args == null ? null : Arrays.asList(args)) + '}';
     }
 
     public RouteDescriptor setThrowables(Set<Class<? extends Throwable>> throwables) {
         this.throwables = throwables;
         return this;
     }
-    
+
     public Set<Class<? extends Throwable>> getThrowables() {
         return throwables;
     }
-    
+
     public List<Parameter<?>> getParameters() {
         return parameters;
     }
@@ -162,23 +157,23 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
         this.produces = produces;
         return this;
     }
-    
+
     public MediaType[] getProduces() {
         return produces;
     }
-    
+
     @Override
     public TargetEndpoint consumes(String... consumes) {
         this.consumes.addAll(Arrays.asList(consumes));
         return this;
     }
-    
+
     @Override
     public TargetEndpoint consumes(MediaType... consumes) {
         this.consumes.addAll(toStrings(consumes));
         return this;
     }
-    
+
     private List<String> toStrings(MediaType... mediaTypes) {
         final List<String> strings = new LinkedList<String>();
         for (MediaType mediaType : mediaTypes) {
@@ -186,28 +181,21 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
         }
         return strings;
     }
-    
+
     public List<String> getConsumes() {
         return consumes;
     }
-    
-    public PagingStrategy getPagingStrategy() {
-        if (offsetBuilder != null) {
-            return offsetBuilder.build();
-        }
-        return NullPagingStrategy.INSTANCE;
-    }
-    
+
     public void addParameter(final Parameter<?> parameter) {
         parameters.add(parameter);
     }
-    
+
     private static class FinalizeFilter implements CallbackFilter {
-        
+
         /* Indexes into the callback array */
         private static final int OUR_INTERCEPTOR = 0;
         private static final int NO_OP = 1;
-    
+
         @Override
         public int accept(Method method) {
             return method.getName().equals("finalize") ? NO_OP : OUR_INTERCEPTOR;

@@ -35,7 +35,5 @@ public class MissingRequestParameterException extends RuntimeException {
     public MissingRequestParameterException(Throwable cause) {
         super(cause);
     }
-    
-    
 
 }

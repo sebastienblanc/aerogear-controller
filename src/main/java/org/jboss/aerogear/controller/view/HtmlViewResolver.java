@@ -17,8 +17,6 @@
 
 package org.jboss.aerogear.controller.view;
 
-
-
 /**
  * A ViewResolver that resolves a static html page for a Route.
  */

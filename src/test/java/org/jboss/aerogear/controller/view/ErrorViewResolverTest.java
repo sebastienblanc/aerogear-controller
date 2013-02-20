@@ -32,36 +32,35 @@ import org.junit.Test;
 
 public class ErrorViewResolverTest {
 
-    @Test (expected = NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void constructWithNullDelegate() {
         new ErrorViewResolver(null);
     }
-    
+
     @Test
     public void resolveGlobalErrorPath() {
         final ErrorViewResolver evs = new ErrorViewResolver(new JspViewResolver());
         final String resolvedPath = evs.resolveViewPathFor(ErrorRoute.DEFAULT.getRoute());
         assertThat(resolvedPath).isEqualTo("/ErrorFilter");
     }
-    
+
     @Test
     public void resolveCustomErrorPath() throws Exception {
         final ErrorViewResolver evs = new ErrorViewResolver(new JspViewResolver());
         final Route customErrorRoute = customErrorRoute(IllegalArgumentException.class);
         assertThat(evs.resolveViewPathFor(customErrorRoute)).isEqualTo("/WEB-INF/pages/ErrorTarget/errorPage.jsp");
     }
-    
+
     @SuppressWarnings("unchecked")
     private Route customErrorRoute(final Class<? extends Throwable> t) throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
-        rd.setPath("ErrorFilter")
-            .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(t)))
-            .on(RequestMethod.GET).to(ErrorTarget.class).errorPage();
+        rd.setPath("ErrorFilter").setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(t)))
+                .on(RequestMethod.GET).to(ErrorTarget.class).errorPage();
         return new DefaultRoute(rd);
     }
-       
+
     static class ErrorTarget {
         public void errorPage() {
-        } 
+        }
     }
 }

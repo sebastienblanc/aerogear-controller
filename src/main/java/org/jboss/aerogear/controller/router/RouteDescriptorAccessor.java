@@ -18,8 +18,7 @@
 package org.jboss.aerogear.controller.router;
 
 public interface RouteDescriptorAccessor {
-    
+
     RouteDescriptor getRouteDescriptor();
-    
 
 }

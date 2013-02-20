@@ -46,7 +46,7 @@ public class ParameterExtractor {
 
     /**
      * Extracts the arguments from the current request for the target route.
-     *
+     * 
      * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext}.
      * @return {@code Object[]} an array of Object matching the route targets parameters.
      */
@@ -54,38 +54,39 @@ public class ParameterExtractor {
         final Map<String, Object> args = new LinkedHashMap<String, Object>();
         for (Parameter<?> parameter : routeContext.getRoute().getParameters()) {
             switch (parameter.getParameterType()) {
-            case ENTITY:
-                if (PaginationInfo.class.isAssignableFrom(parameter.getType())) {
+                case ENTITY:
+                    if (PaginationInfo.class.isAssignableFrom(parameter.getType())) {
+                        break;
+                    }
+                    if (!addIfPresent(extractIogiParam(routeContext), "entity", args)) {
+                        args.put("entity", extractBody(routeContext, parameter, consumers));
+                    }
                     break;
-                }
-                if (!addIfPresent(extractIogiParam(routeContext), "entity", args)) {
-                    args.put("entity", extractBody(routeContext, parameter, consumers));
-                }
-                break;
-            case REQUEST:
-                final RequestParameter<?> requestParameter = (RequestParameter<?>) parameter;
-                if (addIfPresent(extractParam(routeContext, requestParameter), requestParameter.getName(), args)) {
-                    break;
-                }
-                if (addIfPresent(extractHeaderParam(routeContext, requestParameter), requestParameter.getName(), args)) {
-                    break;
-                }
-                if (addIfPresent(extractCookieParam(routeContext, requestParameter), requestParameter.getName(), args)) {
-                    break;
-                }
-                if (addIfPresent(requestParameter.getDefaultValue(), requestParameter.getName(), args)) {
-                    break;
-                }
-                if (addIfPresent(extractPathParam(routeContext), requestParameter.getName(), args)) {
-                    break;
-                } 
-                throw LoggerMessages.MESSAGES.missingParameterInRequest(requestParameter.getName());
+                case REQUEST:
+                    final RequestParameter<?> requestParameter = (RequestParameter<?>) parameter;
+                    if (addIfPresent(extractParam(routeContext, requestParameter), requestParameter.getName(), args)) {
+                        break;
+                    }
+                    if (addIfPresent(extractHeaderParam(routeContext, requestParameter), requestParameter.getName(), args)) {
+                        break;
+                    }
+                    if (addIfPresent(extractCookieParam(routeContext, requestParameter), requestParameter.getName(), args)) {
+                        break;
+                    }
+                    if (addIfPresent(requestParameter.getDefaultValue(), requestParameter.getName(), args)) {
+                        break;
+                    }
+                    if (addIfPresent(extractPathParam(routeContext), requestParameter.getName(), args)) {
+                        break;
+                    }
+                    throw LoggerMessages.MESSAGES.missingParameterInRequest(requestParameter.getName());
             }
         }
         return args;
     }
 
-    private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter, final Map<String, Consumer> consumers) {
+    private static Object extractBody(final RouteContext routeContext, final Parameter<?> parameter,
+            final Map<String, Consumer> consumers) {
         final Set<String> mediaTypes = routeContext.getRoute().consumes();
         for (String mediaType : mediaTypes) {
             final Consumer consumer = consumers.get(mediaType);
@@ -98,9 +99,9 @@ public class ParameterExtractor {
 
     /**
      * Extracts a path parameter from the passed in request path.
-     *
-     * @param routeContext  the {@link org.jboss.aerogear.controller.router.RouteContext} to extract a path parameter from.
-     * @return {@code Optional<String>}  containing the extracted path param if present in the request path.
+     * 
+     * @param routeContext the {@link org.jboss.aerogear.controller.router.RouteContext} to extract a path parameter from.
+     * @return {@code Optional<String>} containing the extracted path param if present in the request path.
      */
     public static Optional<String> extractPathParam(final RouteContext routeContext) {
         final String requestPath = routeContext.getRequestPath();
@@ -112,12 +113,10 @@ public class ParameterExtractor {
     }
 
     /**
-     * Returns an instance of the type used in the parameter names using Iogi.
-     * </p>
-     * For example, having form parameters named 'car.color', 'car.brand', this method
-     * would try to use those values to instantiate a new Car instance.
-     *
-     * @return {@link com.google.common.base.Optional}  may contain the instantiated instance, else isPresent will return false.
+     * Returns an instance of the type used in the parameter names using Iogi. </p> For example, having form parameters named
+     * 'car.color', 'car.brand', this method would try to use those values to instantiate a new Car instance.
+     * 
+     * @return {@link com.google.common.base.Optional} may contain the instantiated instance, else isPresent will return false.
      */
     public static Optional<?> extractIogiParam(final RouteContext routeContext) {
         final LinkedList<br.com.caelum.iogi.parameters.Parameter> parameters = new LinkedList<br.com.caelum.iogi.parameters.Parameter>();
@@ -133,11 +132,12 @@ public class ParameterExtractor {
             final Class<?>[] parameterTypes = routeContext.getRoute().getTargetMethod().getParameterTypes();
             final Class<?> parameterType = parameterTypes[0];
             final Target<?> target = Target.create(parameterType, StringUtils.downCaseFirst(parameterType.getSimpleName()));
-            return Optional.fromNullable(IOGI.instantiate(target, parameters.toArray(new br.com.caelum.iogi.parameters.Parameter[parameters.size()])));
+            return Optional.fromNullable(IOGI.instantiate(target,
+                    parameters.toArray(new br.com.caelum.iogi.parameters.Parameter[parameters.size()])));
         }
         return Optional.absent();
     }
-    
+
     private static boolean addIfPresent(final Optional<?> op, final String paramName, final Map<String, Object> args) {
         if (op.isPresent()) {
             args.put(paramName, op.get());

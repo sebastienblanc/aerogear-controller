@@ -27,10 +27,10 @@ import org.jboss.aerogear.controller.router.RouteContext;
  * @see ViewResolver
  */
 public class AbstractViewResponder implements Responder {
-    
+
     private final ViewResolver viewResolver;
     private final MediaType mediaType;
-    
+
     public AbstractViewResponder(final ViewResolver viewResolver, final MediaType mediaType) {
         this.viewResolver = viewResolver;
         this.mediaType = mediaType;
@@ -48,12 +48,13 @@ public class AbstractViewResponder implements Responder {
         if (view.hasModelData()) {
             routeContext.getRequest().setAttribute(view.getModelName(), view.getModel());
         }
-        routeContext.getRequest().getRequestDispatcher(view.getViewPath()).forward(routeContext.getRequest(), routeContext.getResponse());
+        routeContext.getRequest().getRequestDispatcher(view.getViewPath())
+                .forward(routeContext.getRequest(), routeContext.getResponse());
     }
 
     @Override
     public MediaType mediaType() {
         return mediaType;
     }
-    
+
 }

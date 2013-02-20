@@ -24,29 +24,29 @@ import com.google.common.base.Optional;
  * Properties related to the offset/limit pagination strategy.
  * <p/>
  */
-public class PagingProperties {
-        
+public class PaginationProperties {
+
     private final int offset;
     private final int limit;
     private final Optional<Integer> total;
-    
-    public PagingProperties(final int offset, final int limit) {
+
+    public PaginationProperties(final int offset, final int limit) {
         this(offset, limit, -1);
     }
-        
-    public PagingProperties(final int offset, final int limit, final int total) {
+
+    public PaginationProperties(final int offset, final int limit, final int total) {
         checkValues(offset, limit);
         this.offset = offset;
         this.limit = limit;
-        this.total = total == -1 ? Optional.<Integer>absent() : Optional.of(Integer.valueOf(total));
+        this.total = total == -1 ? Optional.<Integer> absent() : Optional.of(Integer.valueOf(total));
     }
-    
+
     private void checkValues(final int offset, final int limit) {
-        if (offset < 0 || limit <= 0 ) {
+        if (offset < 0 || limit <= 0) {
             throw LoggerMessages.MESSAGES.invalidPagingRequest(offset, limit);
         }
     }
-    
+
     public int offset() {
         return offset;
     }
@@ -58,7 +58,7 @@ public class PagingProperties {
     public Optional<Integer> total() {
         return total;
     }
-    
+
     public int nextOffset() {
         if (offset == 0) {
             return limit;
@@ -71,11 +71,11 @@ public class PagingProperties {
         }
         return offset + limit;
     }
-    
+
     public int previousOffset() {
         if (isOffsetGreaterThanTotal()) {
             final int total = this.total.get();
-            return total-limit;
+            return total - limit;
         }
         final int difference = offset - limit;
         if (difference < 0) {
@@ -83,11 +83,11 @@ public class PagingProperties {
         }
         return difference;
     }
-    
+
     public boolean isFirstOffset() {
         return offset < limit;
     }
-    
+
     public boolean isLastOffset() {
         if (total.isPresent()) {
             final int total = this.total.get();
@@ -95,7 +95,7 @@ public class PagingProperties {
         }
         return false;
     }
-    
+
     public boolean isOffsetGreaterThanTotal() {
         if (total.isPresent()) {
             final int total = this.total.get();
@@ -106,11 +106,8 @@ public class PagingProperties {
 
     @Override
     public String toString() {
-        return "Params[offset=" + offset + 
-                ", limit=" + limit + 
-                ", total=" + total + 
-                ", nextOffset=" + nextOffset() + 
-                ", previousOffset=" + previousOffset() + "]";
+        return "Params[offset=" + offset + ", limit=" + limit + ", total=" + total + ", nextOffset=" + nextOffset()
+                + ", previousOffset=" + previousOffset() + "]";
     }
 
 }

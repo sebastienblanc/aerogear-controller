@@ -22,6 +22,7 @@ import org.jboss.aerogear.controller.router.Route;
 
 /**
  * An Abstract {@link ViewResolver} pattern for resolving a view is as follows:
+ * 
  * <pre>
  * /WEB-INF/pages/TargetClassName/TargetMethodName<.suffix>
  * </pre>
@@ -32,7 +33,7 @@ public abstract class AbstractViewResolver implements ViewResolver {
 
     private static final String DEFAULT_PREFIX = "/WEB-INF/pages";
     private final String suffix;
-    
+
     public AbstractViewResolver(final String suffix) {
         this.suffix = suffix;
     }

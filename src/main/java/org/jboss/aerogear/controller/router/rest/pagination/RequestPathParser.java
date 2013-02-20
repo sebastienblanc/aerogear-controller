@@ -20,7 +20,7 @@ package org.jboss.aerogear.controller.router.rest.pagination;
  * RequestPathParser is able to replace, or add query parameters related to pagination.
  */
 public class RequestPathParser {
-    
+
     private PaginationInfo pgInfo;
     private final String requestPath;
 
@@ -28,7 +28,7 @@ public class RequestPathParser {
         pgInfo = paginationInfo;
         this.requestPath = requestPath;
     }
-    
+
     /**
      * Replaces the offset and limit for the current request.
      * 
@@ -40,7 +40,7 @@ public class RequestPathParser {
         final String path = replaceParam(pgInfo.getOffsetParamName(), String.valueOf(offset), requestPath);
         return replaceParam(pgInfo.getLimitParamName(), String.valueOf(limit), path);
     }
-    
+
     private String replaceParam(final String paramName, final String paramValue, final String path) {
         final StringBuilder parsed = new StringBuilder();
         final int startIdx = path.indexOf(paramName);
@@ -56,9 +56,9 @@ public class RequestPathParser {
         }
         return parsed.toString();
     }
-    
+
     private boolean paramMissingFromQueryPath(final int idx) {
         return idx == -1;
     }
-    
+
 }

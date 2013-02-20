@@ -33,27 +33,25 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.aerogear.controller.util.RequestUtils;
 
 /**
- * Default implementation of {@link Router}.
- * </p>
- * This implementation uses Context and Dependency Injection (CDI) to have various parts injected into it. Of<br>
+ * Default implementation of {@link Router}. </p> This implementation uses Context and Dependency Injection (CDI) to have
+ * various parts injected into it. Of<br>
  * particular interest for end users is the {@link RoutingModule} which is described in more detail in the section below.
  * 
- * <h3> RoutingModule </h3>
- * The CDI implementation will scan for an instance of {@link RoutingModule} upon deployment, and its<br> 
+ * <h3>RoutingModule</h3> The CDI implementation will scan for an instance of {@link RoutingModule} upon deployment, and its<br>
  * {@link RoutingModule#build()} method will be called to assemble the routes configured for this application.<br>
  * To simplify this process {@link AbstractRoutingModule} is provided, please refer its javadoc for sample usage.
  */
 public class DefaultRouter implements Router {
-    
+
     private Routes routes;
     private RouteProcessor routeProcessor;
-    
+
     public DefaultRouter() {
     }
-    
+
     @Inject
     public DefaultRouter(Instance<RoutingModule> instance, RouteProcessor routeProcessor) {
-        this.routes = instance.isUnsatisfied() ? Routes.from(Collections.<RouteBuilder>emptyList()) : instance.get().build();
+        this.routes = instance.isUnsatisfied() ? Routes.from(Collections.<RouteBuilder> emptyList()) : instance.get().build();
         this.routeProcessor = routeProcessor;
     }
 
@@ -72,5 +70,5 @@ public class DefaultRouter implements Router {
             throw new ServletException(e.getMessage(), e);
         }
     }
-    
+
 }

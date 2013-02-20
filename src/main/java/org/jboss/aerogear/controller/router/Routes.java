@@ -26,9 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Routes is a collection of {@link Route} instances that are able to handle certain
- * {@link RequestMethod}/requestURI combinations.
- * </p>
+ * Routes is a collection of {@link Route} instances that are able to handle certain {@link RequestMethod}/requestURI
+ * combinations. </p>
  * 
  * This class also provides static factory methods for creating Routes instances.
  */
@@ -43,8 +42,7 @@ public class Routes {
     }
 
     /**
-     * Simple Factory method for creating a {@link RouteBuilder} which is used to define
-     * a route. 
+     * Simple Factory method for creating a {@link RouteBuilder} which is used to define a route.
      * 
      * @return {@link RouteBuilder} which can be used to gather information about a Route.
      */
@@ -64,9 +62,7 @@ public class Routes {
 
     @Override
     public String toString() {
-        return "Routes{" +
-                "routes=" + routes +
-                '}';
+        return "Routes{" + "routes=" + routes + '}';
     }
 
     /**
@@ -93,8 +89,8 @@ public class Routes {
      * @param method the HTTP {@link RequestMethod}.
      * @param requestURI the URI.
      * @param acceptHeaders the accept headers provided, or an empty set if none were provided.
-     * @return {@link Route} configured to server the {@link RequestMethod}/URI combination. Will throw
-     * a RuntimeException if the specified RequestMethod/URI combination is not supported by this Routes instance.
+     * @return {@link Route} configured to server the {@link RequestMethod}/URI combination. Will throw a RuntimeException if
+     *         the specified RequestMethod/URI combination is not supported by this Routes instance.
      */
     public Route routeFor(RequestMethod method, String requestURI, Set<String> acceptHeaders) {
         for (Route route : routes) {
@@ -104,13 +100,13 @@ public class Routes {
         }
         throw LoggerMessages.MESSAGES.routeNotFound(method, requestURI, acceptHeaders);
     }
-    
+
     /**
      * Returns the {@link Route} for the specified {@link Throwable}.
      * 
      * @param throwable the {@link Throwable} to match with a {@link Route}
-     * @return {@link Route} an error {@link Route} that can the type of the passed-in {@link Throwable}, 
-     * or if no error route was specified a {@link ErrorRoute#DEFAULT} will be returned.
+     * @return {@link Route} an error {@link Route} that can the type of the passed-in {@link Throwable}, or if no error route
+     *         was specified a {@link ErrorRoute#DEFAULT} will be returned.
      */
     public Route routeFor(Throwable throwable) {
         for (Route route : routes) {

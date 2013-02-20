@@ -21,7 +21,7 @@ import org.jboss.aerogear.controller.view.AbstractViewResponder;
 import org.jboss.aerogear.controller.view.HtmlViewResolver;
 
 public class ErrorViewResponder extends AbstractViewResponder {
-    
+
     public static final MediaType MEDIA_TYPE = new MediaType("text/html", ErrorViewResponder.class);
 
     public ErrorViewResponder() {

@@ -16,26 +16,24 @@
  */
 package org.jboss.aerogear.controller.router.rest.pagination;
 
-import org.jboss.aerogear.controller.router.RouteContext;
+public class PaginationRequestException extends RuntimeException {
 
-/**
- * Null Object Pattern implementation of {@link PagingStrategy} which simply passes throw the results.
- */
-public class NullPagingStrategy implements PagingStrategy {
-    
-    public static final NullPagingStrategy INSTANCE = new NullPagingStrategy();
-    
-    private NullPagingStrategy() {
+    private static final long serialVersionUID = 1L;
+
+    public PaginationRequestException() {
+        super();
     }
 
-    @Override
-    public Object process(Object results, RouteContext routeContext) {
-        return results;
+    public PaginationRequestException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public PaginationInfo getPaginationInfo() {
-        throw new UnsupportedOperationException("Should never be called on a Null Object instance");
+    public PaginationRequestException(String message) {
+        super(message);
+    }
+
+    public PaginationRequestException(Throwable cause) {
+        super(cause);
     }
 
 }

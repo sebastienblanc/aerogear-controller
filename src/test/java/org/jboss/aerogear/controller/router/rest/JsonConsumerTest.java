@@ -33,23 +33,23 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class JsonConsumerTest {
-    
+
     @Mock
     private HttpServletRequest request;
     @Mock
     private ServletInputStream servletInputStream;
-    
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
-    
+
     @Test
     public void mediaType() {
         final JsonConsumer consumer = new JsonConsumer();
         assertThat(consumer.mediaType()).isEqualTo(MediaType.JSON.getMediaType());
     }
-    
+
     @Test
     public void unmarshall() throws Exception {
         final JsonConsumer consumer = new JsonConsumer();
@@ -59,7 +59,7 @@ public class JsonConsumerTest {
         assertThat(entity.getName()).isEqualTo("Fletch");
         assertThat(entity.getAge()).isEqualTo(44);
     }
-    
+
     private ServletInputStream from(final String json) {
         final ByteArrayInputStream ba = new ByteArrayInputStream(json.getBytes());
         return new ServletInputStream() {

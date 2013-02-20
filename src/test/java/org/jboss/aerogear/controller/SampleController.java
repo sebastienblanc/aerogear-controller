@@ -41,44 +41,44 @@ public class SampleController {
 
     public void save(Car car) {
     }
-    
+
     public void save(String color, String brand) {
     }
-    
+
     public void save(Car car, String metadata) {
     }
 
     public void find(String id) {
     }
-    
+
     public void find(String color, String brand) {
     }
-    
+
     @Paginated
     public List<Integer> findBy(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
-    
+
     @Paginated
     public List<Integer> findByWithDefaults(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
-    
-    @Paginated (webLinking = false)
+
+    @Paginated(webLinking = false)
     public List<Integer> findByWithCustomHeadersDefaultPrefix(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
-    
-    @Paginated (webLinking = false, customHeadersPrefix = "Test-")
+
+    @Paginated(webLinking = false, customHeadersPrefix = "Test-")
     public List<Integer> findByWithCustomHeadersPrefix(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
-    
-    @Paginated (offsetParamName = "myoffset", limitParamName = "mylimit", customHeadersPrefix = "TS-", webLinking = false)
+
+    @Paginated(offsetParamName = "myoffset", limitParamName = "mylimit", customHeadersPrefix = "TS-", webLinking = false)
     public List<Integer> findByWithCustomParamNames(PaginationInfo pinfo, String query) {
         return ints(pinfo.getOffset(), pinfo.getLimit(), 50);
     }
-    
+
     private List<Integer> ints(final int offset, final int limit, final int total) {
         final ArrayList<Integer> ints = new ArrayList<Integer>();
         if (offset >= total) {
@@ -93,14 +93,14 @@ public class SampleController {
 
     public void admin() {
     }
-    
+
     public void error(final Exception e) {
     }
 
     public void throwSampleControllerException() throws SampleControllerException {
         throw new SampleControllerException("Bogus exception");
     }
-    
+
     public void throwIllegalStateException() {
         throw new IllegalStateException("Bogus exception");
     }
@@ -111,10 +111,10 @@ public class SampleController {
     public ErrorResponse errorResponse() {
         return new JsonErrorResponse(HttpServletResponse.SC_NOT_FOUND).json(Collections.emptyList());
     }
-    
+
     public void superException() {
     }
-    
+
     public void subException() {
     }
 }

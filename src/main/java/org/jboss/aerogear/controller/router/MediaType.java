@@ -22,13 +22,13 @@ import org.jboss.aerogear.controller.view.HtmlViewResponder;
 import org.jboss.aerogear.controller.view.JspViewResponder;
 
 public class MediaType {
-    
+
     public static final MediaType HTML = new MediaType("text/html", HtmlViewResponder.class);
     public static final MediaType JSP = new MediaType(HTML.getMediaType(), JspViewResponder.class);
     public static final MediaType JSON = new MediaType("application/json", JsonResponder.class);
-    
+
     public static final String ANY = "*/*";
-    
+
     private final String mediaType;
     private final Class<? extends Responder> responderClass;
 
@@ -45,7 +45,7 @@ public class MediaType {
     public String toString() {
         return "MediaType[type=" + mediaType + ", responderClass=" + responderClass + "]";
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -67,7 +67,7 @@ public class MediaType {
             return false;
         }
         final MediaType other = (MediaType) obj;
-        if (mediaType == null) { 
+        if (mediaType == null) {
             if (other.mediaType != null) {
                 return false;
             }

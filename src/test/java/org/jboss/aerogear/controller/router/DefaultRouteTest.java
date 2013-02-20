@@ -29,11 +29,11 @@ import org.jboss.aerogear.controller.SampleController;
 import org.junit.Test;
 
 public class DefaultRouteTest {
-    
-    private static final RequestMethod[] GET = new RequestMethod[]{RequestMethod.GET};
+
+    private static final RequestMethod[] GET = new RequestMethod[] { RequestMethod.GET };
     private static final Class<?> TARGET_CLASS = SampleController.class;
     private static final Method TARGET_METHOD = indexMethod(TARGET_CLASS, "index");
-    
+
     @Test
     public void defaults() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
@@ -49,11 +49,11 @@ public class DefaultRouteTest {
         assertThat(route.hasExceptionsRoutes()).isFalse();
         assertThat(route.produces()).contains(MediaType.JSP);
     }
-    
+
     @Test
     public void createRouteWithNullHttpMethods() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
-        rd.setPath("/car/{id}").on((RequestMethod[])null).to(SampleController.class).index();
+        rd.setPath("/car/{id}").on((RequestMethod[]) null).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
         assertThat(route.getMethods()).isEmpty();
     }
@@ -61,7 +61,7 @@ public class DefaultRouteTest {
     @Test
     public void constructWithNullRoles() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
-        rd.setPath("/car/{id}").roles((String[])null).on(GET).to(SampleController.class).index();
+        rd.setPath("/car/{id}").roles((String[]) null).on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
         assertThat(route.getRoles()).isEmpty();
     }
@@ -69,7 +69,8 @@ public class DefaultRouteTest {
     @Test
     public void constructWithNullExceptions() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
-        rd.setPath("/car/{id}").setThrowables((Set<Class<? extends Throwable>>) null).on(GET).to(SampleController.class).index();
+        rd.setPath("/car/{id}").setThrowables((Set<Class<? extends Throwable>>) null).on(GET).to(SampleController.class)
+                .index();
         final Route route = new DefaultRoute(rd);
         assertThat(route.hasExceptionsRoutes()).isFalse();
     }
@@ -82,17 +83,18 @@ public class DefaultRouteTest {
         assertThat(route.getRoles().size()).isEqualTo(1);
         assertThat(route.getRoles()).contains("admin");
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void constructWithExceptions() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
-        rd.setPath("/car/{id}").setThrowables(exceptions(IllegalArgumentException.class)).on(GET).to(SampleController.class).index();
+        rd.setPath("/car/{id}").setThrowables(exceptions(IllegalArgumentException.class)).on(GET).to(SampleController.class)
+                .index();
         final Route route = new DefaultRoute(rd);
         assertThat(route.hasExceptionsRoutes()).isTrue();
     }
-    
-    @Test (expected = UnsupportedOperationException.class)
+
+    @Test(expected = UnsupportedOperationException.class)
     public void tryToModifyRoles() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").roles("admin").on(GET).to(SampleController.class).index();
@@ -100,7 +102,7 @@ public class DefaultRouteTest {
         route.getRoles().remove("admin");
     }
 
-    @Test (expected = UnsupportedOperationException.class)
+    @Test(expected = UnsupportedOperationException.class)
     public void tryToModifyHttpMethods() throws Exception {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
@@ -115,11 +117,11 @@ public class DefaultRouteTest {
         final Route route = new DefaultRoute(rd);
         assertThat(route.matches(RequestMethod.GET, "/index", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
     }
-    
+
     private Set<String> acceptHeaders(String... mediaTypes) {
         return new HashSet<String>(Arrays.asList(mediaTypes));
     }
-    
+
     @Test
     public void matchParameterizedRoutePaths() throws NoSuchMethodException {
         final RouteDescriptor rd = new RouteDescriptor();
@@ -131,7 +133,7 @@ public class DefaultRouteTest {
         assertThat(route.matches(RequestMethod.GET, "/carss", acceptHeaders(MediaType.HTML.getMediaType()))).isFalse();
         assertThat(route.matches(RequestMethod.GET, "/somelongpath", acceptHeaders(MediaType.HTML.getMediaType()))).isFalse();
     }
-    
+
     @Test
     public void doesNotMatchesProduces() throws NoSuchMethodException {
         final RouteDescriptor rd = new RouteDescriptor();
@@ -140,7 +142,7 @@ public class DefaultRouteTest {
         final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType()));
         assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isFalse();
     }
-    
+
     @Test
     public void matchesProduces() throws NoSuchMethodException {
         final RouteDescriptor rd = new RouteDescriptor();
@@ -149,7 +151,7 @@ public class DefaultRouteTest {
         final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.HTML.getMediaType()));
         assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isTrue();
     }
-    
+
     @Test
     public void matchesProducesAny() throws NoSuchMethodException {
         final RouteDescriptor rd = new RouteDescriptor();
@@ -158,20 +160,20 @@ public class DefaultRouteTest {
         final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList("*/*"));
         assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isTrue();
     }
-    
+
     @Test
     public void toStringTest() {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
-        final String expected = "DefaultRoute[path=/car/{id}, " +
-            "targetClass=class org.jboss.aerogear.controller.SampleController, " +
-            "targetMethod=public void org.jboss.aerogear.controller.SampleController.index(), " +
-            "produces=[MediaType[type=text/html, responderClass=class org.jboss.aerogear.controller.view.JspViewResponder]], " +
-            "parameters=[], roles=[], throwables=[]]";
+        final String expected = "DefaultRoute[path=/car/{id}, "
+                + "targetClass=class org.jboss.aerogear.controller.SampleController, "
+                + "targetMethod=public void org.jboss.aerogear.controller.SampleController.index(), "
+                + "produces=[MediaType[type=text/html, responderClass=class org.jboss.aerogear.controller.view.JspViewResponder]], "
+                + "parameters=[], roles=[], throwables=[]]";
         assertThat(route.toString()).isEqualTo(expected);
     }
-    
+
     @Test
     public void produces() {
         final RouteDescriptor rd = new RouteDescriptor();
@@ -189,9 +191,9 @@ public class DefaultRouteTest {
         }
         return m;
     }
-    
+
     private Set<Class<? extends Throwable>> exceptions(final Class<? extends Throwable>... exs) {
         return new HashSet<Class<? extends Throwable>>(Arrays.asList(exs));
     }
-    
+
 }

@@ -17,38 +17,38 @@
 
 package org.jboss.aerogear.controller.router;
 
-
 /**
- * RouteBuilder builds a {@link Route} using a fluent API.
- * </p>
- * Sample Usage:<pre>{@code 
+ * RouteBuilder builds a {@link Route} using a fluent API. </p> Sample Usage:
+ * 
+ * <pre>
+ * {@code 
  *     RouteBuilder routeBuilder = ...;
  *     routeBuilder.from("/home")
  *                 .on(RequestMethod.GET)
  *                 .to(SampleController.class).index();
  *     Route route = routeBuilder.build();
- * }</pre>
+ * }
+ * </pre>
  */
 public interface RouteBuilder {
 
     /**
-     * Specifies that this route should be able to handle any of the types of exceptions passed-in.
-     * The method is used to define an error route.
+     * Specifies that this route should be able to handle any of the types of exceptions passed-in. The method is used to define
+     * an error route.
      * 
      * @param exception a single class of type, or subtype, {@link Throwable}.
      * @param exceptions zero or more classes of type, or subtypes, of {@link Throwable}.
-     * @return {@link TargetEndpoint} to enable further configuration of the route, such as
-     * * specifying the target class and method that will be called when the exception(s) 
-     * are thrown.
+     * @return {@link TargetEndpoint} to enable further configuration of the route, such as * specifying the target class and
+     *         method that will be called when the exception(s) are thrown.
      */
     TargetEndpoint on(Class<? extends Throwable> exception, Class<?>... exceptions);
-    
+
     /**
      * Specifies the request path that the {@link Route} will handle request from.
      * 
      * @param path the request path that the {@link Route} will handle request from.
-     * @return {@link OnMethods} which enables further specialization of the types of requests that
-     * can be handled by the {@link Route}.
+     * @return {@link OnMethods} which enables further specialization of the types of requests that can be handled by the
+     *         {@link Route}.
      */
     OnMethods from(String path);
 
@@ -56,7 +56,7 @@ public interface RouteBuilder {
      * A fluent API for further specializing the {@link Route}'s destination/endpoint.
      */
     public static interface OnMethods {
-        
+
         /**
          * Specifies which {@link RequestMethod}s should be supported by the {@link Route}.
          * 
@@ -64,7 +64,7 @@ public interface RouteBuilder {
          * @return {@link TargetEndpoint} which is a builder for the destination for this {@link Route}.
          */
         TargetEndpoint on(RequestMethod... methods);
-        
+
         /**
          * Specifies the roles that are allowed to invoke the target endpoint
          * 
@@ -78,31 +78,31 @@ public interface RouteBuilder {
      * Describes the target destination for the {@link Route}.
      */
     public static interface TargetEndpoint {
-        
+
         /**
-         * Specifies the media types that this endpoint can consumes. 
+         * Specifies the media types that this endpoint can consumes.
          * 
          * @param mediaTypes the media types that this endpoint method can consume.
          * @return {@link TargetEndpoint} to support method chaining.
          */
         TargetEndpoint consumes(String... mediaTypes);
-        
+
         /**
-         * Specifies the media types that this endpoint can consumes. 
+         * Specifies the media types that this endpoint can consumes.
          * 
          * @param mediaTypes the media types that this endpoint method can consume.
          * @return {@link TargetEndpoint} to support method chaining.
          */
         TargetEndpoint consumes(MediaType... mediaTypes);
-        
+
         /**
-         * Specifies the MediaType's that this endpoint produces. 
+         * Specifies the MediaType's that this endpoint produces.
          * 
          * @param mediaTypes the {@link MediaType}s that this endpoint method can produce.
          * @return {@link TargetEndpoint} to support method chaining.
          */
         TargetEndpoint produces(MediaType... mediaTypes);
-        
+
         /**
          * Specifies the target Class for the {@link Route}.
          * 

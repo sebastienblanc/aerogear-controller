@@ -23,7 +23,7 @@ import org.jboss.aerogear.controller.router.parameter.Parameter;
 import org.junit.Test;
 
 public class ParameterTest {
-    
+
     @Test
     public void pathParameter() {
         final Parameter<String> parameter = new Parameter<String>(Parameter.Type.REQUEST, String.class);

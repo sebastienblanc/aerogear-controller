@@ -20,22 +20,21 @@ package org.jboss.aerogear.controller;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-
 public class Car {
-    
+
     private final String color;
     private final String brand;
-    
+
     @JsonCreator
     public Car(@JsonProperty("color") final String color, @JsonProperty("brand") final String brand) {
         this.color = color;
         this.brand = brand;
     }
-    
+
     public String getColor() {
         return color;
     }
-    
+
     public String getBrand() {
         return brand;
     }

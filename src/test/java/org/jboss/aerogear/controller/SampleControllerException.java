@@ -36,7 +36,5 @@ public class SampleControllerException extends Exception {
     public SampleControllerException(Throwable cause) {
         super(cause);
     }
-    
-    
 
 }

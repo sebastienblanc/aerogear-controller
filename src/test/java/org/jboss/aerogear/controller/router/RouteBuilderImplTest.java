@@ -23,14 +23,14 @@ import org.jboss.aerogear.controller.SampleController;
 import org.junit.Test;
 
 public class RouteBuilderImplTest {
-    
+
     @Test
     public void testNoExceptions() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         assertThat(rb.build().hasExceptionsRoutes()).isFalse();
     }
-    
-    @Test (expected = IllegalArgumentException.class)
+
+    @Test(expected = IllegalArgumentException.class)
     public void testWrongExceptionType() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         rb.on(IllegalStateException.class, String.class);
@@ -45,7 +45,7 @@ public class RouteBuilderImplTest {
         assertThat(route.canHandle(new IllegalArgumentException())).isFalse();
         assertCanHandle(route, new IllegalStateException());
     }
-    
+
     @Test
     public void testOnExceptionSubtype() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
@@ -55,34 +55,35 @@ public class RouteBuilderImplTest {
         assertThat(route.canHandle(new Exception())).isTrue();
         assertThat(route.canHandle(new Throwable())).isFalse();
     }
-    
+
     @Test
     public void testOnMultipleExceptions() {
         final RouteBuilderImpl rb = defaultRouteBuilder();
         rb.on(IllegalStateException.class, IllegalArgumentException.class, UnsupportedOperationException.class);
-        assertCanHandle(rb.build(), new IllegalStateException(), new IllegalArgumentException(), new UnsupportedOperationException());
+        assertCanHandle(rb.build(), new IllegalStateException(), new IllegalArgumentException(),
+                new UnsupportedOperationException());
     }
-    
+
     @Test
     public void testProduces() {
         final RouteBuilderImpl rb = new RouteBuilderImpl();
         rb.from("/somepath").on(RequestMethod.GET).produces(MediaType.JSON).to(SampleController.class).index();
         assertThat(rb.build().produces()).contains(MediaType.JSON);
     }
-    
+
     @Test
     public void testConsumes() {
         final RouteBuilderImpl rb = new RouteBuilderImpl();
         rb.from("/somepath").on(RequestMethod.GET).consumes("application/json").to(SampleController.class).index();
         assertThat(rb.build().consumes()).contains("application/json");
     }
-    
+
     private void assertCanHandle(final Route route, final Throwable... t) {
         for (Throwable throwable : t) {
             assertThat(route.canHandle(throwable)).isTrue();
         }
     }
-    
+
     private RouteBuilderImpl defaultRouteBuilder() {
         final RouteBuilderImpl rb = new RouteBuilderImpl();
         rb.from("/path").on(RequestMethod.GET).to(SampleController.class).index();

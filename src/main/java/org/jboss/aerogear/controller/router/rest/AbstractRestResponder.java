@@ -28,17 +28,15 @@ import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
- * AbstractRestResponder is a Responder capable of returning a response to a request.
- * </p>
- * This class handles common task such as implementing {@link #accepts(String)} and making
- * sure that certain HTTP headers are always set on the {@link HttpServletResponse}, for example
- * that the 'Content-Type' header is set to the media type that this Responder accepts.
+ * AbstractRestResponder is a Responder capable of returning a response to a request. </p> This class handles common task such
+ * as implementing {@link #accepts(String)} and making sure that certain HTTP headers are always set on the
+ * {@link HttpServletResponse}, for example that the 'Content-Type' header is set to the media type that this Responder accepts.
  * 
  */
 public abstract class AbstractRestResponder implements Responder {
-    
+
     private final MediaType mediaType;
-    
+
     /**
      * Sole constructor that subclasses should call from tier no-args constructor
      * 
@@ -47,10 +45,10 @@ public abstract class AbstractRestResponder implements Responder {
     public AbstractRestResponder(final MediaType mediaType) {
         this.mediaType = mediaType;
     }
-    
+
     /**
-     * Writes the passed-in entity to the {@link HttpServletResponse} enabling concrete implementation
-     * to add additional headers of in other ways process the response. 
+     * Writes the passed-in entity to the {@link HttpServletResponse} enabling concrete implementation to add additional headers
+     * of in other ways process the response.
      * 
      * @param entity the entity returned from a {@link Route} endpoint.
      * @param routeContext the current {@link RouteContext}.
@@ -62,7 +60,7 @@ public abstract class AbstractRestResponder implements Responder {
     public boolean accepts(final String mediaType) {
         return this.mediaType.getMediaType().equals(mediaType);
     }
-    
+
     @Override
     public void respond(final Object entity, final RouteContext routeContext) throws Exception {
         final HttpServletResponse response = routeContext.getResponse();
@@ -77,10 +75,10 @@ public abstract class AbstractRestResponder implements Responder {
         }
         writeResponse(entity, routeContext);
     }
-    
+
     @Override
     public MediaType mediaType() {
         return mediaType;
     }
-    
+
 }

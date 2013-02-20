@@ -24,12 +24,10 @@ import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.error.ErrorResponse;
 
 /**
- * A RESTFul {@link Responder} that is able to return JSON responses.
- * </p>
- * This implementation uses Jackson for JSON support.
+ * A RESTFul {@link Responder} that is able to return JSON responses. </p> This implementation uses Jackson for JSON support.
  */
 public class JsonResponder extends AbstractRestResponder {
-    
+
     private final ObjectMapper mapper;
 
     public JsonResponder() {
@@ -49,7 +47,7 @@ public class JsonResponder extends AbstractRestResponder {
             }
         }
     }
-    
+
     private void writeJsonResponse(final Object entity, final RouteContext routeContext) throws Exception {
         mapper.writeValue(routeContext.getResponse().getWriter(), entity);
     }

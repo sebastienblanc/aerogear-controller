@@ -49,6 +49,7 @@ import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.SampleControllerException;
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 import org.jboss.aerogear.controller.router.ControllerFactory;
+import org.jboss.aerogear.controller.router.EndpointInvoker;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.Responder;
@@ -98,10 +99,10 @@ public class ErrorHandlerTest {
     private JspViewResponder jspResponder;
     @Mock
     private HtmlViewResponder htmlResponder;
-    
+
     private SampleController controller;
     private Responders responders;
-    
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -109,47 +110,40 @@ public class ErrorHandlerTest {
         configureExceptionTestMocks(controller);
         instrumentResponders();
     }
-    
-    @Test 
+
+    @Test
     public void testOnException() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() throws Exception {
-                route()
-                        .on(IllegalStateException.class)
-                        .produces(mockJsp())
-                        .to(SampleController.class).errorPage();
-                route()
-                        .from("/home")
-                        .on(RequestMethod.GET, RequestMethod.POST)
-                        .to(SampleController.class).throwIllegalStateException();
+                route().on(IllegalStateException.class).produces(mockJsp()).to(SampleController.class).errorPage();
+                route().from("/home").on(RequestMethod.GET, RequestMethod.POST).to(SampleController.class)
+                        .throwIllegalStateException();
             }
         };
         final Routes routes = routingModule.build();
         final Route route = routes.routeFor(RequestMethod.GET, "/home", acceptHeaders(MediaType.HTML.getMediaType()));
-        final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, responders, controllerFactory, beanManager);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
         errorHandler.process(new RouteContext(route, request, response, routes));
         verify(controller).errorPage();
         verify(jspResponder).respond(anyObject(), any(RouteContext.class));
     }
-    
-    @Test 
+
+    @Test
     public void testOnExceptions() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() throws Exception {
-                route()
-                        .on(SampleControllerException.class, IllegalStateException.class)
-                        .produces(mockJsp())
+                route().on(SampleControllerException.class, IllegalStateException.class).produces(mockJsp())
                         .to(SampleController.class).error(param(Exception.class));
-                route()
-                        .from("/home")
-                        .on(RequestMethod.GET, RequestMethod.POST)
-                        .to(SampleController.class).throwSampleControllerException();
+                route().from("/home").on(RequestMethod.GET, RequestMethod.POST).to(SampleController.class)
+                        .throwSampleControllerException();
             }
         };
-        final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, responders, controllerFactory, beanManager);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
         final Route route = routes.routeFor(RequestMethod.GET, "/home", acceptHeaders(MediaType.HTML.getMediaType()));
         errorHandler.process(new RouteContext(route, request, response, routingModule.build()));
@@ -157,54 +151,49 @@ public class ErrorHandlerTest {
         verify(jspResponder).respond(anyObject(), any(RouteContext.class));
         verify(jsonResponder, never()).respond(anyObject(), any(RouteContext.class));
     }
-    
+
     @Test
     public void testDefaultErrorRoute() throws Exception {
         final ErrorTarget errorTarget = mock(ErrorTarget.class);
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() throws Exception {
-                route()
-                        .from("/home")
-                        .on(RequestMethod.GET, RequestMethod.POST)
-                        .to(SampleController.class).throwSampleControllerException();
+                route().from("/home").on(RequestMethod.GET, RequestMethod.POST).to(SampleController.class)
+                        .throwSampleControllerException();
             }
         };
         final Routes routes = routingModule.build();
         final Responders responders = mock(Responders.class);
         final Route route = routes.routeFor(RequestMethod.GET, "/home", acceptHeaders(MediaType.HTML.getMediaType()));
-        final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, responders, controllerFactory, beanManager);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(SampleControllerException.class).when(routeProcessor).process(any(RouteContext.class));
         when(controllerFactory.createController(eq(ErrorTarget.class), eq(beanManager))).thenReturn(errorTarget);
         errorHandler.process(new RouteContext(route, request, response, routes));
         verify(errorTarget).error(any(SampleControllerException.class));
         verify(responders).respond(any(RouteContext.class), anyObject());
     }
-    
-    @Test 
+
+    @Test
     public void testJsonResponseOnException() throws Exception {
         final RoutingModule routingModule = new AbstractRoutingModule() {
             @Override
             public void configuration() throws Exception {
-                route()
-                        .on(IllegalStateException.class)
-                        .produces(MediaType.JSON)
-                        .to(SampleController.class).errorResponse();
-                route()
-                        .from("/home")
-                        .on(RequestMethod.GET, RequestMethod.POST)
-                        .produces(MediaType.JSON)
+                route().on(IllegalStateException.class).produces(MediaType.JSON).to(SampleController.class).errorResponse();
+                route().from("/home").on(RequestMethod.GET, RequestMethod.POST).produces(MediaType.JSON)
                         .to(SampleController.class).throwIllegalStateException();
             }
         };
         final Routes routes = routingModule.build();
         when(request.getHeader("Accept")).thenReturn(MediaType.JSON.getMediaType());
-        final Route route = routes.routeFor(RequestMethod.GET, "/home", new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType())));
+        final Route route = routes.routeFor(RequestMethod.GET, "/home",
+                new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType())));
         final JsonResponder spyJsonResponder = spy(new JsonResponder());
         final List<Responder> spyResponders = new LinkedList<Responder>(Arrays.asList(spyJsonResponder));
         when(this.responderInstance.iterator()).thenReturn(spyResponders.iterator());
         final Responders responders = new Responders(responderInstance);
-        final ErrorHandler errorHandler = new ErrorHandler(routeProcessor, responders, controllerFactory, beanManager);
+        final EndpointInvoker endpointInvoker = new EndpointInvoker(controllerFactory, beanManager);
+        final RouteProcessor errorHandler = new ResponseHandler(new ErrorHandler(routeProcessor, endpointInvoker), responders);
         doThrow(IllegalStateException.class).when(routeProcessor).process(any(RouteContext.class));
         final StringWriter stringWriter = new StringWriter();
         when(response.getWriter()).thenReturn(new PrintWriter(stringWriter));
@@ -214,7 +203,7 @@ public class ErrorHandlerTest {
         verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
         assertThat(stringWriter.toString()).isEqualTo("[]");
     }
-    
+
     private void configureExceptionTestMocks(final SampleController controller) {
         when(controllerFactory.createController(eq(SampleController.class), eq(beanManager))).thenReturn(controller);
         when(request.getMethod()).thenReturn(RequestMethod.GET.toString());
@@ -222,34 +211,34 @@ public class ErrorHandlerTest {
         when(servletContext.getContextPath()).thenReturn("/webapp");
         when(request.getRequestURI()).thenReturn("/webapp/home");
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
-        when(viewResolver.resolveViewPathFor((Route)anyObject())).thenReturn("WEB-INF/Home/error.jsp");
+        when(viewResolver.resolveViewPathFor((Route) anyObject())).thenReturn("WEB-INF/Home/error.jsp");
         when(request.getRequestDispatcher("WEB-INF/Home/error.jsp")).thenReturn(requestDispatcher);
-     }
-    
+    }
+
     private Set<String> acceptHeaders(String... mediaTypes) {
         return new HashSet<String>(Arrays.asList(mediaTypes));
     }
-    
+
     private MediaType mockJsp() {
-        return new MediaType(MediaType.JSP.getMediaType(), jspResponder.getClass()); 
+        return new MediaType(MediaType.JSP.getMediaType(), jspResponder.getClass());
     }
-    
+
     private MediaType mockJson() {
         return new MediaType(MediaType.JSON.getMediaType(), jsonResponder.getClass());
     }
-    
+
     private MediaType mockHtml() {
-        return new MediaType(MediaType.HTML.getMediaType(), htmlResponder.getClass()); 
+        return new MediaType(MediaType.HTML.getMediaType(), htmlResponder.getClass());
     }
-    
+
     private void instrumentResponders() {
         when(jspResponder.accepts(MediaType.HTML.getMediaType())).thenReturn(true);
         when(jspResponder.mediaType()).thenReturn(mockJsp());
         when(jspResponder.accepts(MediaType.ANY)).thenReturn(true);
-        
+
         when(htmlResponder.accepts(MediaType.HTML.getMediaType())).thenReturn(true);
         when(htmlResponder.mediaType()).thenReturn(mockHtml());
-        
+
         when(jsonResponder.accepts(MediaType.JSON.getMediaType())).thenReturn(true);
         when(jsonResponder.mediaType()).thenReturn(mockJson());
         final List<Responder> responders = new LinkedList<Responder>(Arrays.asList(jspResponder, jsonResponder, htmlResponder));

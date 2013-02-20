@@ -36,7 +36,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class CorsHandlerTest {
-    
+
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -49,9 +49,9 @@ public class CorsHandlerTest {
     private CorsConfiguration corsConfig;
     @Mock
     private Instance<CorsConfiguration> corsInstance;
-    
+
     private CorsHandler corsHandler;
-    
+
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
@@ -60,16 +60,16 @@ public class CorsHandlerTest {
         when(corsInstance.get()).thenReturn(corsConfig);
         corsHandler = new CorsHandler(delegate, corsInstance);
     }
-    
+
     @Test
-    public void disableCorsSupport() throws Exception  {
+    public void disableCorsSupport() throws Exception {
         when(corsConfig.isCorsSupportEnabled()).thenReturn(false);
         CorsTestUtil.setOriginRequestHeader(request, "http://someserver.com");
         corsHandler.dispatch(request, response, filterChain);
         verifyZeroInteractions(response);
         verify(delegate).dispatch(request, response, filterChain);
     }
-    
+
     @Test
     public void exposeHeaders() throws Exception {
         setupValidSimpleRequest();
@@ -77,7 +77,7 @@ public class CorsHandlerTest {
         corsHandler.dispatch(request, response, filterChain);
         verify(response).setHeader(Cors.ResponseHeader.EXPOSE_HEADERS.toString(), "Header1,Header2");
     }
-    
+
     @Test
     public void echoOrigin() throws Exception {
         setupValidSimpleRequest();
@@ -85,7 +85,7 @@ public class CorsHandlerTest {
         corsHandler.dispatch(request, response, filterChain);
         verify(response).setHeader(Cors.ResponseHeader.ALLOW_ORIGIN.toString(), "http://someserver.com");
     }
-    
+
     @Test
     public void anyOrigin() throws Exception {
         setupValidSimpleRequest();
@@ -93,7 +93,7 @@ public class CorsHandlerTest {
         corsHandler.dispatch(request, response, filterChain);
         verify(response).setHeader(Cors.ResponseHeader.ALLOW_ORIGIN.toString(), "*");
     }
-    
+
     @Test
     public void allowCookies() throws Exception {
         setupValidSimpleRequest();
@@ -101,7 +101,7 @@ public class CorsHandlerTest {
         corsHandler.dispatch(request, response, filterChain);
         verify(response).setHeader(Cors.ResponseHeader.ALLOW_CREDENTIALS.toString(), Boolean.TRUE.toString());
     }
-    
+
     @Test
     public void disallowCookies() throws Exception {
         setupValidSimpleRequest();
@@ -109,7 +109,7 @@ public class CorsHandlerTest {
         corsHandler.dispatch(request, response, filterChain);
         verify(response, never()).setHeader(eq(Cors.ResponseHeader.ALLOW_CREDENTIALS.toString()), anyString());
     }
-    
+
     @Test
     public void simpleMethod() throws Exception {
         setupValidSimpleRequest();
@@ -118,7 +118,7 @@ public class CorsHandlerTest {
         verify(response, never()).setHeader(eq(Cors.ResponseHeader.EXPOSE_HEADERS.toString()), anyString());
         verify(delegate).dispatch(request, response, filterChain);
     }
-    
+
     @Test
     public void preflightValidateRequestMethod() throws Exception {
         setupValidPreflightRequest();
@@ -127,7 +127,7 @@ public class CorsHandlerTest {
         verify(response).setHeader(Cors.ResponseHeader.ALLOW_METHODS.toString(), "GET,PUT,POST");
         verify(delegate, never()).dispatch(request, response, filterChain);
     }
-    
+
     @Test
     public void preflightInvalidRequestMethod() throws Exception {
         setupValidPreflightRequest();
@@ -137,7 +137,7 @@ public class CorsHandlerTest {
         verify(delegate, never()).dispatch(request, response, filterChain);
         verifyNoCorsHeaderSet();
     }
-    
+
     @Test
     public void preflightRequestHeaders() throws Exception {
         setupValidPreflightRequest();
@@ -148,14 +148,14 @@ public class CorsHandlerTest {
         verify(delegate, never()).dispatch(request, response, filterChain);
         verify(response).setHeader(Cors.ResponseHeader.ALLOW_ORIGIN.toString(), "http://someserver.com");
     }
-    
+
     private void verifyNoCorsHeaderSet() {
         verify(response, never()).setHeader(eq(Cors.ResponseHeader.ALLOW_ORIGIN.toString()), anyString());
         verify(response, never()).setHeader(eq(Cors.ResponseHeader.ALLOW_HEADERS.toString()), anyString());
         verify(response, never()).setHeader(eq(Cors.ResponseHeader.MAX_AGE.toString()), anyString());
         verify(response, never()).setHeader(eq(Cors.ResponseHeader.ALLOW_CREDENTIALS.toString()), anyString());
     }
-    
+
     @Test
     public void preflightInvalidRequestHeaders() throws Exception {
         setupValidPreflightRequest();
@@ -165,7 +165,7 @@ public class CorsHandlerTest {
         verify(delegate, never()).dispatch(request, response, filterChain);
         verifyNoCorsHeaderSet();
     }
-    
+
     @Test
     public void preflightMaxAge() throws Exception {
         setupValidPreflightRequest();
@@ -176,24 +176,24 @@ public class CorsHandlerTest {
         verify(response).setStatus(HttpServletResponse.SC_OK);
         verify(delegate, never()).dispatch(request, response, filterChain);
     }
-    
+
     @Test
     public void preflight() throws Exception {
         setupValidPreflightRequest();
         corsHandler.dispatch(request, response, filterChain);
         verify(delegate, never()).dispatch(request, response, filterChain);
     }
-    
+
     private void setupValidSimpleRequest() {
         CorsTestUtil.setOriginRequestHeader(request, "http://someserver.com");
         when(request.getMethod()).thenReturn("GET");
     }
-    
+
     private void setupValidPreflightRequest() {
         CorsTestUtil.setValidRequestMethods(corsConfig, "GET", "PUT", "POST");
         CorsTestUtil.setOriginRequestHeader(request, "http://someserver.com");
         when(request.getHeader(Cors.RequestHeader.METHOD.toString())).thenReturn("PUT");
         when(request.getMethod()).thenReturn(Cors.RequestHeader.OPTIONS.toString());
     }
-    
+
 }

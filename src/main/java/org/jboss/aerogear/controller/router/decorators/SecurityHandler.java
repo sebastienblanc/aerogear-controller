@@ -23,21 +23,21 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 
+import org.jboss.aerogear.controller.router.InvocationResult;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 
 /**
- * SecurityHandler is a CDI Decorator that decorates a {@link RouteProcessor}.
- * </p>
+ * SecurityHandler is a CDI Decorator that decorates a {@link RouteProcessor}. </p>
  */
 @Decorator
 public class SecurityHandler implements RouteProcessor {
-    
+
     private final RouteProcessor delegate;
     private final SecurityProvider securityProvider;
-    
+
     /**
      * Sole constructor which will have its parameters injected by CDI.
      * 
@@ -47,24 +47,24 @@ public class SecurityHandler implements RouteProcessor {
     @Inject
     public SecurityHandler(final @Delegate RouteProcessor delegate, final Instance<SecurityProvider> securityProviders) {
         this.delegate = delegate;
-        this.securityProvider = securityProviders.isUnsatisfied() ? defaultSecurityProvider(): securityProviders.get();
+        this.securityProvider = securityProviders.isUnsatisfied() ? defaultSecurityProvider() : securityProviders.get();
     }
 
     /**
-     * This method will use the injected {@link SecurityProvider} to access to the route is allowed.
-     * If access is allowed this methods simply delegates to the target {@link RouteProcessor}.
+     * This method will use the injected {@link SecurityProvider} to access to the route is allowed. If access is allowed this
+     * methods simply delegates to the target {@link RouteProcessor}.
      * 
      * @throws Exception if access to the Route is denied.
      */
     @Override
-    public void process(final RouteContext routeContext) throws Exception {
+    public InvocationResult process(final RouteContext routeContext) throws Exception {
         final Route route = routeContext.getRoute();
         if (route.isSecured()) {
             securityProvider.isRouteAllowed(route);
         }
-        delegate.process(routeContext);
+        return delegate.process(routeContext);
     }
-    
+
     private SecurityProvider defaultSecurityProvider() {
         return new SecurityProvider() {
             @Override
@@ -72,5 +72,5 @@ public class SecurityHandler implements RouteProcessor {
             }
         };
     }
-    
+
 }

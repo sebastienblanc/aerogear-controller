@@ -36,7 +36,7 @@ public class RouteBuilderImpl implements RouteBuilder, RouteDescriptorAccessor {
         routeDescriptor.setPath(path);
         return routeDescriptor;
     }
-    
+
     @Override
     public Route build() {
         return new DefaultRoute(routeDescriptor);
@@ -44,9 +44,7 @@ public class RouteBuilderImpl implements RouteBuilder, RouteDescriptorAccessor {
 
     @Override
     public String toString() {
-        return "RouteBuilderImpl{" +
-                "routeDescriptor=" + routeDescriptor +
-                '}';
+        return "RouteBuilderImpl{" + "routeDescriptor=" + routeDescriptor + '}';
     }
 
     @Override
@@ -56,7 +54,7 @@ public class RouteBuilderImpl implements RouteBuilder, RouteDescriptorAccessor {
         routeDescriptor.setThrowables(set);
         return routeDescriptor;
     }
-    
+
     @SuppressWarnings("unchecked")
     private Set<Class<? extends Throwable>> exceptions(final Class<?>... exceptions) {
         final List<Class<?>> list = Arrays.asList(exceptions);

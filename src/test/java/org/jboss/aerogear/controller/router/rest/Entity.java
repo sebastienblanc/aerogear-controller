@@ -24,10 +24,10 @@ public class Entity implements ResponseHeaders {
 
     private String name;
     private int age;
-    
+
     public Entity() {
     }
-    
+
     public Entity(final String name, final int age) {
         this.name = name;
         this.age = age;
@@ -56,5 +56,5 @@ public class Entity implements ResponseHeaders {
         headers.put("Entity-Age", Integer.toString(age));
         return headers;
     }
-    
+
 }

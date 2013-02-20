@@ -33,25 +33,22 @@ import org.jboss.aerogear.controller.util.RequestUtils;
  * @see Responder
  */
 public class Responders {
-    
+
     private final Map<MediaType, Responder> responders = new LinkedHashMap<MediaType, Responder>();
-    
+
     @Inject
     public Responders(final Instance<Responder> responders) {
         for (Responder responder : responders) {
-            this.responders.put(responder.mediaType(), responder); 
+            this.responders.put(responder.mediaType(), responder);
         }
     }
-    
+
     /**
-     * Responds to the Route in the passed-in RouteContext using an appropriate Responder.
-     * </p>
-     * The {@link Responder} used to respond is determined by inspecting the HTTP 
-     * Accept header values and matching these with the media types that the Route
+     * Responds to the Route in the passed-in RouteContext using an appropriate Responder. </p> The {@link Responder} used to
+     * respond is determined by inspecting the HTTP Accept header values and matching these with the media types that the Route
      * is capable of producing ({@link Route#produces()}) <br>
-     * If no match is found for the values in the Accept header, or if the Accept
-     * header was empty of "*&#47;*" then any Responder that accepts "*&#47;*" will 
-     * be used to respond.
+     * If no match is found for the values in the Accept header, or if the Accept header was empty of "*&#47;*" then any
+     * Responder that accepts "*&#47;*" will be used to respond.
      * 
      * @param routeContext the current route context
      * @param result the result from invoking the Route's target endpoint method.
@@ -61,7 +58,7 @@ public class Responders {
         final Set<String> acceptHeaders = RequestUtils.extractAcceptHeader(routeContext.getRequest());
         final Set<MediaType> routeMediaTypes = routeContext.getRoute().produces();
         for (String acceptHeader : acceptHeaders) {
-            for (MediaType mediaType: routeMediaTypes) {
+            for (MediaType mediaType : routeMediaTypes) {
                 if (mediaType.getMediaType().equals(acceptHeader)) {
                     if (respond(mediaType, result, routeContext)) {
                         return;
@@ -69,7 +66,7 @@ public class Responders {
                 }
             }
         }
-        
+
         if (acceptHeaders.contains(MediaType.ANY) || acceptHeaders.isEmpty()) {
             respondAny(routeMediaTypes, result, routeContext);
         } else {
@@ -84,15 +81,16 @@ public class Responders {
         }
         return false;
     }
-    
-    private void respondAny(final Set<MediaType> mediaTypes, final Object result, final RouteContext routeContext) throws Exception {
+
+    private void respondAny(final Set<MediaType> mediaTypes, final Object result, final RouteContext routeContext)
+            throws Exception {
         for (MediaType mediaType : mediaTypes) {
             if (respond(mediaType, result, routeContext)) {
                 break;
             }
         }
     }
-    
+
     @Override
     public String toString() {
         return "Responders[" + responders + "]";

@@ -17,18 +17,18 @@
 
 package org.jboss.aerogear.controller.router;
 
-
 /**
  * A Responder is capable of responding to a specific MediaType.
  */
 public interface Responder {
-    
+
     /**
      * The media type that this Responder can handle.
+     * 
      * @return {@code MediaType} the media type.
      */
     MediaType mediaType();
-    
+
     /**
      * Determines whether this responder can respond to the passed-in @{code mediaType}
      * 
@@ -36,10 +36,9 @@ public interface Responder {
      * @return @{code true} if this responder can handle the media type passed in, false otherwise.
      */
     boolean accepts(final String mediaType);
-    
+
     /**
-     * Responds to the current request in a why appropriate to the type of Responder (forward, return).
-     * </p>
+     * Responds to the current request in a why appropriate to the type of Responder (forward, return). </p>
      * 
      * @param entity the entity returned from a {@link Route} endpoint.
      * @param routeContext the current {@link RouteContext}.
