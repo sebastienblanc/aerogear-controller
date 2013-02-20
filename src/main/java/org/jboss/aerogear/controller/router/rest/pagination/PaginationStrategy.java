@@ -33,7 +33,7 @@ public interface PaginationStrategy {
      * 
      * @param routeContext the {@link RouteContext} of the route being processed.
      * @param arguments the extracted arguments from the current request.
-     * @return {@link PaginationInfo} the information requred for paging. 
+     * @return {@link PaginationInfo} the information required for paging. 
      */
     PaginationInfo createPaginationInfo(RouteContext routeContext, Map<String, Object> arguments);
     

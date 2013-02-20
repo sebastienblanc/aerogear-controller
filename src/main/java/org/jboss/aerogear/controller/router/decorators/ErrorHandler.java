@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 
 import org.jboss.aerogear.controller.router.EndpointInvoker;
 import org.jboss.aerogear.controller.router.InvocationResult;
@@ -78,7 +77,7 @@ public class ErrorHandler implements RouteProcessor {
         return new RouteContext(errorRoute, orgContext.getRequest(), orgContext.getResponse(), orgContext.getRoutes());
     }
     
-    private Object[] getMethodArguments(final RouteContext routeContext, final Throwable t) throws ServletException {
+    private Object[] getMethodArguments(final RouteContext routeContext, final Throwable t) {
         final Method targetMethod = routeContext.getRoute().getTargetMethod();
         return targetMethod.getParameterTypes().length == 0 ? new Object[]{}: new Object[]{t};
     }

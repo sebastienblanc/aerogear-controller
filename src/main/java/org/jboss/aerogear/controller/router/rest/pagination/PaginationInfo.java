@@ -81,7 +81,7 @@ public class PaginationInfo {
     }
 
     public int getLimit() {
-        return Integer.valueOf(limit);
+        return limit;
     }
     
     public boolean webLinking() {
