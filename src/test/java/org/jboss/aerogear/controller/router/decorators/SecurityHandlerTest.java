@@ -39,7 +39,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class SecurityHandlerTest {
-    
+
     @Mock
     private Route route;
     @Mock
@@ -57,7 +57,7 @@ public class SecurityHandlerTest {
     @Mock
     private ServletContext servletContext;
     private SecurityHandler securityHandler;
-    
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -68,22 +68,22 @@ public class SecurityHandlerTest {
         when(request.getServletContext()).thenReturn(servletContext);
         when(request.getRequestURI()).thenReturn("/myapp/cars/1");
     }
-    
+
     @Test
     public void testRouteAllowed() throws Exception {
         when(route.isSecured()).thenReturn(true);
         final RouteContext routeContext = routeContext();
         securityHandler.process(routeContext);
-        verify(routeProcessor).process(routeContext); 
+        verify(routeProcessor).process(routeContext);
     }
-    
-    @Test (expected = ServletException.class)
+
+    @Test(expected = ServletException.class)
     public void testRouteForbidden() throws Exception {
         when(route.isSecured()).thenReturn(true);
         doThrow(ServletException.class).when(securityProvider).isRouteAllowed(any(Route.class));
         securityHandler.process(routeContext());
     }
-    
+
     private RouteContext routeContext() {
         return new RouteContext(route, request, response, routes);
     }

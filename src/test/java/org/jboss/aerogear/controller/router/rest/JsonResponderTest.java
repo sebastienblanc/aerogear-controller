@@ -41,10 +41,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class JsonResponderTest {
-    
+
     @Mock
     private HttpServletRequest request;
-    @Mock  
+    @Mock
     private HttpServletResponse response;
     @Mock
     private Route route;
@@ -52,7 +52,7 @@ public class JsonResponderTest {
     private Routes routes;
     @InjectMocks
     private RouteContext routeContext;
-    
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -62,23 +62,23 @@ public class JsonResponderTest {
     public void accepts() {
         assertThat(new JsonResponder().accepts(MediaType.JSON.getMediaType())).isTrue();
     }
-    
+
     @Test
     public void acceptsEmpty() {
         assertThat(new JsonResponder().accepts("")).isFalse();
     }
-    
+
     @Test
     public void acceptsNull() {
         assertThat(new JsonResponder().accepts(null)).isFalse();
     }
-    
+
     @Test
     public void respond() throws Exception {
         final StringWriter stringWriter = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(printWriter);
-        
+
         new JsonResponder().respond(new Entity("Larry", 38), routeContext);
         verify(response).getWriter();
         verify(response).setCharacterEncoding("UTF-8");
@@ -87,14 +87,14 @@ public class JsonResponderTest {
         verify(response).setHeader("Entity-Name", "Larry");
         verify(response).setHeader("Entity-Age", "38");
     }
-    
+
     @SuppressWarnings("rawtypes")
     @Test
     public void errorResponse() throws Exception {
         final StringWriter stringWriter = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(stringWriter);
         when(response.getWriter()).thenReturn(printWriter);
-        
+
         ErrorResponseImpl errorResponse = new ErrorResponseImpl(HttpServletResponse.SC_NOT_FOUND, new Exception("not found"));
         new JsonResponder().respond(errorResponse, routeContext);
         verify(response).getWriter();

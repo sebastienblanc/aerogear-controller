@@ -30,50 +30,47 @@ import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteDescriptor;
 
 /**
- * A singleton {@link Route} that acts as a catch-all error {@link Route} which 
- * is will be used when no explicit error route has been defined.
+ * A singleton {@link Route} that acts as a catch-all error {@link Route} which is will be used when no explicit error route has
+ * been defined.
  */
 public enum ErrorRoute {
-    
+
     DEFAULT("org.jboss.aerogear.controller.exception");
-    
+
     private final Route route;
     private final String exceptionAttributeName;
-    
+
     @SuppressWarnings("unchecked")
     private ErrorRoute(final String exceptionAttributeName) {
         this.exceptionAttributeName = exceptionAttributeName;
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath(ErrorFilter.class.getAnnotation(WebFilter.class).urlPatterns()[0])
-            .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class)))
-            .on(RequestMethod.GET)
-            .produces(ErrorViewResponder.MEDIA_TYPE)
-            .to(ErrorTarget.class).error(param(Throwable.class));
+                .setThrowables(new HashSet<Class<? extends Throwable>>(Arrays.asList(Throwable.class))).on(RequestMethod.GET)
+                .produces(ErrorViewResponder.MEDIA_TYPE).to(ErrorTarget.class).error(param(Throwable.class));
         route = new DefaultRoute(rd);
     }
-    
+
     /**
      * Returns an {@link Route} which is configured to route to an instance of {@link ErrorTarget}.
      * 
-     * @return {@link Route} provided as a fallback when a route has no explicit error route  defined.
+     * @return {@link Route} provided as a fallback when a route has no explicit error route defined.
      */
     public Route getRoute() {
         return route;
     }
-    
+
     /**
-     * Returns the name of the request attribute for this ErrorRoute, which will be accessible 
-     * by calling {@link HttpServletRequest#getAttribute(String)} method.
+     * Returns the name of the request attribute for this ErrorRoute, which will be accessible by calling
+     * {@link HttpServletRequest#getAttribute(String)} method.
      * 
      * @return String the name of the request attribute to get hold of the target exception.
      */
     public String getExceptionAttrName() {
         return exceptionAttributeName;
     }
-    
+
     private <T> T param(Class<T> type) {
         return null;
     }
-    
 
 }

@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.jboss.aerogear.controller.router.parameter.Parameter;
 
-
 /**
  * An immutable implementation of {@link Route}.
  */
@@ -54,9 +53,9 @@ public class DefaultRoute implements Route {
         methods = asSet(descriptor.getMethods());
         targetMethod = descriptor.getTargetMethod();
         targetClass = descriptor.getTargetClass();
-        roles = asSet(firstNonNull(descriptor.getRoles(), new String[]{}));
+        roles = asSet(firstNonNull(descriptor.getRoles(), new String[] {}));
         consumes = asSet(descriptor.getConsumes(), MediaType.HTML.getMediaType());
-        parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>>emptyList());
+        parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>> emptyList());
         produces = asSet(firstNonNull(descriptor.getProduces(), defaultMediaTypes()));
         throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
     }
@@ -80,7 +79,7 @@ public class DefaultRoute implements Route {
     public boolean matches(RequestMethod method, String path, Set<String> acceptHeaders) {
         return this.methods.contains(method) && isPathCompatible(path) && matchesProduces(acceptHeaders);
     }
-    
+
     private boolean matchesProduces(final Set<String> acceptHeaders) {
         if (acceptHeaders.isEmpty() || acceptHeaders.contains(MediaType.ANY)) {
             return true;
@@ -127,21 +126,21 @@ public class DefaultRoute implements Route {
     public boolean hasExceptionsRoutes() {
         return !throwables.isEmpty();
     }
-    
+
     @Override
     public Set<MediaType> produces() {
         return Collections.unmodifiableSet(produces);
     }
-    
+
     @Override
     public List<Parameter<?>> getParameters() {
-        return Collections.<Parameter<?>>unmodifiableList(parameters);
+        return Collections.<Parameter<?>> unmodifiableList(parameters);
     }
-    
+
     public Set<String> consumes() {
         return Collections.unmodifiableSet(consumes);
     }
-    
+
     @Override
     public boolean canHandle(final Throwable throwable) {
         for (Class<? extends Throwable> t : throwables) {
@@ -154,40 +153,34 @@ public class DefaultRoute implements Route {
 
     @Override
     public String toString() {
-        return new StringBuilder("DefaultRoute[")
-                .append("path=").append(path)
-                .append(", targetClass=").append(targetClass)
-                .append(", targetMethod=").append(targetMethod)
-                .append(", produces=").append(produces)
-                .append(", parameters=").append(parameters)
-                .append(", roles=").append(roles)
-                .append(", throwables=").append(throwables)
-                .append("]")
+        return new StringBuilder("DefaultRoute[").append("path=").append(path).append(", targetClass=").append(targetClass)
+                .append(", targetMethod=").append(targetMethod).append(", produces=").append(produces).append(", parameters=")
+                .append(parameters).append(", roles=").append(roles).append(", throwables=").append(throwables).append("]")
                 .toString();
     }
 
     private Set<RequestMethod> asSet(final RequestMethod[] methods) {
-        return methods == null ? Collections.<RequestMethod>emptySet() : new HashSet<RequestMethod>(Arrays.asList(methods));
+        return methods == null ? Collections.<RequestMethod> emptySet() : new HashSet<RequestMethod>(Arrays.asList(methods));
     }
-    
+
     private Set<String> asSet(final String[] strings) {
         return new HashSet<String>(Arrays.asList(strings));
     }
-    
+
     private Set<MediaType> asSet(final MediaType[] types) {
         return new HashSet<MediaType>(Arrays.asList(types));
     }
-    
+
     private Set<String> asSet(final List<String> strings, final String defaultValue) {
         return strings.isEmpty() ? new HashSet<String>(Arrays.asList(defaultValue)) : new LinkedHashSet<String>(strings);
     }
-    
+
     private static Set<Class<? extends Throwable>> emptyThrowableSet() {
         return Collections.emptySet();
     }
-    
+
     private static MediaType[] defaultMediaTypes() {
-        return new MediaType[] {MediaType.JSP};
+        return new MediaType[] { MediaType.JSP };
     }
 
 }

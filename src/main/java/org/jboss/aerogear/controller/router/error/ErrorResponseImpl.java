@@ -17,7 +17,7 @@
 package org.jboss.aerogear.controller.router.error;
 
 public class ErrorResponseImpl implements ErrorResponse {
-    
+
     private final int statusCode;
     private final Object content;
 
@@ -35,7 +35,7 @@ public class ErrorResponseImpl implements ErrorResponse {
     public Object content() {
         return content;
     }
-    
+
     @Override
     public String toString() {
         return "ErrorResponseImpl[statusCode=" + statusCode + ", content=" + content + "]";

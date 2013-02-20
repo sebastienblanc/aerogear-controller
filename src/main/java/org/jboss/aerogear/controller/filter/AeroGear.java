@@ -28,8 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * A Servlet Filter that intercept all request for the current web application and
- * delegates to an instance of {@link Router}.
+ * A Servlet Filter that intercept all request for the current web application and delegates to an instance of {@link Router}.
  */
 @WebFilter(filterName = "aerogear-controller", urlPatterns = "/*")
 public class AeroGear implements Filter {
@@ -42,7 +41,8 @@ public class AeroGear implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         if (isHttpServletContainer(request, response)) {
             throw LoggerMessages.MESSAGES.mustRunInsideAContainer();
         }

@@ -43,22 +43,21 @@ public interface AeroGearLogger extends BasicLogger {
     @LogMessage(level = Logger.Level.TRACE)
     @Message(id = 3, value = "method: '%s', requested URI: '%s'")
     void requestedRoute(RequestMethod method, String requestURI);
-    
+
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 5, value = "Exception Message: '%s'")
-    void routeCatchAllException(@Cause Throwable exception, String error) ;
-    
+    void routeCatchAllException(@Cause Throwable exception, String error);
+
     @LogMessage(level = Logger.Level.TRACE)
     @Message(id = 6, value = "Exception when trying to close input stream: '%s'")
     void closeInputStream(IOException exception);
-    
+
     @LogMessage(level = Logger.Level.INFO)
     @Message(id = 7, value = "CORS Bad Request Headers: Received '%s', allowed: '%s'")
     void badCorsRequestHeaders(String actualHeaders, List<String> allowedHeaders);
-    
+
     @LogMessage(level = Logger.Level.INFO)
     @Message(id = 8, value = "CORS Bad Request Method: Received '%s', allowed: '%s'")
     void badCorsRequestMethod(String actualMethod, Set<String> allowedMethods);
-
 
 }

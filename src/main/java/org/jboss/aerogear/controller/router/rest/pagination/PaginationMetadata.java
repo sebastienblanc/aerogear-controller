@@ -22,28 +22,28 @@ import java.util.Map;
 import com.google.common.base.Optional;
 
 /**
- * Represents information about pagination in AeroGear Controller. 
- * </p>
- * Provides access to "raw" {@link Links}, and {@link PaginationProperties} to enable developers
- * to assemble pagination information in whatever way they choose.
+ * Represents information about pagination in AeroGear Controller. </p> Provides access to "raw" {@link Links}, and
+ * {@link PaginationProperties} to enable developers to assemble pagination information in whatever way they choose.
  */
 public class PaginationMetadata {
-    
+
     public static final String DEFAULT_HEADER_PREFIX = "AG-";
     private final Links links;
     private final WebLinking webLinking;
     private final PaginationProperties params;
     private final Optional<String> headerPrefix;
-    
+
     public PaginationMetadata(final PaginationProperties paging, final RequestPathParser requestPathParser) {
-        this(paging, requestPathParser, Optional.<String>absent());
+        this(paging, requestPathParser, Optional.<String> absent());
     }
-    
-    public PaginationMetadata(final PaginationProperties paging, final RequestPathParser requestPathParser, final String headerPrefix) {
+
+    public PaginationMetadata(final PaginationProperties paging, final RequestPathParser requestPathParser,
+            final String headerPrefix) {
         this(paging, requestPathParser, Optional.of(headerPrefix));
     }
-    
-    private PaginationMetadata(final PaginationProperties params, final RequestPathParser requestPathParser, final Optional<String> headerPrefix) {
+
+    private PaginationMetadata(final PaginationProperties params, final RequestPathParser requestPathParser,
+            final Optional<String> headerPrefix) {
         this.params = params;
         this.headerPrefix = headerPrefix;
         links = new Links(requestPathParser, params);
@@ -66,7 +66,7 @@ public class PaginationMetadata {
         } else {
             if (params.isFirstOffset()) {
                 headers.put(webLinking.getLinkHeaderName(), webLinking.getNext());
-            } else if (resultsSize < params.limit())  {
+            } else if (resultsSize < params.limit()) {
                 headers.put(webLinking.getLinkHeaderName(), webLinking.getPrevious());
             } else {
                 headers.put(webLinking.getLinkHeaderName(), webLinking.getLinkHeaders());
@@ -74,14 +74,15 @@ public class PaginationMetadata {
         }
         return headers;
     }
-    
+
     public WebLinking getWebLinking() {
         return webLinking;
     }
-    
+
     @Override
     public String toString() {
-        return "PagingMetadata[params=" + params + ", links=" + links + ", headerPrefix=" + headerPrefix + ", webLinking=" + webLinking + "]";
+        return "PagingMetadata[params=" + params + ", links=" + links + ", headerPrefix=" + headerPrefix + ", webLinking="
+                + webLinking + "]";
     }
-    
+
 }

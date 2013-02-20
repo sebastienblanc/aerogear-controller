@@ -38,19 +38,17 @@ import org.jboss.aerogear.controller.router.RouteProcessor;
 
 @Decorator
 public class PaginationHandler implements RouteProcessor {
-    
+
     private final RouteProcessor delegate;
     private final PaginationStrategy pagingStrategy;
     private final Map<String, Consumer> consumers = new HashMap<String, Consumer>();
     private final EndpointInvoker endpointInvoker;
-    
+
     @Inject
-    public PaginationHandler(final @Delegate RouteProcessor delegate, 
-            final Instance<PaginationStrategy> pagingStrategies,
-            final Instance<Consumer> consumers,
-            final EndpointInvoker endpointInvoker) {
+    public PaginationHandler(final @Delegate RouteProcessor delegate, final Instance<PaginationStrategy> pagingStrategies,
+            final Instance<Consumer> consumers, final EndpointInvoker endpointInvoker) {
         this.delegate = delegate;
-        this.pagingStrategy = pagingStrategies.isUnsatisfied() ? defaultPagingStrategy(): pagingStrategies.get();
+        this.pagingStrategy = pagingStrategies.isUnsatisfied() ? defaultPagingStrategy() : pagingStrategies.get();
         this.endpointInvoker = endpointInvoker;
         for (Consumer consumer : consumers) {
             this.consumers.put(consumer.mediaType(), consumer);
@@ -69,15 +67,16 @@ public class PaginationHandler implements RouteProcessor {
             return delegate.process(routeContext);
         }
     }
-    
+
     private boolean hasPaginatedAnnotation(final Route route) {
         return route.getTargetMethod().getAnnotation(Paginated.class) != null;
     }
-    
+
     public static PaginationStrategy defaultPagingStrategy() {
         return new AbstractPaginationStrategy() {
             @Override
-            public void setResponseHeaders(final PaginationMetadata metadata, final HttpServletResponse response, final int resultSize) {
+            public void setResponseHeaders(final PaginationMetadata metadata, final HttpServletResponse response,
+                    final int resultSize) {
                 for (Entry<String, String> entry : metadata.getHeaders(resultSize).entrySet()) {
                     response.setHeader(entry.getKey(), entry.getValue());
                 }

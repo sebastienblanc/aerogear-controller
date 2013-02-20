@@ -20,19 +20,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JsonErrorResponse {
-    
+
     private final int statusCode;
 
     public JsonErrorResponse(final int statusCode) {
         this.statusCode = statusCode;
     }
-    
+
     public ErrorResponse message(final String key, final String value) {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put(key, value);
         return new ErrorResponseImpl(statusCode, map);
     }
-    
+
     public ErrorResponse json(final Object json) {
         return new ErrorResponseImpl(statusCode, json);
     }

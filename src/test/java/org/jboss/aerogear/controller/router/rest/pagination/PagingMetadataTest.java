@@ -27,10 +27,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PagingMetadataTest {
-    
+
     private final Pattern offsetLimitValue = Pattern.compile(".*\\?offset=([0-9]*)&limit=([0-9]*).*");
     private RequestPathParser requestPathParser;
-    
+
     @Before
     public void setup() {
         final PaginationInfo paginationInfo = PaginationInfo.offset(0).limit(10).build();
@@ -44,38 +44,38 @@ public class PagingMetadataTest {
         assertThat(links.getFirst()).isEqualTo("cars?offset=0&limit=10");
         assertThat(links.getPrevious()).isEqualTo("cars?offset=0&limit=10");
     }
-    
+
     @Test
     public void navigateForward() {
         PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 5), requestPathParser);
         Links links = metadata.getLinks();
         assertThat(links.getNext()).isEqualTo("cars?offset=5&limit=5");
-        
+
         metadata = new PaginationMetadata(new PaginationProperties(parseOffset(links.getNext()), 5), requestPathParser);
         links = metadata.getLinks();
         assertThat(links.getNext()).isEqualTo("cars?offset=10&limit=5");
         assertThat(links.getPrevious()).isEqualTo("cars?offset=0&limit=5");
-        
+
         metadata = new PaginationMetadata(new PaginationProperties(parseOffset(links.getNext()), 5), requestPathParser);
         links = metadata.getLinks();
         assertThat(links.getNext()).isEqualTo("cars?offset=15&limit=5");
     }
-    
+
     @Test
     public void navigateBackwards() {
         PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(15, 5), requestPathParser);
         Links links = metadata.getLinks();
         assertThat(links.getPrevious()).isEqualTo("cars?offset=10&limit=5");
-        
+
         metadata = new PaginationMetadata(new PaginationProperties(parseOffset(links.getPrevious()), 5), requestPathParser);
         links = metadata.getLinks();
         assertThat(links.getPrevious()).isEqualTo("cars?offset=5&limit=5");
-        
+
         metadata = new PaginationMetadata(new PaginationProperties(parseOffset(links.getPrevious()), 5), requestPathParser);
         links = metadata.getLinks();
         assertThat(links.getPrevious()).isEqualTo("cars?offset=0&limit=5");
     }
-    
+
     @Test
     public void webLinkingFirst() {
         final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(0, 10), requestPathParser);
@@ -84,7 +84,7 @@ public class PagingMetadataTest {
         assertThat(headers.get(WebLinking.NEXT)).isEqualTo("cars?offset=10&limit=10");
         assertThat(headers.get(WebLinking.PREVIOUS)).isNull();
     }
-    
+
     @Test
     public void webLinkingMiddle() {
         final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(10, 5), requestPathParser);
@@ -93,7 +93,7 @@ public class PagingMetadataTest {
         assertThat(headers.get(WebLinking.PREVIOUS)).isEqualTo("cars?offset=5&limit=5");
         assertThat(headers.get(WebLinking.NEXT)).isEqualTo("cars?offset=15&limit=5");
     }
-    
+
     @Test
     public void webLinkingLast() {
         final PaginationMetadata metadata = new PaginationMetadata(new PaginationProperties(5, 5), requestPathParser);
@@ -102,12 +102,12 @@ public class PagingMetadataTest {
         assertThat(headers.get(WebLinking.PREVIOUS)).isEqualTo("cars?offset=0&limit=5");
         assertThat(headers.get(WebLinking.NEXT)).isNull();
     }
-    
+
     private int parseOffset(final String header) {
         final Matcher matcher = offsetLimitValue.matcher(header);
         matcher.find();
         final String offset = matcher.group(1);
         return Integer.valueOf(offset);
     }
-    
+
 }

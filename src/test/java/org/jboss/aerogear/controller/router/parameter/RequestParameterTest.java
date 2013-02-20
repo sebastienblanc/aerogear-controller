@@ -24,7 +24,7 @@ import org.jboss.aerogear.controller.router.parameter.RequestParameter;
 import org.junit.Test;
 
 public class RequestParameterTest {
-    
+
     @Test
     public void pathParameterWithName() {
         final RequestParameter<String> parameter = new RequestParameter<String>("model", Parameter.Type.REQUEST, String.class);
@@ -32,10 +32,11 @@ public class RequestParameterTest {
         assertThat(parameter.getParameterType()).isEqualTo(Parameter.Type.REQUEST);
         assertThat(parameter.getDefaultValue().isPresent()).isFalse();
     }
-    
+
     @Test
     public void pathParameterWithDefaultValue() {
-        final RequestParameter<String> parameter = new RequestParameter<String>("model", Parameter.Type.REQUEST, "def", String.class);
+        final RequestParameter<String> parameter = new RequestParameter<String>("model", Parameter.Type.REQUEST, "def",
+                String.class);
         assertThat(parameter.getName()).isEqualTo("model");
         assertThat(parameter.getParameterType()).isEqualTo(Parameter.Type.REQUEST);
         assertThat(parameter.getDefaultValue().get()).isEqualTo("def");

@@ -61,7 +61,8 @@ public class TypeNameExtractorTest {
     Class<String> clazz;
 
     @Test
-    public void shouldDecapitalizeSomeCharsUntilItFindsOneUppercasedForListsAndArrays() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
+    public void shouldDecapitalizeSomeCharsUntilItFindsOneUppercasedForListsAndArrays() throws NoSuchMethodException,
+            SecurityException, NoSuchFieldException {
         Assert.assertEquals("stringList", extractor.nameFor(getField("strings")));
         Assert.assertEquals("bigDecimalList", extractor.nameFor(getField("bigs")));
         Assert.assertEquals("hashSet", extractor.nameFor(getField("bigsOld")));
@@ -71,7 +72,8 @@ public class TypeNameExtractorTest {
     }
 
     @Test
-    public void shouldDecapitalizeSomeCharsUntilItFindsOneUppercasedForListsAndArraysForBoundedGenericElements() throws NoSuchMethodException, SecurityException, NoSuchFieldException {
+    public void shouldDecapitalizeSomeCharsUntilItFindsOneUppercasedForListsAndArraysForBoundedGenericElements()
+            throws NoSuchMethodException, SecurityException, NoSuchFieldException {
         Assert.assertEquals("bigDecimalList", extractor.nameFor(getField("bigsLimited")));
         Assert.assertEquals("bigDecimalList", extractor.nameFor(getField("bigsLimited2")));
         Assert.assertEquals("objectList", extractor.nameFor(getField("objects")));

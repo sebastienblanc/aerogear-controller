@@ -34,18 +34,16 @@ import org.jboss.aerogear.controller.spi.HttpStatusAwareException;
 import com.google.common.base.Throwables;
 
 /**
- * ErrorHandler is a CDI Decorator that decorates a {@link RouteProcessor}.
- * </p>
- * By wrapping the call to {@link RouteProcessor#process(RouteContext)} with a try catch block, this class 
- * will handle any exception thrown and either forward to a the appropriate error route configured, or if no error 
- * route exists, forward to the default error view.
+ * ErrorHandler is a CDI Decorator that decorates a {@link RouteProcessor}. </p> By wrapping the call to
+ * {@link RouteProcessor#process(RouteContext)} with a try catch block, this class will handle any exception thrown and either
+ * forward to a the appropriate error route configured, or if no error route exists, forward to the default error view.
  */
 @Decorator
 public class ErrorHandler implements RouteProcessor {
-    
+
     private final RouteProcessor delegate;
     private EndpointInvoker endpointInvoker;
-    
+
     @Inject
     public ErrorHandler(final @Delegate RouteProcessor delegate, final EndpointInvoker endpointInvoker) {
         this.delegate = delegate;
@@ -67,19 +65,19 @@ public class ErrorHandler implements RouteProcessor {
             return new InvocationResult(result, errorContext);
         }
     }
-    
+
     private Object invokeErrorMethod(final RouteContext errorContext, final Throwable rootCause) throws Exception {
         return endpointInvoker.invoke(errorContext, getMethodArguments(errorContext, rootCause));
     }
-    
+
     private RouteContext errorContext(final Throwable rootCause, final RouteContext orgContext) {
         final Route errorRoute = orgContext.getRoutes().routeFor(rootCause);
         return new RouteContext(errorRoute, orgContext.getRequest(), orgContext.getResponse(), orgContext.getRoutes());
     }
-    
+
     private Object[] getMethodArguments(final RouteContext routeContext, final Throwable t) {
         final Method targetMethod = routeContext.getRoute().getTargetMethod();
-        return targetMethod.getParameterTypes().length == 0 ? new Object[]{}: new Object[]{t};
+        return targetMethod.getParameterTypes().length == 0 ? new Object[] {} : new Object[] { t };
     }
-    
+
 }

@@ -17,8 +17,9 @@
 package org.jboss.aerogear.controller.router.error;
 
 public interface ErrorResponse {
-    
+
     int statusCode();
+
     Object content();
 
 }

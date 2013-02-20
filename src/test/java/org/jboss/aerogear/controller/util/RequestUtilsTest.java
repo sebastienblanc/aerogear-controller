@@ -33,7 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class RequestUtilsTest {
-    
+
     @Mock
     private ServletContext servletContext;
     @Mock
@@ -42,27 +42,27 @@ public class RequestUtilsTest {
     private Route route;
     @Mock
     private RouteContext routeContext;
-    
+
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         when(request.getServletContext()).thenReturn(servletContext);
     }
-    
+
     @Test
     public void extractPath() {
         when(servletContext.getContextPath()).thenReturn("/myapp");
         when(request.getRequestURI()).thenReturn("/myapp/cars/1");
         assertThat(RequestUtils.extractPath(request)).isEqualTo("/cars/1");
     }
-    
+
     @Test
     public void extractPathDefaultWebApp() {
         when(servletContext.getContextPath()).thenReturn("");
         when(request.getRequestURI()).thenReturn("/cars/1");
         assertThat(RequestUtils.extractPath(request)).isEqualTo("/cars/1");
     }
-    
+
     @Test
     public void extractMethod() {
         when(request.getMethod()).thenReturn("GET");
@@ -80,16 +80,16 @@ public class RequestUtilsTest {
         when(request.getMethod()).thenReturn("PATCH");
         assertThat(RequestUtils.extractMethod(request)).isEqualTo(RequestMethod.PATCH);
     }
-    
+
     @Test
     public void extractAcceptsHeaderMissing() {
         assertThat(RequestUtils.extractAcceptHeader(request).isEmpty()).isTrue();
     }
-    
+
     @Test
     public void extractAcceptsHeader() {
         when(request.getHeader("Accept")).thenReturn("application/json, application/xml");
         assertThat(RequestUtils.extractAcceptHeader(request)).contains(MediaType.JSON.getMediaType(), "application/xml");
     }
-    
+
 }

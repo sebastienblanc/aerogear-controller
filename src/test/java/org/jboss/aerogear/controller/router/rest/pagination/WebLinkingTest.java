@@ -37,7 +37,7 @@ public class WebLinkingTest {
         assertThat(linksHeaders.get(WebLinking.NEXT)).isEqualTo("cars?offset=10&limit=10");
         assertThat(weblinking.getLinkHeaderName()).isEqualTo("Link");
     }
-    
+
     @Test
     public void weblinkingLimit5() {
         final PaginationInfo pinfo = PaginationInfo.offset(0).limit(5).build();
@@ -49,7 +49,7 @@ public class WebLinkingTest {
         assertThat(linksHeaders.get(WebLinking.PREVIOUS)).isEqualTo("cars?offset=0&limit=5");
         assertThat(linksHeaders.get(WebLinking.NEXT)).isEqualTo("cars?offset=5&limit=5");
     }
-    
+
     @Test
     public void weblinkingDefaultOffset() {
         final PaginationInfo pinfo = PaginationInfo.offset(0).limit(5).build();
@@ -61,7 +61,7 @@ public class WebLinkingTest {
         assertThat(linksHeaders.get(WebLinking.PREVIOUS)).isEqualTo("cars?limit=5&offset=0");
         assertThat(linksHeaders.get(WebLinking.NEXT)).isEqualTo("cars?limit=5&offset=5");
     }
-    
+
     @Test
     public void weblinkingDefaultLimit() {
         final PaginationInfo pinfo = PaginationInfo.offset(0).limit(10).build();
@@ -73,5 +73,5 @@ public class WebLinkingTest {
         assertThat(linksHeaders.get(WebLinking.PREVIOUS)).isEqualTo("cars?offset=0&limit=10");
         assertThat(linksHeaders.get(WebLinking.NEXT)).isEqualTo("cars?offset=10&limit=10");
     }
-    
+
 }

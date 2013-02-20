@@ -27,32 +27,28 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.aerogear.controller.router.RouteContext;
 
 /**
- * A PaginationStrategy that expects the target endpoint method to take a {@link PaginationInfo} as
- * a parameter.
- * </p>
- * Subclasses can implement {@link #setResponseHeaders(PaginationMetadata, HttpServletResponse, int)} to
- * set the HTTP Response headers. 
+ * A PaginationStrategy that expects the target endpoint method to take a {@link PaginationInfo} as a parameter. </p> Subclasses
+ * can implement {@link #setResponseHeaders(PaginationMetadata, HttpServletResponse, int)} to set the HTTP Response headers.
  */
 public abstract class AbstractPaginationStrategy implements PaginationStrategy {
-    
-    public abstract void setResponseHeaders(final PaginationMetadata metadata, final HttpServletResponse response, final int resultSize);
-    
+
+    public abstract void setResponseHeaders(final PaginationMetadata metadata, final HttpServletResponse response,
+            final int resultSize);
+
     @Override
     public PaginationInfo createPaginationInfo(final RouteContext routeContext, final Map<String, Object> args) {
         final Paginated paginated = routeContext.getRoute().getTargetMethod().getAnnotation(Paginated.class);
         final String customHeader = paginated.customHeadersPrefix();
         return PaginationInfo.offset(paginated.offsetParamName(), argAsInt(args, paginated.offsetParamName()))
                 .limit(paginated.limitParamName(), argAsInt(args, paginated.limitParamName()))
-                .customHeadersPrefix(customHeader)
-                .webLinking(paginated.webLinking())
-                .build();
+                .customHeadersPrefix(customHeader).webLinking(paginated.webLinking()).build();
     }
 
     @Override
     public Object[] preInvocation(final PaginationInfo paginationInfo, final Map<String, Object> arguments) {
         return merge(paginationInfo, arguments).toArray();
     }
-    
+
     private List<Object> merge(final PaginationInfo paginationInfo, final Map<String, Object> arguments) {
         final List<Object> methodArguments = new ArrayList<Object>();
         arguments.remove(paginationInfo.getOffsetParamName());
@@ -61,14 +57,14 @@ public abstract class AbstractPaginationStrategy implements PaginationStrategy {
         methodArguments.addAll(arguments.values());
         return methodArguments;
     }
-    
+
     @Override
     public Object postInvocation(final Collection<?> results, final RouteContext routeContext, final PaginationInfo pagingInfo) {
         final PaginationMetadata pagingMetadata = createMetadata(routeContext, pagingInfo);
         setResponseHeaders(pagingMetadata, routeContext.getResponse(), results.size());
         return results;
     }
-    
+
     private PaginationMetadata createMetadata(final RouteContext routeContext, final PaginationInfo pagingInfo) {
         final RequestPathParser requestPathParser = new RequestPathParser(pagingInfo, getResourcePath(routeContext));
         final PaginationProperties pagingProperties = new PaginationProperties(pagingInfo.getOffset(), pagingInfo.getLimit());
@@ -78,7 +74,7 @@ public abstract class AbstractPaginationStrategy implements PaginationStrategy {
             return new PaginationMetadata(pagingProperties, requestPathParser, pagingInfo.getHeaderPrefix().get());
         }
     }
-    
+
     private String getResourcePath(final RouteContext routeContext) {
         final HttpServletRequest request = routeContext.getRequest();
         final String resourcePath = request.getRequestURL().toString() + "?" + routeContext.getRequest().getQueryString();

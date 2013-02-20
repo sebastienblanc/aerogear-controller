@@ -38,38 +38,37 @@ import org.jboss.aerogear.controller.router.error.ErrorRoute;
 import org.mvel2.templates.TemplateRuntime;
 
 /**
- * This Filter is used for default error handling when no explicit error route has configured. 
- * </p>
+ * This Filter is used for default error handling when no explicit error route has configured. </p>
  * 
  * @see ErrorHandler
  */
-@WebFilter(filterName = "aerogear-error-filter", urlPatterns = {"/ErrorFilter"}, dispatcherTypes = {FORWARD})
+@WebFilter(filterName = "aerogear-error-filter", urlPatterns = { "/ErrorFilter" }, dispatcherTypes = { FORWARD })
 public class ErrorFilter implements Filter {
 
     private static final String TEMPLATE = "/org/jboss/aerogear/controller/router/error.html";
-    
+
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
     }
-    
+
     /**
-     * Writes a general error page response to the client. 
+     * Writes a general error page response to the client.
      */
     @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
+    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
+            throws IOException, ServletException {
         final Throwable throwable = (Throwable) request.getAttribute(ErrorRoute.DEFAULT.getExceptionAttrName());
         final String html = ErrorFilter.readTemplate(TEMPLATE, throwable);
         response.getWriter().write(html);
     }
 
     /**
-     * Reads the template and makes Throwable available as a variable named 'exception'. 
-     * </p>
-     * The template language used by this method is MVEL2 (http://mvel.codehaus.org/).
+     * Reads the template and makes Throwable available as a variable named 'exception'. </p> The template language used by this
+     * method is MVEL2 (http://mvel.codehaus.org/).
      * 
      * @param templatePath the path to the template used for displaying the exception.
      * @param throwable the exception to be used in the target template.
-     * @return {@code String} the result of  processing the passed-in template.
+     * @return {@code String} the result of processing the passed-in template.
      */
     @SuppressWarnings("resource")
     public static String readTemplate(final String templatePath, final Throwable throwable) {
@@ -94,10 +93,9 @@ public class ErrorFilter implements Filter {
         }
     }
 
-
     @Override
     public void destroy() {
-        
+
     }
-    
+
 }

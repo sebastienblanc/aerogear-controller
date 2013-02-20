@@ -26,24 +26,22 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
- * Default implementation of {@link RouteProcessor}.
- * </p>
- * This implementation uses Context and Dependency Injection (CDI) to have various parts injected into it. Of<br>
+ * Default implementation of {@link RouteProcessor}. </p> This implementation uses Context and Dependency Injection (CDI) to
+ * have various parts injected into it. Of<br>
  * particular interest for end users is the {@link RoutingModule} which is described in more detail in the section below.
  * 
- * <h3> RoutingModule </h3>
- * The CDI implementation will scan for an instance of {@link RoutingModule} upon deployment, and its<br> 
+ * <h3>RoutingModule</h3> The CDI implementation will scan for an instance of {@link RoutingModule} upon deployment, and its<br>
  * {@link RoutingModule#build()} method will be called to assemble the routes configured for this application.<br>
  * To simplify this process {@link AbstractRoutingModule} is provided, please refer its javadoc for sample usage.
  */
 public class DefaultRouteProcessor implements RouteProcessor {
-    
+
     private EndpointInvoker endpointInvoker;
     private final Map<String, Consumer> consumers = new HashMap<String, Consumer>();
-    
+
     public DefaultRouteProcessor() {
     }
-    
+
     @Inject
     public DefaultRouteProcessor(Instance<Consumer> consumers, EndpointInvoker endpointInvoker) {
         this.endpointInvoker = endpointInvoker;
@@ -57,5 +55,5 @@ public class DefaultRouteProcessor implements RouteProcessor {
         final Map<String, Object> arguments = extractArguments(routeContext, consumers);
         return new InvocationResult(endpointInvoker.invoke(routeContext, arguments.values().toArray()), routeContext);
     }
-    
+
 }

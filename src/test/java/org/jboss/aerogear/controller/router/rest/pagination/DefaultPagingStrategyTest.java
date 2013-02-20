@@ -36,14 +36,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class DefaultPagingStrategyTest {
-    
+
     @Mock
     private RouteContext routeContext;
-    @Mock 
+    @Mock
     private HttpServletResponse response;
-    @Mock 
+    @Mock
     private HttpServletRequest request;
-    
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -53,29 +53,31 @@ public class DefaultPagingStrategyTest {
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/app/cars"));
         when(routeContext.getRequestPath()).thenReturn("cars");
     }
-    
+
     @Test
     public void processFirst() {
         when(routeContext.getRequestPath()).thenReturn("cars");
         when(request.getQueryString()).thenReturn("myoffset=0&mylimit=5&color=red");
-        final PaginationInfo pagingInfo = PaginationInfo.offset("myoffset", 0).customHeadersPrefix("Test-").limit("mylimit", 5).build();
+        final PaginationInfo pagingInfo = PaginationInfo.offset("myoffset", 0).customHeadersPrefix("Test-").limit("mylimit", 5)
+                .build();
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5));
         PaginationHandler.defaultPagingStrategy().postInvocation(results, routeContext, pagingInfo);
         verify(response, never()).setHeader(eq("Test-Links-Previous"), anyString());
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/app/cars?myoffset=5&mylimit=5&color=red");
     }
-    
+
     @Test
     public void processMiddle() {
         when(routeContext.getRequestPath()).thenReturn("cars");
         when(request.getQueryString()).thenReturn("color=red&myoffset=5&mylimit=5");
-        final PaginationInfo pagingInfo = PaginationInfo.offset("myoffset", 5).customHeadersPrefix("Test-").limit("mylimit", 5).build();
+        final PaginationInfo pagingInfo = PaginationInfo.offset("myoffset", 5).customHeadersPrefix("Test-").limit("mylimit", 5)
+                .build();
         final Collection<Integer> results = new ArrayList<Integer>(Arrays.asList(6, 7, 8, 9, 10));
         PaginationHandler.defaultPagingStrategy().postInvocation(results, routeContext, pagingInfo);
         verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/app/cars?color=red&myoffset=0&mylimit=5");
         verify(response).setHeader("Test-Links-Next", "http://localhost:8080/app/cars?color=red&myoffset=10&mylimit=5");
     }
-    
+
     @Test
     public void processLast() {
         when(routeContext.getRequestPath()).thenReturn("cars");
@@ -85,7 +87,7 @@ public class DefaultPagingStrategyTest {
         PaginationHandler.defaultPagingStrategy().postInvocation(results, routeContext, pagingInfo);
         verify(response).setHeader("Test-Links-Previous", "http://localhost:8080/app/cars?offset=0&color=red&limit=5");
     }
-    
+
     @Test
     public void missingPagingRequestParamButHasDefault() {
         when(routeContext.getRequestPath()).thenReturn("cars");
@@ -95,7 +97,7 @@ public class DefaultPagingStrategyTest {
         PaginationHandler.defaultPagingStrategy().postInvocation(results, routeContext, pagingInfo);
         verify(response).setHeader("AG-Links-Next", "http://localhost:8080/app/cars?color=red&limit=5&offset=5");
     }
-    
+
     @Test
     public void weblinkingHeader() {
         when(routeContext.getRequestPath()).thenReturn("cars");
@@ -107,5 +109,5 @@ public class DefaultPagingStrategyTest {
         verify(response, never()).setHeader(eq("Test-Links-Next"), anyString());
         verify(response).setHeader(eq("Link"), anyString());
     }
-    
+
 }

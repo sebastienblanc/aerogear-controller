@@ -21,11 +21,10 @@ import org.jboss.aerogear.controller.log.AeroGearLogger;
 import org.jboss.aerogear.controller.router.Route;
 
 /**
- * ErrorHandler is used as default target for a {@link Route} when a route has not defined any 
- * explicit error route.
+ * ErrorHandler is used as default target for a {@link Route} when a route has not defined any explicit error route.
  */
 public class ErrorTarget {
-    
+
     /**
      * Simply logs the exception thrown.
      * 
@@ -34,5 +33,5 @@ public class ErrorTarget {
     public void error(final Throwable throwable) {
         AeroGearLogger.LOGGER.routeCatchAllException(throwable, throwable.getMessage());
     }
-    
+
 }

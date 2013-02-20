@@ -17,13 +17,11 @@
 
 package org.jboss.aerogear.controller.router;
 
-
 /**
- * A RouteProcessor processes/handles a single Route in AeroGear Controller.
- * </p>
+ * A RouteProcessor processes/handles a single Route in AeroGear Controller. </p>
  */
 public interface RouteProcessor {
-    
+
     /**
      * Handles the actual invocation of the target or the passed-in {@link Route}.
      * 

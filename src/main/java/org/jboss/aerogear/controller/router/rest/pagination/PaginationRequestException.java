@@ -35,7 +35,5 @@ public class PaginationRequestException extends RuntimeException {
     public PaginationRequestException(Throwable cause) {
         super(cause);
     }
-    
-    
 
 }

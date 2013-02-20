@@ -23,7 +23,7 @@ import javax.inject.Inject;
  * EndpointInvoker is responsible for invoking target endpoint methods in AeroGear Controller.
  */
 public class EndpointInvoker {
-    
+
     private BeanManager beanManager;
     private ControllerFactory controllerFactory;
 
@@ -32,7 +32,7 @@ public class EndpointInvoker {
         this.controllerFactory = controllerFactory;
         this.beanManager = beanManager;
     }
-    
+
     /**
      * Invokes the target endpoint method for the passed-in {@code RouteContext}.
      * 
@@ -45,7 +45,7 @@ public class EndpointInvoker {
         final Route route = routeContext.getRoute();
         return route.getTargetMethod().invoke(getController(route), args);
     }
-    
+
     private Object getController(Route route) {
         return controllerFactory.createController(route.getTargetClass(), beanManager);
     }

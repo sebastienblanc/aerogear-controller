@@ -19,12 +19,11 @@ package org.jboss.aerogear.controller.view;
 
 import org.jboss.aerogear.controller.router.MediaType;
 
-
 /**
  * A Responder that "responds" to request by forwarding them to a {@link View}.
  */
 public class JspViewResponder extends AbstractViewResponder {
-    
+
     public JspViewResponder() {
         super(new JspViewResolver(), MediaType.JSP);
     }

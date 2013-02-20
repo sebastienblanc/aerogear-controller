@@ -36,18 +36,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class JspViewResponderTest {
-    
+
     @Mock
     private Route route;
     @Mock
     private HttpServletRequest request;
     @Mock
     private RequestDispatcher dispatcher;
-    @Mock 
+    @Mock
     private HttpServletResponse response;
     @Mock
     private RouteContext routeContext;
-    
+
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -64,7 +64,7 @@ public class JspViewResponderTest {
         assertThat(responder.accepts(MediaType.HTML.getMediaType())).isTrue();
         assertThat(responder.accepts(null)).isFalse();
     }
-    
+
     @Test
     public void respondWithJspViewResolver() throws Exception {
         final String viewPath = "/WEB-INF/pages/SampleController/index.jsp";
@@ -75,8 +75,8 @@ public class JspViewResponderTest {
         verify(request).getRequestDispatcher(viewPath);
         verify(dispatcher).forward(request, response);
     }
-    
+
     private static class Car {
     }
-    
+
 }

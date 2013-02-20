@@ -18,15 +18,12 @@ package org.jboss.aerogear.controller.router.rest.pagination;
 
 import com.google.common.base.Optional;
 
-
 /**
- * Links are a part of the metadata related to paging of fetched data.
- * </p>
- * Links are used to navigate the the first, previous, next, or last set
- * of data.
+ * Links are a part of the metadata related to paging of fetched data. </p> Links are used to navigate the the first, previous,
+ * next, or last set of data.
  */
 public class Links {
-    
+
     private final String first;
     private final String previous;
     private final String next;
@@ -36,9 +33,8 @@ public class Links {
         first = requestPathParser.replace(0, paging.limit());
         next = requestPathParser.replace(paging.nextOffset(), paging.limit());
         previous = requestPathParser.replace(paging.previousOffset(), paging.limit());
-        last =  paging.total().isPresent() ?
-            Optional.of(requestPathParser.replace(paging.total().get() - paging.limit(), paging.limit())) :
-            Optional.<String>absent();
+        last = paging.total().isPresent() ? Optional.of(requestPathParser.replace(paging.total().get() - paging.limit(),
+                paging.limit())) : Optional.<String> absent();
     }
 
     public String getFirst() {
@@ -52,7 +48,7 @@ public class Links {
     public String getNext() {
         return next;
     }
-    
+
     public Optional<String> getLast() {
         return last;
     }

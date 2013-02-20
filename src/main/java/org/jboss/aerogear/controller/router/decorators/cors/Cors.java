@@ -34,45 +34,39 @@ import com.google.common.collect.Iterables;
  * Cors is a helper class for handling Cross-Origin Resource Sharing (CORS) in AeroGear Controller.
  */
 public class Cors {
-    
+
     public enum RequestHeader {
-        ORIGIN("Origin"),
-        OPTIONS("OPTIONS"),
-        METHOD("Access-Control-Request-Method"),
-        HEADERS("Access-Control-Request-Headers");
-        
+        ORIGIN("Origin"), OPTIONS("OPTIONS"), METHOD("Access-Control-Request-Method"), HEADERS("Access-Control-Request-Headers");
+
         private final String headerName;
-        
+
         private RequestHeader(final String headerName) {
             this.headerName = headerName;
         }
-        
+
         @Override
         public String toString() {
             return headerName;
         }
     }
-    
+
     public enum ResponseHeader {
-        ALLOW_ORIGIN("Access-Control-Allow-Origin"),
-        ALLOW_CREDENTIALS("Access-Control-Allow-Credentials"),
-        EXPOSE_HEADERS("Access-Control-Expose-Headers"),
-        ALLOW_METHODS("Access-Control-Allow-Methods"),
-        MAX_AGE("Access-Control-Max-Age"),
-        ALLOW_HEADERS("Access-Control-Allow-Headers");
-        
+        ALLOW_ORIGIN("Access-Control-Allow-Origin"), ALLOW_CREDENTIALS("Access-Control-Allow-Credentials"), EXPOSE_HEADERS(
+                "Access-Control-Expose-Headers"), ALLOW_METHODS("Access-Control-Allow-Methods"), MAX_AGE(
+                "Access-Control-Max-Age"), ALLOW_HEADERS("Access-Control-Allow-Headers");
+
         private final String headerName;
-        
+
         private ResponseHeader(final String headerName) {
             this.headerName = headerName;
         }
-        
+
         @Override
         public String toString() {
             return headerName;
         }
     }
-    
+
     private final HttpServletRequest request;
     private final CorsConfiguration corsConfig;
 
@@ -86,23 +80,20 @@ public class Cors {
         this.request = request;
         this.corsConfig = corsConfig;
     }
-    
+
     /**
-     * Determines if the current {@link HttpServletRequest} is a CORS request.
-     * </p>
-     * See <a href="http://www.w3.org/TR/cors/#http-origin">http-origin</a> section of the specification.
+     * Determines if the current {@link HttpServletRequest} is a CORS request. </p> See <a
+     * href="http://www.w3.org/TR/cors/#http-origin">http-origin</a> section of the specification.
      * 
      * @return {@code true} if the current request has an 'Origin' request header, otherwise false.
      */
     public boolean isCorsRequest() {
         return hasOriginHeader();
     }
-    
+
     /**
-     * Determines if this instance can handle CORS requests. 
-     * </p>
-     * This is simply a convenience method and is the equivalent of calling
-     * {@link Cors#isCorsSupportEnabled()} && {@link Cors#isCorsRequest()}
+     * Determines if this instance can handle CORS requests. </p> This is simply a convenience method and is the equivalent of
+     * calling {@link Cors#isCorsSupportEnabled()} && {@link Cors#isCorsRequest()}
      * 
      * @return {@code true} is CORS support has been enabled and if the current request is a CORS request.
      * 
@@ -110,7 +101,7 @@ public class Cors {
     public boolean canHandleRequest() {
         return isCorsSupportEnabled() && isCorsRequest();
     }
-    
+
     /**
      * Determines if core support has been enabled by the {@link CorsConfig} instance.
      * 
@@ -119,7 +110,7 @@ public class Cors {
     public boolean isCorsSupportEnabled() {
         return corsConfig.isCorsSupportEnabled();
     }
-    
+
     /**
      * Determines if the current {@link HttpServletRequest} has an 'Origin' request header.
      * 
@@ -128,7 +119,7 @@ public class Cors {
     public boolean hasOriginHeader() {
         return hasHeader(RequestHeader.ORIGIN.toString());
     }
-    
+
     /**
      * Determines if the the current {@link HttpServletRequest}'s http method is 'OPTIONS'.
      * 
@@ -139,16 +130,15 @@ public class Cors {
     }
 
     /**
-     * Determines if the current {@link HttpServletRequest} qualifies as a 'Preflight' request.
-     * </p> 
-     * See <a href="http://www.w3.org/TR/cors/#preflight-request">preflight-request</a> section of the specification.
+     * Determines if the current {@link HttpServletRequest} qualifies as a 'Preflight' request. </p> See <a
+     * href="http://www.w3.org/TR/cors/#preflight-request">preflight-request</a> section of the specification.
      * 
      * @return {@code true} if the current request qualifies as a preflight, otherwise false.
      */
     public boolean isPreflightRequest() {
         return hasOriginHeader() && isOptionsMethod() && hasHeader(RequestHeader.METHOD.toString());
     }
-    
+
     /**
      * Checks that the preflight request method ({@link RequestHeader#METHOD}) is supported.
      * 
@@ -159,17 +149,17 @@ public class Cors {
         final String method = request.getHeader(RequestHeader.METHOD.toString());
         return validMethods.contains(method);
     }
-    
+
     /**
-     * Checks that the preflight request method ({@link RequestHeader#METHOD}) is supported according
-     * to the {@link CorsConfiguration} settings.
+     * Checks that the preflight request method ({@link RequestHeader#METHOD}) is supported according to the
+     * {@link CorsConfiguration} settings.
      * 
      * @return {@code true} if the current request method is one of the allowed http methods.
      */
     public boolean isRequestMethodValid() {
         return isRequestMethodValid(corsConfig.getValidRequestMethods());
     }
-    
+
     /**
      * Determines if the current {@link HttpServletRequest} has a {@link RequestHeader#HEADERS} request header.
      * 
@@ -178,7 +168,7 @@ public class Cors {
     public boolean hasRequestHeaders() {
         return hasHeader(RequestHeader.HEADERS.toString());
     }
-    
+
     /**
      * Returns the {@link RequestHeader#HEADERS} request header.
      * 
@@ -187,7 +177,7 @@ public class Cors {
     public String getRequestHeaders() {
         return request.getHeader(RequestHeader.HEADERS.toString());
     }
-    
+
     /**
      * Returns the {@link RequestHeader#METHOD} request header.
      * 
@@ -196,7 +186,7 @@ public class Cors {
     public String getRequestMethod() {
         return request.getHeader(RequestHeader.METHOD.toString());
     }
-    
+
     /**
      * Returns the allowed set of Request Methods.
      * 
@@ -205,7 +195,7 @@ public class Cors {
     public Set<String> getAllowedRequestMethods() {
         return corsConfig.getValidRequestMethods();
     }
-    
+
     /**
      * Returns the allowed set of Request Headers.
      * 
@@ -224,7 +214,7 @@ public class Cors {
     public Cors setEchoOrigin(final HttpServletResponse response) {
         return setOrigin(response, request.getHeader(RequestHeader.ORIGIN.headerName));
     }
-    
+
     /**
      * Set the {@link ResponseHeader#ALLOW_ORIGIN} to either echo the 'Origin' or to support '*' depending on the underlying
      * {@link CorsConfiguration} setting.
@@ -240,7 +230,7 @@ public class Cors {
         }
         return this;
     }
-    
+
     /**
      * Set the {@link ResponseHeader#ALLOW_ORIGIN} to the passed in value.
      * 
@@ -266,11 +256,11 @@ public class Cors {
 
     /**
      * Set the {@link ResponseHeader#ALLOW_CREDENTIALS} to 'true' if allowCookies was set set to true in the underlying
-     * {@link CorsConfiguration}.
-     * </p>
-     * By default cookies are not included in CORS requests but by setting this header cookies will be added to CORS request.
+     * {@link CorsConfiguration}. </p> By default cookies are not included in CORS requests but by setting this header cookies
+     * will be added to CORS request.
      * 
-     * @param response the {@link HttpServletResponse} for which the response header ResponseHeader.ALLOW_CREDENTIALS should be set.
+     * @param response the {@link HttpServletResponse} for which the response header ResponseHeader.ALLOW_CREDENTIALS should be
+     *        set.
      * @return {@code Cors} to support methods chaining.
      */
     public Cors setAllowCredentials(final HttpServletResponse response) {
@@ -279,23 +269,22 @@ public class Cors {
         }
         return this;
     }
-    
+
     /**
-     * Set the {@link ResponseHeader#EXPOSE_HEADERS} to the the configured comma separated list of headers.
-     * </p>
-     * During a simple CORS request only certain response headers are made available to a calling client:
+     * Set the {@link ResponseHeader#EXPOSE_HEADERS} to the the configured comma separated list of headers. </p> During a simple
+     * CORS request only certain response headers are made available to a calling client:
      * <ul>
-     *  <li>Cache-Control</li>
-     *  <li>Content-Language</li>
-     *  <li>Content-Type</li>
-     *  <li>Expires</li>
-     *  <li>Last-Modified</li>
-     *  <li>Pragma</li>
+     * <li>Cache-Control</li>
+     * <li>Content-Language</li>
+     * <li>Content-Type</li>
+     * <li>Expires</li>
+     * <li>Last-Modified</li>
+     * <li>Pragma</li>
      * </ul>
-     * To expose other headers they need to be specified which what this method enables.
-     * </p>
+     * To expose other headers they need to be specified which what this method enables. </p>
      * 
-     * @param response the {@link HttpServletResponse} for which the response header ResponseHeader#EXPOSE_HEADERS should be set.
+     * @param response the {@link HttpServletResponse} for which the response header ResponseHeader#EXPOSE_HEADERS should be
+     *        set.
      * @return {@code Cors} to support methods chaining.
      */
     public Cors setExposeHeaders(final HttpServletResponse response) {
@@ -307,7 +296,7 @@ public class Cors {
         }
         return this;
     }
-    
+
     /**
      * Set the {@link ResponseHeader#ALLOW_METHODS} to the the configured comma separated list of http methods.
      * 
@@ -321,14 +310,11 @@ public class Cors {
         }
         return this;
     }
-    
+
     /**
-     * Set the {@link ResponseHeader#MAX_AGE} to the configured max age value.
-     * </p>
-     * When making a preflight request the client has to perform two request with can be inefficient. This
-     * setting enables the caching of the preflight response for the specified time. During this time no
-     * preflight request will be made.
-     * </p>
+     * Set the {@link ResponseHeader#MAX_AGE} to the configured max age value. </p> When making a preflight request the client
+     * has to perform two request with can be inefficient. This setting enables the caching of the preflight response for the
+     * specified time. During this time no preflight request will be made. </p>
      * 
      * @param response the {@link HttpServletResponse} for which the response header ResponseHeader.MAX_AGE should be set.
      * @return {@code Cors} to support methods chaining.
@@ -351,7 +337,7 @@ public class Cors {
         if (requestHeaders == null) {
             return true;
         }
-        
+
         final Collection<String> lowerCaseValidHeaders = StringUtils.toLowerCase(validHeaders);
         final Iterable<String> headers = Splitter.on(',').trimResults().split(requestHeaders);
         boolean valid = Iterables.all(headers, new Predicate<String>() {
@@ -362,10 +348,10 @@ public class Cors {
         });
         return valid;
     }
-    
+
     /**
-     * Checks that the configured preflight request headers ({@link RequestHeader#HEADERS}) are supported
-     * according to the underlying {@link CorsConfiguration} settings.
+     * Checks that the configured preflight request headers ({@link RequestHeader#HEADERS}) are supported according to the
+     * underlying {@link CorsConfiguration} settings.
      * 
      * @return {@code true} if the current request headers are not supported.
      */
@@ -382,7 +368,7 @@ public class Cors {
         response.setHeader(ResponseHeader.ALLOW_HEADERS.toString(), asString(corsConfig.getValidRequestHeaders()));
         return this;
     }
-    
+
     private String asString(final Collection<String> strings) {
         return Joiner.on(',').join(strings);
     }

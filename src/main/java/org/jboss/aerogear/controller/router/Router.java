@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  * Router is the component that knows how to route/dispatch requests to target endpoints.
  */
 public interface Router {
-    
+
     /**
      * Determines if this {@link Router} has a {@link Route} for the passed-in {@link HttpServletRequest}.
      * 

@@ -53,14 +53,13 @@ public class StringUtils {
         // all uppercase: URL -> url
         return name.toLowerCase();
     }
-    
+
     public static Collection<String> toLowerCase(Collection<String> strings) {
         return Collections2.transform(strings, new Function<String, String>() {
-                public String apply(String str) {
-                    return str.toLowerCase();
-                }
+            public String apply(String str) {
+                return str.toLowerCase();
             }
-        );
+        });
     }
-    
+
 }

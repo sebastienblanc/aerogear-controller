@@ -30,7 +30,7 @@ public class PagingPropertiesTest {
         assertThat(params.limit()).isEqualTo(25);
         assertThat(params.total().get()).isEqualTo(100);
     }
-    
+
     @Test
     public void nextOffset() {
         final PaginationProperties params = new PaginationProperties(14, 10, 30);
@@ -39,7 +39,7 @@ public class PagingPropertiesTest {
         assertThat(params.limit()).isEqualTo(10);
         assertThat(params.total().get()).isEqualTo(30);
     }
-    
+
     @Test
     public void nextOffsetLastPage() {
         final PaginationProperties params = new PaginationProperties(90, 10, 100);
@@ -49,14 +49,14 @@ public class PagingPropertiesTest {
         assertThat(params.total().get()).isEqualTo(100);
         assertThat(params.isLastOffset()).isTrue();
     }
-    
+
     @Test
     public void previousOffset() {
         assertThat(new PaginationProperties(90, 10, 100).previousOffset()).isEqualTo(80);
         assertThat(new PaginationProperties(10, 10, 100).previousOffset()).isEqualTo(0);
         assertThat(new PaginationProperties(0, 10, 100).previousOffset()).isEqualTo(0);
     }
-    
+
     @Test
     public void isFirstOffset() {
         assertThat(new PaginationProperties(0, 10, 100).isFirstOffset()).isTrue();
@@ -64,38 +64,38 @@ public class PagingPropertiesTest {
         assertThat(new PaginationProperties(10, 10, 100).isFirstOffset()).isFalse();
         assertThat(new PaginationProperties(11, 10, 100).isFirstOffset()).isFalse();
     }
-    
+
     @Test
     public void isLastOffset() {
         assertThat(new PaginationProperties(90, 10, 100).isLastOffset()).isTrue();
         assertThat(new PaginationProperties(99, 10, 100).isLastOffset()).isTrue();
         assertThat(new PaginationProperties(89, 10, 100).isLastOffset()).isFalse();
     }
-    
+
     @Test
     public void isOffsetGreaterThanTotal() {
         assertThat(new PaginationProperties(200, 10, 100).isOffsetGreaterThanTotal()).isTrue();
     }
-    
+
     @Test
     public void offsetLargerThanTotalPrevious() {
         assertThat(new PaginationProperties(200, 10, 100).previousOffset()).isEqualTo(90);
-        
+
     }
-    
-    @Test (expected = RuntimeException.class)
+
+    @Test(expected = RuntimeException.class)
     public void shouldThrowIfOffsetIsNegative() {
-       new PaginationProperties(-1, 10, 100);
+        new PaginationProperties(-1, 10, 100);
     }
-    
-    @Test (expected = RuntimeException.class)
+
+    @Test(expected = RuntimeException.class)
     public void shouldThrowIfLimitIsNegative() {
-       new PaginationProperties(0, -10, 100);
+        new PaginationProperties(0, -10, 100);
     }
-    
-    @Test (expected = RuntimeException.class)
+
+    @Test(expected = RuntimeException.class)
     public void shouldThrowIfLimitIsZero() {
-       new PaginationProperties(0, 0, 100);
+        new PaginationProperties(0, 0, 100);
     }
-    
+
 }

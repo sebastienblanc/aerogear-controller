@@ -31,16 +31,13 @@ import com.google.common.base.Splitter;
  * Utility methods for various {@link HttpServletRequest} operation.
  */
 public class RequestUtils {
-    
-    
+
     private RequestUtils() {
     }
-    
+
     /**
-     * Returns the path of the current request with out the context path.
-     * </p>
-     * For example, if the web application was deployed with a context path of '/myapp',
-     * and the request submitted was '/myapp/cars/12', this method would return '/cars/12'.
+     * Returns the path of the current request with out the context path. </p> For example, if the web application was deployed
+     * with a context path of '/myapp', and the request submitted was '/myapp/cars/12', this method would return '/cars/12'.
      * 
      * @param request the {@link HttpServletRequest}.
      * @return {@code String} the request path without the context path (suffix)
@@ -49,7 +46,7 @@ public class RequestUtils {
         final String contextPath = request.getServletContext().getContextPath();
         return request.getRequestURI().substring(contextPath.length());
     }
-    
+
     /**
      * Returns the {@link RequestMethod} for the passed-in {@link HttpServletRequest}.
      * 
@@ -59,25 +56,24 @@ public class RequestUtils {
     public static RequestMethod extractMethod(final HttpServletRequest httpServletRequest) {
         return RequestMethod.valueOf(httpServletRequest.getMethod());
     }
-    
+
     /**
      * Returns the {@code Accept header} from the passed-in {@code HttpServletRequest}.
      * 
      * @param request the {@link HttpServletRequest}
-     * @return {@code Set<String>} of the values of the Http Accept Header, or an empty list if
-     * there was not Accept header
+     * @return {@code Set<String>} of the values of the Http Accept Header, or an empty list if there was not Accept header
      */
     public static Set<String> extractAcceptHeader(final HttpServletRequest request) {
         final String acceptHeader = request.getHeader("Accept");
         if (acceptHeader == null) {
             return Collections.emptySet();
         }
-        
+
         final Set<String> acceptHeaders = new LinkedHashSet<String>();
         for (String header : Splitter.on(',').trimResults().split(acceptHeader)) {
             acceptHeaders.add(header);
         }
         return acceptHeaders;
     }
-    
+
 }

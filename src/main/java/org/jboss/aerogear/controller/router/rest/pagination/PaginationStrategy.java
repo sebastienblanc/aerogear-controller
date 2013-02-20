@@ -25,31 +25,29 @@ import org.jboss.aerogear.controller.router.RouteContext;
  * A strategy for implementing pagination in AeroGear Controller.
  */
 public interface PaginationStrategy {
-    
+
     /**
-     * Creates a PaginationInfo instance.
-     * How this information is gathered, be it from an Annotation on the target endpoint method, 
-     * or by using separate request parameters is up to the concrete implementation.
+     * Creates a PaginationInfo instance. How this information is gathered, be it from an Annotation on the target endpoint
+     * method, or by using separate request parameters is up to the concrete implementation.
      * 
      * @param routeContext the {@link RouteContext} of the route being processed.
      * @param arguments the extracted arguments from the current request.
-     * @return {@link PaginationInfo} the information required for paging. 
+     * @return {@link PaginationInfo} the information required for paging.
      */
     PaginationInfo createPaginationInfo(RouteContext routeContext, Map<String, Object> arguments);
-    
+
     /**
-     * Called before the target endpoint method has been invoked and enables a concrete strategy to 
-     * manipulate the arguments that will be passed to the target endpoint method.
+     * Called before the target endpoint method has been invoked and enables a concrete strategy to manipulate the arguments
+     * that will be passed to the target endpoint method.
      * 
      * @param pagingInfo the {@link PaginationInfo} instance created by this strategy.
      * @param arguments the extracted arguments from the current request.
      * @return {@code Object[]} the arguments that will be passed to the target endpoint method.
      */
-    Object[] preInvocation(PaginationInfo pagingInfo, Map<String, Object> arguments); 
-    
+    Object[] preInvocation(PaginationInfo pagingInfo, Map<String, Object> arguments);
+
     /**
-     * Called after the target endpoint method has been invoked and 
-     * allows the strategy to set HTTP Response headers. 
+     * Called after the target endpoint method has been invoked and allows the strategy to set HTTP Response headers.
      * 
      * @param results the result returned from the target endpoint method.
      * @param routeContext the {@link RouteContext}.
@@ -57,6 +55,5 @@ public interface PaginationStrategy {
      * @return {@code Object} Either the unchanged result or a modified result depending on the underlying implementation.
      */
     Object postInvocation(Collection<?> results, RouteContext routeContext, PaginationInfo pagingInfo);
-    
 
 }

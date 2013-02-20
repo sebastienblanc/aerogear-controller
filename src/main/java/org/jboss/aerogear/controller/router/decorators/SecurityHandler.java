@@ -30,15 +30,14 @@ import org.jboss.aerogear.controller.router.RouteProcessor;
 import org.jboss.aerogear.controller.spi.SecurityProvider;
 
 /**
- * SecurityHandler is a CDI Decorator that decorates a {@link RouteProcessor}.
- * </p>
+ * SecurityHandler is a CDI Decorator that decorates a {@link RouteProcessor}. </p>
  */
 @Decorator
 public class SecurityHandler implements RouteProcessor {
-    
+
     private final RouteProcessor delegate;
     private final SecurityProvider securityProvider;
-    
+
     /**
      * Sole constructor which will have its parameters injected by CDI.
      * 
@@ -48,12 +47,12 @@ public class SecurityHandler implements RouteProcessor {
     @Inject
     public SecurityHandler(final @Delegate RouteProcessor delegate, final Instance<SecurityProvider> securityProviders) {
         this.delegate = delegate;
-        this.securityProvider = securityProviders.isUnsatisfied() ? defaultSecurityProvider(): securityProviders.get();
+        this.securityProvider = securityProviders.isUnsatisfied() ? defaultSecurityProvider() : securityProviders.get();
     }
 
     /**
-     * This method will use the injected {@link SecurityProvider} to access to the route is allowed.
-     * If access is allowed this methods simply delegates to the target {@link RouteProcessor}.
+     * This method will use the injected {@link SecurityProvider} to access to the route is allowed. If access is allowed this
+     * methods simply delegates to the target {@link RouteProcessor}.
      * 
      * @throws Exception if access to the Route is denied.
      */
@@ -65,7 +64,7 @@ public class SecurityHandler implements RouteProcessor {
         }
         return delegate.process(routeContext);
     }
-    
+
     private SecurityProvider defaultSecurityProvider() {
         return new SecurityProvider() {
             @Override
@@ -73,5 +72,5 @@ public class SecurityHandler implements RouteProcessor {
             }
         };
     }
-    
+
 }

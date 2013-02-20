@@ -41,10 +41,7 @@ public class RoutesTest {
         Routes routes = new AbstractRoutingModule() {
             @Override
             public void configuration() {
-                route()
-                        .from("/cars")
-                        .on(POST)
-                        .to(SampleController.class).save(param(Car.class));
+                route().from("/cars").on(POST).to(SampleController.class).save(param(Car.class));
             }
         }.build();
         assertThat(routes.hasRouteFor(POST, "/cars", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
@@ -55,10 +52,7 @@ public class RoutesTest {
         Routes routes = new AbstractRoutingModule() {
             @Override
             public void configuration() {
-                route()
-                        .from("/admin").roles("manager")
-                        .on(GET)
-                        .to(SampleController.class).admin();
+                route().from("/admin").roles("manager").on(GET).to(SampleController.class).admin();
             }
         }.build();
         assertThat(routes.hasRouteFor(GET, "/admin", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
@@ -66,60 +60,46 @@ public class RoutesTest {
 
     @Test
     public void routesWithPathParameters() {
-        Routes routes = new AbstractRoutingModule(){
+        Routes routes = new AbstractRoutingModule() {
             @Override
             public void configuration() {
-                route()
-                        .from("/car/{id}")
-                        .on(GET)
-                        .to(SampleController.class).find(param("id"));
+                route().from("/car/{id}").on(GET).to(SampleController.class).find(param("id"));
             }
         }.build();
         assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
     }
-    
+
     @Test
     public void restfulRoute() {
         final MediaType custom = new MediaType("application/custom", CustomResponder.class);
-        Routes routes = new AbstractRoutingModule(){
+        Routes routes = new AbstractRoutingModule() {
             @Override
             public void configuration() {
-                route()
-                        .from("/car/{id}")
-                        .on(GET)
-                        .produces(MediaType.JSON, custom)
-                        .to(SampleController.class).find(param("id"));
+                route().from("/car/{id}").on(GET).produces(MediaType.JSON, custom).to(SampleController.class).find(param("id"));
             }
         }.build();
         final Route route = routes.routeFor(GET, "/car/1", acceptHeaders(MediaType.JSON.getMediaType(), "application/custom"));
         assertThat(route.produces()).contains(MediaType.JSON, custom);
     }
-    
+
     @Test
     public void restfulRouteWithMultipleMediaTypes() {
-        Routes routes = new AbstractRoutingModule(){
+        Routes routes = new AbstractRoutingModule() {
             @Override
             public void configuration() {
-                route()
-                        .from("/car/{id}")
-                        .on(GET)
-                        .produces(MediaType.JSON)
-                        .to(SampleController.class).find(param("id"));
+                route().from("/car/{id}").on(GET).produces(MediaType.JSON).to(SampleController.class).find(param("id"));
             }
         }.build();
         final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType()));
         assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders)).isTrue();
     }
-    
+
     @Test
     public void routesWithDefaultExceptionRoute() {
         Routes routes = new AbstractRoutingModule() {
             @Override
             public void configuration() throws Exception {
-                route()
-                        .from("/home")
-                        .on(GET)
-                        .to(SampleController.class).index();
+                route().from("/home").on(GET).to(SampleController.class).index();
             }
         }.build();
         Route route = routes.routeFor(new IllegalStateException());
@@ -128,7 +108,7 @@ public class RoutesTest {
         assertThat(route.canHandle(new Throwable())).isTrue();
         assertThat(route.getTargetClass()).isEqualTo(ErrorTarget.class);
     }
-    
+
     @Test
     public void exceptionRoutesOrder() {
         Routes routes = new AbstractRoutingModule() {
@@ -137,22 +117,19 @@ public class RoutesTest {
                 route().on(SubException.class).to(SampleController.class).subException();
                 route().on(SuperException.class).to(SampleController.class).superException();
                 route().on(Exception.class).to(SampleController.class).error(param(Exception.class));
-                route()
-                        .from("/home")
-                        .on(GET)
-                        .to(SampleController.class).index();
+                route().from("/home").on(GET).to(SampleController.class).index();
             }
         }.build();
         final Route superErrorRoute = routes.routeFor(new SuperException());
         assertThat(superErrorRoute.canHandle(new SuperException())).isTrue();
         assertThat(superErrorRoute.canHandle(new SubException())).isTrue();
         assertThat(superErrorRoute.getTargetMethod().getName()).isEqualTo("superException");
-        
+
         final Route subErrorRoute = routes.routeFor(new SubException());
         assertThat(subErrorRoute.canHandle(new SubException())).isTrue();
         assertThat(subErrorRoute.canHandle(new SuperException())).isFalse();
         assertThat(subErrorRoute.getTargetMethod().getName()).isEqualTo("subException");
-        
+
         final Route genErrorRoute = routes.routeFor(new Exception());
         assertThat(genErrorRoute.canHandle(new SuperException())).isTrue();
         assertThat(genErrorRoute.canHandle(new SubException())).isTrue();
@@ -162,14 +139,15 @@ public class RoutesTest {
     public static class SuperException extends Exception {
         private static final long serialVersionUID = 1L;
     }
+
     public static class SubException extends SuperException {
         private static final long serialVersionUID = 1L;
     }
-    
+
     private Set<String> acceptHeaders(String... mediaTypes) {
         return new HashSet<String>(Arrays.asList(mediaTypes));
     }
-    
+
     private class CustomResponder extends AbstractRestResponder {
 
         public CustomResponder(String mediaType) {
@@ -178,8 +156,8 @@ public class RoutesTest {
 
         @Override
         public void writeResponse(Object entity, RouteContext routeContext) throws Exception {
-            //NoOp
+            // NoOp
         }
-        
+
     }
 }

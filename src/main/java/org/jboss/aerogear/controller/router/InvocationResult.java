@@ -20,7 +20,7 @@ package org.jboss.aerogear.controller.router;
  * Represents the result of invoking a Route in AeroGear Controller.
  */
 public class InvocationResult {
-    
+
     private Object result;
     private RouteContext routeContext;
 
@@ -38,7 +38,7 @@ public class InvocationResult {
     /**
      * Gets the result from this invocation.
      * 
-     * @param {@code Object} the result for this invocation.
+     * @return {@code Object} the result for this invocation.
      */
     public Object getResult() {
         return result;
@@ -47,12 +47,10 @@ public class InvocationResult {
     /**
      * The {@code RouteContext} for this invocation.
      * 
-     * @param {@code RouteContext} the {@link RouteContext} for this invocation.
+     * @return {@code RouteContext} the {@link RouteContext} for this invocation.
      */
     public RouteContext getRouteContext() {
         return routeContext;
     }
-    
-    
 
 }

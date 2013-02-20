@@ -23,9 +23,9 @@ import javax.servlet.http.HttpServletRequest;
  * A Consumer is capable of unmarshalling an Http Request Body into a Java Object representation.
  */
 public interface Consumer {
-    
+
     public String mediaType();
-    
+
     <T> T unmarshall(HttpServletRequest request, Class<T> type);
 
 }

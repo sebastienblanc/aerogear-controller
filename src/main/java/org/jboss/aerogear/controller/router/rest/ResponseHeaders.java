@@ -19,18 +19,16 @@ package org.jboss.aerogear.controller.router.rest;
 
 import java.util.Map;
 
-
 /**
- * Responsible for specifying one or more HTTP Headers that will be include
- * in the HttpServletResponse
+ * Responsible for specifying one or more HTTP Headers that will be include in the HttpServletResponse
  */
 public interface ResponseHeaders {
-    
+
     /**
      * The headers to be included.
      * 
-     * @return {@code Map} with the key is the name of the header and value is the headers value(s). If no headers 
-     *                     are to be returned, this method should return an empty map.
+     * @return {@code Map} with the key is the name of the header and value is the headers value(s). If no headers are to be
+     *         returned, this method should return an empty map.
      */
     Map<String, String> headers();
 

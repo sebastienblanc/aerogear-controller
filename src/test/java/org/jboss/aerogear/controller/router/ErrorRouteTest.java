@@ -32,5 +32,5 @@ public class ErrorRouteTest {
         assertThat(errorRoute.getTargetClass()).isEqualTo(ErrorTarget.class);
         assertThat(errorRoute.getTargetMethod().getName()).isEqualTo("error");
     }
-    
+
 }

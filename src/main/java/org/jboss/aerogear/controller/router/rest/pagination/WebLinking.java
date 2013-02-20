@@ -17,40 +17,41 @@
 package org.jboss.aerogear.controller.router.rest.pagination;
 
 public class WebLinking {
-    
+
     public static final String PREVIOUS = "previous";
     public static final String NEXT = "next";
     public static final String LINK_HEADER = "Link";
-    
+
     private Links links;
 
     public WebLinking(final Links links) {
         this.links = links;
     }
-    
+
     public String getLinkHeaderName() {
         return LINK_HEADER;
     }
-    
+
     public String getNext() {
         return oneLink(links.getNext(), NEXT);
     }
-    
+
     public String getPrevious() {
         return oneLink(links.getPrevious(), PREVIOUS);
     }
-    
+
     public String getLinkHeaders() {
         final StringBuilder sb = new StringBuilder();
         sb.append(oneLink(links.getPrevious(), PREVIOUS)).append(",");
         sb.append(getNext());
         return sb.toString();
     }
-    
+
     private String oneLink(final String link, final String type) {
-        return new StringBuilder("<").append(link).append(">; ").append("rel=").append("\"").append(type).append("\"").toString();
+        return new StringBuilder("<").append(link).append(">; ").append("rel=").append("\"").append(type).append("\"")
+                .toString();
     }
-    
+
     @Override
     public String toString() {
         return "WebLinking[" + LINK_HEADER + ":" + getLinkHeaders() + "]";

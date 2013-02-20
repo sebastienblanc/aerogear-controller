@@ -28,10 +28,10 @@ import org.jboss.aerogear.controller.router.RouteProcessor;
 
 @Decorator
 public class ResponseHandler implements RouteProcessor {
-    
+
     private final RouteProcessor delegate;
     private final Responders responders;
-    
+
     @Inject
     public ResponseHandler(final @Delegate RouteProcessor delegate, final Responders responders) {
         this.delegate = delegate;
@@ -44,5 +44,5 @@ public class ResponseHandler implements RouteProcessor {
         responders.respond(result.getRouteContext(), result.getResult());
         return result;
     }
-    
+
 }

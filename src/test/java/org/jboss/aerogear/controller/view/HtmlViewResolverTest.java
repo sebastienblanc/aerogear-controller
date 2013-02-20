@@ -28,10 +28,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class HtmlViewResolverTest {
-    
+
     @Mock
     private Route route;
-    
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);

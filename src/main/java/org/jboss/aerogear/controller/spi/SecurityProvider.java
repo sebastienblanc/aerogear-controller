@@ -25,7 +25,7 @@ import javax.servlet.ServletException;
  * Provides authorization for Routes in AeroGear Controller.
  */
 public interface SecurityProvider {
-    
+
     /**
      * Determines whether a request to the passed-in {@link Route} is allowed.
      * 

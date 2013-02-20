@@ -27,7 +27,7 @@ import javax.inject.Qualifier;
 @Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ ElementType.METHOD, ElementType.TYPE })
 /**
  * Specifies that target endpoint method in AeroGear Controller returns a paginated response.
  * </p>
@@ -36,56 +36,56 @@ import javax.inject.Qualifier;
  * 
  */
 public @interface Paginated {
-    
+
     /**
      * The name of query parameter that will be used as the 'offset' in a pagination strategy using offset/limit.
      * 
      * @return {@code String} the name of the query parameter used for the 'offset'. If not specified defaults to 'offset'.
      */
     String offsetParamName() default "offset";
-    
+
     /**
-     * The value to be used as the default 'offset' if no query parameter by the name specified in 'offsetParamName' 
-     * is included in the HTTP Request.
+     * The value to be used as the default 'offset' if no query parameter by the name specified in 'offsetParamName' is included
+     * in the HTTP Request.
      * 
-     * @return {@code int} the value to be used as the default 'offset' if no query parameter named 'offsetParamName' was 
-     *                     included in the request.
+     * @return {@code int} the value to be used as the default 'offset' if no query parameter named 'offsetParamName' was
+     *         included in the request.
      */
     int defaultOffset() default 0;
-    
+
     /**
      * The name of query parameter that will be used as the 'limit' in a pagination strategy using offset/limit.
      * 
      * @return {@code String} the name of the query parameter used for the 'limit'. If not specified defaults to 'limit'.
      */
     String limitParamName() default "limit";
-    
+
     /**
-     * The value to be used as the default 'limit' if no query parameter by the name specified in 'limitParamName' 
-     * is included in the HTTP Request.
+     * The value to be used as the default 'limit' if no query parameter by the name specified in 'limitParamName' is included
+     * in the HTTP Request.
      * 
-     * @return {@code int} the value to be used as the default 'limit' if no query parameter named 'limitParamName' was 
-     *                     included in the request.
+     * @return {@code int} the value to be used as the default 'limit' if no query parameter named 'limitParamName' was included
+     *         in the request.
      */
     int defaultLimit() default 10;
-    
+
     /**
-     * The prefix to be used when custom HTTP response headers are used to provide link to next/previous.
-     * </p>
-     * For example, if you specify the prefix as 'XYZ-" the following response headers could possibly be returned: 
+     * The prefix to be used when custom HTTP response headers are used to provide link to next/previous. </p> For example, if
+     * you specify the prefix as 'XYZ-" the following response headers could possibly be returned:
+     * 
      * <pre>
      * XYZ-Links-Next "http://server/app/resource?offset=5?limit=5"
      * XYZ-Links-Previous "http://server/app/resource?offset=0?limit=5"
      * </pre>
+     * 
      * Note, that this value is only used when Web Linking is disabled (webLinking = false).
      * 
      * @return {@code String} the prefix to be used for next/previous HTTP response headers. Defaults to 'AG-'.
      */
     String customHeadersPrefix() default "AG-";
-    
+
     /**
-     * Determines if <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">Web Linking</a>
-     * should be used.
+     * Determines if <a href="http://tools.ietf.org/html/draft-nottingham-http-link-header-10">Web Linking</a> should be used.
      * 
      * @return {@code true} if Web Linking should be used, or false if custom HTTP headers should be used.
      */

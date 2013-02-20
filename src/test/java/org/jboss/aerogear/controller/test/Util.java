@@ -22,10 +22,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Util {
-    
+
     private Util() {
     }
-    
+
     public static Map<String, String> parseWebLinkHeader(final String linkHeader) {
         final Map<String, String> links = new HashMap<String, String>();
         final Pattern p = Pattern.compile("<([^>]*)>; rel=\"([A-Za-z]+)\"");

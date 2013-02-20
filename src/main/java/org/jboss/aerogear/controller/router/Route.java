@@ -17,7 +17,6 @@
 
 package org.jboss.aerogear.controller.router;
 
-
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
@@ -87,14 +86,14 @@ public interface Route {
      * @return the roles associated with this Route, or an empty set if there are no roles associated.
      */
     Set<String> getRoles();
-    
+
     /**
      * Determines if this Route contains one or more exception routes.
      * 
      * @return {@code true} if this Route has one or more exception routes.
      */
     boolean hasExceptionsRoutes();
-    
+
     /**
      * Determines if this Route can handle the throwable.
      * 
@@ -102,26 +101,26 @@ public interface Route {
      * @return {@code true} if this Route can handle the Throwable, otherwise {@code false}.
      */
     boolean canHandle(Throwable throwable);
-    
+
     /**
      * Returns the media types that this Route is capable of serving.
      * 
-     * @return  the media types that this routes can produce.
+     * @return the media types that this routes can produce.
      */
     Set<MediaType> produces();
 
     /**
      * Returns the Parameter's that this route accepts.
      * 
-     * @return  the {@link Parameter}'s that this route accepts.
+     * @return the {@link Parameter}'s that this route accepts.
      */
     List<Parameter<?>> getParameters();
-    
+
     /**
      * Returns the media types that this Route is capable of consuming.
      * 
-     * @return  the media types that this routes can consuming.
+     * @return the media types that this routes can consuming.
      */
     Set<String> consumes();
-    
+
 }

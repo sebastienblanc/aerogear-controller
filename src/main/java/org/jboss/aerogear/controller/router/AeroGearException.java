@@ -28,7 +28,7 @@ public class AeroGearException extends RuntimeException {
     public AeroGearException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     public AeroGearException(String message) {
         super(message);
     }
@@ -36,6 +36,5 @@ public class AeroGearException extends RuntimeException {
     public AeroGearException(Throwable cause) {
         super(cause);
     }
-    
 
 }

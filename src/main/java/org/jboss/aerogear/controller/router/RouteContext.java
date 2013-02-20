@@ -26,13 +26,13 @@ import org.jboss.aerogear.controller.util.RequestUtils;
  * RouteContext holds information related to processing of a Route.
  */
 public class RouteContext {
-    
+
     private final Route route;
     private final String requestPath;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final Routes routes;
-    
+
     /**
      * Constructor.
      * 
@@ -41,20 +41,23 @@ public class RouteContext {
      * @param response the {@link HttpServletRequest}.
      * @param routes the {@link Routes} to enables querying of information about configured routes.
      */
-    public RouteContext(final Route route, final HttpServletRequest request, final HttpServletResponse response, final Routes routes) {
+    public RouteContext(final Route route, final HttpServletRequest request, final HttpServletResponse response,
+            final Routes routes) {
         this(route, RequestUtils.extractPath(request), request, response, routes);
     }
-    
-    public RouteContext(final Route route, final String requestPath, final HttpServletRequest request, final HttpServletResponse response, final Routes routes) {
+
+    public RouteContext(final Route route, final String requestPath, final HttpServletRequest request,
+            final HttpServletResponse response, final Routes routes) {
         this.route = route;
         this.requestPath = requestPath;
         this.request = request;
         this.response = response;
         this.routes = routes;
     }
-    
+
     /**
      * Returns the current Route
+     * 
      * @return {@link Route} the current route.
      */
     public Route getRoute() {
@@ -62,7 +65,7 @@ public class RouteContext {
     }
 
     /**
-     * Returns the request path minus the context path (suffix) for the current request. 
+     * Returns the request path minus the context path (suffix) for the current request.
      * 
      * @return {@code String} the request path minus the context path (suffix) for the current request.
      */
@@ -87,7 +90,7 @@ public class RouteContext {
     public HttpServletResponse getResponse() {
         return response;
     }
-    
+
     /**
      * Returns the {@link Routes} instance for the current application.
      * 
@@ -96,5 +99,5 @@ public class RouteContext {
     public Routes getRoutes() {
         return routes;
     }
-    
+
 }
