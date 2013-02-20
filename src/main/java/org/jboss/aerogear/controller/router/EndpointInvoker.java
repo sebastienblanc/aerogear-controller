@@ -19,6 +19,9 @@ package org.jboss.aerogear.controller.router;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
+/**
+ * EndpointInvoker is responsible for invoking target endpoint methods in AeroGear Controller.
+ */
 public class EndpointInvoker {
     
     private BeanManager beanManager;
@@ -30,11 +33,18 @@ public class EndpointInvoker {
         this.beanManager = beanManager;
     }
     
+    /**
+     * Invokes the target endpoint method for the passed-in {@code RouteContext}.
+     * 
+     * @param routeContext the {@link RouteContext} for route to be invoked.
+     * @param args the arguments for the route's target endpoint method.
+     * @return {@code Object} the result from invoking the endpoint method, if any.
+     * @throws Exception if an error occurs while invoking the target method.
+     */
     public Object invoke(final RouteContext routeContext, final Object[] args) throws Exception {
         final Route route = routeContext.getRoute();
         return route.getTargetMethod().invoke(getController(route), args);
     }
-    
     
     private Object getController(Route route) {
         return controllerFactory.createController(route.getTargetClass(), beanManager);

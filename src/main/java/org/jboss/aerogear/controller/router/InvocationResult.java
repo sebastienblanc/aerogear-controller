@@ -16,21 +16,39 @@
  */
 package org.jboss.aerogear.controller.router;
 
-
+/**
+ * Represents the result of invoking a Route in AeroGear Controller.
+ */
 public class InvocationResult {
     
     private Object result;
     private RouteContext routeContext;
 
+    /**
+     * Sole constructor.
+     * 
+     * @param result the result from invoking the route's target endpoint method, if any.
+     * @param routeContext the {@link RouteContext} for the current route.
+     */
     public InvocationResult(final Object result, final RouteContext routeContext) {
         this.result = result;
         this.routeContext = routeContext;
     }
 
+    /**
+     * Gets the result from this invocation.
+     * 
+     * @param {@code Object} the result for this invocation.
+     */
     public Object getResult() {
         return result;
     }
 
+    /**
+     * The {@code RouteContext} for this invocation.
+     * 
+     * @param {@code RouteContext} the {@link RouteContext} for this invocation.
+     */
     public RouteContext getRouteContext() {
         return routeContext;
     }
