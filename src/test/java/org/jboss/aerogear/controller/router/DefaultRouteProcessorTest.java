@@ -20,6 +20,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.jboss.aerogear.controller.router.MediaType.HTML;
 import static org.jboss.aerogear.controller.router.MediaType.JSON;
 import static org.jboss.aerogear.controller.router.MediaType.JSP;
+import static org.jboss.aerogear.controller.router.MediaType.ANY;
 import static org.jboss.aerogear.controller.router.RequestMethod.GET;
 import static org.jboss.aerogear.controller.router.RequestMethod.POST;
 import static org.mockito.Matchers.any;
@@ -316,12 +317,13 @@ public class DefaultRouteProcessorTest {
                 route()
                         .from("/cars/{id}").roles("admin")
                         .on(RequestMethod.GET)
-                        .produces(JSON)
+                        .produces(JSP, JSON)
                         .to(SampleController.class).find(param("id"));
             }
-        }).requestMethod(GET).acceptHeader(JSON);
+        }).requestMethod(GET).acceptHeader(ANY);
         routeTester.process("/cars/10");
         verify(routeTester.<SampleController>getController()).find("10");
+        verify(routeTester.jspResponder()).respond(anyObject(), any(RouteContext.class));
     }
 
     @Test
