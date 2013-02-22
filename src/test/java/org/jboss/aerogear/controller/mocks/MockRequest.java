@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.aerogear.controller.test;
+package org.jboss.aerogear.controller.mocks;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -211,7 +211,7 @@ public class MockRequest {
         return request;
     }
 
-    public HttpServletResponse getReqponse() {
+    public HttpServletResponse getResponse() {
         return response;
     }
 

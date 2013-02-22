@@ -35,11 +35,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.Car;
 import org.jboss.aerogear.controller.SampleController;
+import org.jboss.aerogear.controller.mocks.RouteTester;
 import org.jboss.aerogear.controller.router.parameter.MissingRequestParameterException;
 import org.jboss.aerogear.controller.router.rest.AbstractRestResponder;
 import org.jboss.aerogear.controller.router.rest.JsonResponder;
 import org.jboss.aerogear.controller.router.rest.pagination.PaginationInfo;
-import org.jboss.aerogear.controller.test.RouteTester;
 import org.junit.Test;
 
 public class DefaultRouteProcessorTest {

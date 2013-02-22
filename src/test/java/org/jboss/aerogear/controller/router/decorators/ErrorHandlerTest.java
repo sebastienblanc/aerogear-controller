@@ -29,12 +29,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.aerogear.controller.SampleController;
 import org.jboss.aerogear.controller.SampleControllerException;
+import org.jboss.aerogear.controller.mocks.RouteTester;
 import org.jboss.aerogear.controller.router.AbstractRoutingModule;
 import org.jboss.aerogear.controller.router.InvocationResult;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.RequestMethod;
 import org.jboss.aerogear.controller.router.RouteContext;
-import org.jboss.aerogear.controller.test.RouteTester;
 import org.junit.Test;
 
 public class ErrorHandlerTest {

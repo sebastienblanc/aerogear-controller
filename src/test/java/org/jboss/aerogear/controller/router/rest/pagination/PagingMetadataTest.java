@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jboss.aerogear.controller.test.Util;
+import org.jboss.aerogear.controller.Util;
 import org.junit.Before;
 import org.junit.Test;
 

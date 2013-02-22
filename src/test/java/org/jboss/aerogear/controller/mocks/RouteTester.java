@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.aerogear.controller.test;
+package org.jboss.aerogear.controller.mocks;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -144,21 +144,20 @@ public class RouteTester {
     public InvocationResult process(final Route route) throws Exception {
         setController(route);
         mockRequest.prepareProcessing();
-        final RouteContext routeContext = new RouteContext(route, mockRequest.getRequest(), mockRequest.getReqponse(), routes);
+        final RouteContext routeContext = new RouteContext(route, mockRequest.getRequest(), mockRequest.getResponse(), routes);
         return createRouteProcessor().process(routeContext);
     }
 
     private RouteProcessor createRouteProcessor() {
         if (routeProcessor == null) {
             final EndpointInvoker endpointInvoker = mockInvoker.getEndpointInvoker();
-            final RouteProcessor routeProcessor = new DefaultRouteProcessor(consumers, endpointInvoker);
-            final RouteProcessor paginationHandler = new PaginationHandler(routeProcessor, pagingInstance, consumers,
+            final RouteProcessor defaultRouteProcessor = new DefaultRouteProcessor(consumers, endpointInvoker);
+            final RouteProcessor paginationHandler = new PaginationHandler(defaultRouteProcessor, pagingInstance, consumers,
                     endpointInvoker);
             final RouteProcessor securityHandler = new SecurityHandler(paginationHandler, securityProviderInstance);
             final RouteProcessor errorHandler = new ErrorHandler(securityHandler, endpointInvoker);
-            final RouteProcessor responseHandler = new ResponseHandler(errorHandler, mockResponders.getResponders());
-            this.routeProcessor = responseHandler;
-            return this.routeProcessor;
+            routeProcessor = new ResponseHandler(errorHandler, mockResponders.getResponders());
+            return routeProcessor;
         } else {
             return routeProcessor;
         }
