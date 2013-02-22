@@ -20,7 +20,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Map;
 
-import org.jboss.aerogear.controller.test.Util;
+import org.jboss.aerogear.controller.Util;
 import org.junit.Test;
 
 public class WebLinkingTest {

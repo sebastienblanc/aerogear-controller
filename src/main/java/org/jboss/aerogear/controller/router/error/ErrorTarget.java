@@ -30,8 +30,9 @@ public class ErrorTarget {
      * 
      * @param throwable the error to be logged.
      */
-    public void error(final Throwable throwable) {
+    public Throwable error(final Throwable throwable) {
         AeroGearLogger.LOGGER.routeCatchAllException(throwable, throwable.getMessage());
+        return throwable;
     }
 
 }
