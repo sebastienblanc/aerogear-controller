@@ -48,7 +48,7 @@ import org.mockito.MockitoAnnotations;
 import com.google.common.base.Joiner;
 
 public class MockRequest {
-    
+
     @Mock
     private HttpServletRequest request;
     @Mock
@@ -57,37 +57,37 @@ public class MockRequest {
     private HttpServletResponse response;
     @Mock
     private RequestDispatcher requestDispatcher;
-    
+
     private final Set<String> acceptHeaders = new LinkedHashSet<String>();
     private final Map<String, String[]> params = new LinkedHashMap<String, String[]>();
     private final List<Cookie> cookies = new ArrayList<Cookie>();
     private StringWriter stringWriter;
-    
+
     public MockRequest() {
         MockitoAnnotations.initMocks(this);
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
     }
-    
+
     public MockRequest requestMethod(final RequestMethod httpMethod) {
         when(request.getMethod()).thenReturn(httpMethod.toString());
         return this;
     }
-    
+
     public MockRequest acceptHeader(final String acceptHeader) {
         this.acceptHeaders.add(acceptHeader);
         return this;
     }
-    
+
     public MockRequest acceptHeader(final MediaType mediaType) {
         this.acceptHeaders.add(mediaType.getMediaType());
         return this;
     }
-    
+
     public MockRequest acceptHeaders(final String... acceptHeaders) {
         this.acceptHeaders.addAll(Arrays.asList(acceptHeaders));
         return this;
     }
-    
+
     public MockRequest body(final String body) {
         try {
             when(request.getInputStream()).thenReturn(inputStream(body));
@@ -96,7 +96,7 @@ public class MockRequest {
         }
         return this;
     }
-    
+
     private ServletInputStream inputStream(final String json) {
         final ByteArrayInputStream ba = new ByteArrayInputStream(json.getBytes());
         return new ServletInputStream() {
@@ -106,12 +106,12 @@ public class MockRequest {
             }
         };
     }
-    
+
     public void setRequestURL(String path) {
         final StringBuffer requestURL = new StringBuffer("http://localhost:8080" + request.getRequestURI());
         when(request.getRequestURL()).thenReturn(requestURL);
     }
-    
+
     public void setRequestURI(final String path) {
         if (servletContext.getContextPath() == null) {
             servletContext("/test");
@@ -119,28 +119,28 @@ public class MockRequest {
         final String requestUri = servletContext.getContextPath() + path;
         when(request.getRequestURI()).thenReturn(requestUri);
     }
-    
+
     public String extractQueryParameters(final String path) {
         final int indexOf = path.indexOf("?");
         if (indexOf != -1) {
-            final String substring = path.substring(indexOf+1);
+            final String substring = path.substring(indexOf + 1);
             final String[] split = substring.split("&");
             for (String string : split) {
                 final String[] param = string.split("=");
-                params.put(param[0], new String[]{param[1]});
+                params.put(param[0], new String[] { param[1] });
             }
             return path.substring(0, indexOf);
         }
         return path;
     }
-    
+
     public void prepareProcessing() {
         setRequestParams();
         setCookies();
         setAcceptHeaders();
         setupWriter();
     }
-    
+
     public void setupWriter() {
         try {
             stringWriter = new StringWriter();
@@ -149,7 +149,7 @@ public class MockRequest {
             throw new RuntimeException(e.getMessage());
         }
     }
-    
+
     private PrintWriter printWriter(StringWriter writer) {
         return new PrintWriter(writer);
     }
@@ -162,7 +162,7 @@ public class MockRequest {
     }
 
     public void setCookies() {
-        when(request.getCookies()).thenReturn(cookies.toArray(new Cookie[]{}));
+        when(request.getCookies()).thenReturn(cookies.toArray(new Cookie[] {}));
     }
 
     @SuppressWarnings("unchecked")
@@ -173,7 +173,7 @@ public class MockRequest {
         for (int i = 0; i < array.length; i++) {
             final Entry<String, String[]> entry = (Entry<String, String[]>) array[i];
             sb.append(entry.getKey()).append("=").append(entry.getValue()[0]);
-            if (i < (array.length-1)) {
+            if (i < (array.length - 1)) {
                 sb.append("&");
             }
         }
@@ -184,17 +184,17 @@ public class MockRequest {
         when(servletContext.getContextPath()).thenReturn(context);
         when(request.getServletContext()).thenReturn(servletContext);
     }
-    
+
     public MockRequest param(final String name, final String value) {
-        params.put(name, new String[]{value});
+        params.put(name, new String[] { value });
         return this;
     }
-    
+
     public MockRequest header(final String name, final String value) {
         when(request.getHeader(name)).thenReturn(value);
         return this;
     }
-    
+
     public MockRequest cookie(final String name, final String value) {
         final Cookie cookie = mock(Cookie.class);
         when(cookie.getName()).thenReturn(name);
@@ -210,11 +210,11 @@ public class MockRequest {
     public HttpServletRequest getRequest() {
         return request;
     }
-    
+
     public HttpServletResponse getReqponse() {
         return response;
     }
-    
+
     public ServletContext getServletContext() {
         return servletContext;
     }
@@ -222,6 +222,5 @@ public class MockRequest {
     public Set<String> getAcceptHeaders() {
         return acceptHeaders;
     }
-
 
 }

@@ -36,21 +36,21 @@ public class MockEndpointInvoker {
     @Mock
     private ControllerFactory controllerFactory;
     private ErrorTarget errorTarget;
-    
+
     public MockEndpointInvoker() {
         MockitoAnnotations.initMocks(this);
         instrumentErrorController();
     }
-    
+
     private void instrumentErrorController() {
         errorTarget = spy(new ErrorTarget());
         when(controllerFactory.createController(eq(ErrorTarget.class), eq(beanManager))).thenReturn(errorTarget);
     }
-    
+
     public EndpointInvoker getEndpointInvoker() {
         return new EndpointInvoker(controllerFactory, beanManager);
     }
-    
+
     public Object setController(Object controller, final Route route) {
         if (controller == null) {
             controller = mock(route.getTargetClass());
@@ -58,7 +58,7 @@ public class MockEndpointInvoker {
         when(controllerFactory.createController(eq(route.getTargetClass()), eq(beanManager))).thenReturn(controller);
         return controller;
     }
-    
+
     public MockEndpointInvoker addController(final Object controller) {
         when(controllerFactory.createController(eq(controller.getClass()), eq(beanManager))).thenReturn(controller);
         return this;

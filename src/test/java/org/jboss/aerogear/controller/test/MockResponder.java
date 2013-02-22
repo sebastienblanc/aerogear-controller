@@ -40,7 +40,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 public class MockResponder {
-    
+
     @Mock
     private Instance<Responder> responderInstance;
     @Spy
@@ -54,16 +54,16 @@ public class MockResponder {
     @Mock
     private ErrorViewResponder errorViewResponder;
     private final List<Responder> responderList = new LinkedList<Responder>();
-    
+
     public MockResponder() {
         MockitoAnnotations.initMocks(this);
     }
-    
+
     public MockResponder addResponder(final Responder responder) {
         responderList.add(responder);
         return this;
     }
-    
+
     public Responders getResponders() {
         if (responderList.isEmpty()) {
             mockResponders();
@@ -71,7 +71,7 @@ public class MockResponder {
         when(this.responderInstance.iterator()).thenReturn(responderList.iterator());
         return spy(new Responders(responderInstance));
     }
-    
+
     public MockResponder addJspResponder() {
         when(jspResponder.accepts(HTML.getMediaType())).thenReturn(true);
         when(jspResponder.mediaType()).thenReturn(JSP);
@@ -79,47 +79,47 @@ public class MockResponder {
         addResponder(jspResponder);
         return this;
     }
-    
+
     public MockResponder addHtmlResponder() {
         when(htmlResponder.accepts(HTML.getMediaType())).thenReturn(true);
         when(htmlResponder.mediaType()).thenReturn(HTML);
         addResponder(htmlResponder);
         return this;
     }
-    
+
     public MockResponder addErrorResponder() {
         when(errorViewResponder.accepts(HTML.getMediaType())).thenReturn(true);
         when(errorViewResponder.mediaType()).thenReturn(ErrorViewResponder.MEDIA_TYPE);
         addResponder(errorViewResponder);
         return this;
     }
-    
+
     public MockResponder addJsonResponder() {
         when(jsonResponder.accepts(JSON.getMediaType())).thenReturn(true);
         when(jsonResponder.mediaType()).thenReturn(JSON);
         addResponder(jsonResponder);
         return this;
     }
-    
+
     public void mockResponders() {
         addJspResponder();
         addHtmlResponder();
         addJsonResponder();
         addErrorResponder();
     }
-    
+
     public JsonResponder getJsonResponder() {
         return jsonResponder;
     }
-    
+
     public JspViewResponder getJspResponder() {
         return jspResponder;
     }
-    
+
     public HtmlViewResponder getHtmlResponder() {
         return htmlResponder;
     }
-    
+
     public ErrorViewResponder getErrorViewResponder() {
         return errorViewResponder;
     }

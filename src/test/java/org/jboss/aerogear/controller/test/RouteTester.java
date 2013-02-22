@@ -57,12 +57,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class RouteTester {
-    
+
     @Mock
     private Instance<Consumer> consumers;
     @Mock
     private SecurityProvider securityProvider;
-    @Mock 
+    @Mock
     private Instance<SecurityProvider> securityProviderInstance;
     @Mock
     private Instance<PaginationStrategy> pagingInstance;
@@ -72,7 +72,7 @@ public class RouteTester {
     private final Routes routes;
     private Object controller;
     private RouteProcessor routeProcessor;
-    
+
     private RouteTester(final RoutingModule routingModule) {
         MockitoAnnotations.initMocks(this);
         routes = routingModule.build();
@@ -83,16 +83,16 @@ public class RouteTester {
         instrumentSecurityProviders();
         instrumentPagination();
     }
-    
+
     public static RouteTester from(final RoutingModule routingModule) {
         return new RouteTester(routingModule);
     }
-    
+
     public RouteTester addResponder(final Responder responder) {
         mockResponders.addResponder(responder);
         return this;
     }
-    
+
     public RouteTester requestMethod(final RequestMethod httpMethod) {
         mockRequest.requestMethod(httpMethod);
         return this;
@@ -112,23 +112,24 @@ public class RouteTester {
         mockRequest.acceptHeaders(acceptHeaders);
         return this;
     }
-    
+
     public RouteTester body(final String body) {
         mockRequest.body(body);
         return this;
     }
-    
+
     public Route routeFor(final String path) {
         mockRequest.setRequestURI(path);
         mockRequest.setRequestURL(path);
-        return routes.routeFor(RequestMethod.valueOf(mockRequest.getRequest().getMethod()), path, mockRequest.getAcceptHeaders());
+        return routes.routeFor(RequestMethod.valueOf(mockRequest.getRequest().getMethod()), path,
+                mockRequest.getAcceptHeaders());
     }
 
     public InvocationResult processGetRequest(final String path) throws Exception {
         requestMethod(RequestMethod.GET);
         return process(path);
     }
-    
+
     public InvocationResult processPostRequest(final String path) throws Exception {
         requestMethod(RequestMethod.POST);
         return process(path);
@@ -139,19 +140,20 @@ public class RouteTester {
         final Route route = routeFor(trimmed);
         return process(route);
     }
-    
+
     public InvocationResult process(final Route route) throws Exception {
         setController(route);
         mockRequest.prepareProcessing();
         final RouteContext routeContext = new RouteContext(route, mockRequest.getRequest(), mockRequest.getReqponse(), routes);
         return createRouteProcessor().process(routeContext);
     }
-    
+
     private RouteProcessor createRouteProcessor() {
         if (routeProcessor == null) {
             final EndpointInvoker endpointInvoker = mockInvoker.getEndpointInvoker();
             final RouteProcessor routeProcessor = new DefaultRouteProcessor(consumers, endpointInvoker);
-            final RouteProcessor paginationHandler = new PaginationHandler(routeProcessor, pagingInstance, consumers, endpointInvoker);
+            final RouteProcessor paginationHandler = new PaginationHandler(routeProcessor, pagingInstance, consumers,
+                    endpointInvoker);
             final RouteProcessor securityHandler = new SecurityHandler(paginationHandler, securityProviderInstance);
             final RouteProcessor errorHandler = new ErrorHandler(securityHandler, endpointInvoker);
             final RouteProcessor responseHandler = new ResponseHandler(errorHandler, mockResponders.getResponders());
@@ -174,34 +176,34 @@ public class RouteTester {
     public SecurityProvider getSecurityProvider() {
         return securityProvider;
     }
-    
+
     public JsonResponder jsonResponder() {
         return mockResponders.getJsonResponder();
     }
-    
+
     public JspViewResponder jspResponder() {
         return mockResponders.getJspResponder();
     }
-    
+
     public ErrorViewResponder errorViewResponder() {
         return mockResponders.getErrorViewResponder();
     }
-    
+
     public RouteTester param(final String name, final String value) {
         mockRequest.param(name, value);
         return this;
     }
-    
+
     public RouteTester header(final String name, final String value) {
         mockRequest.header(name, value);
         return this;
     }
-    
+
     public RouteTester cookie(final String name, final String value) {
         mockRequest.cookie(name, value);
         return this;
     }
-    
+
     private void instrumentPagination() {
         when(pagingInstance.isUnsatisfied()).thenReturn(true);
     }
@@ -211,30 +213,30 @@ public class RouteTester {
         when(securityProviderInstance.iterator()).thenReturn(iterator);
         when(securityProviderInstance.get()).thenReturn(securityProvider);
     }
-    
+
     private void instrumentConsumers() {
         final Iterator<Consumer> iterator = new HashSet<Consumer>(Arrays.asList(new JsonConsumer())).iterator();
         when(consumers.iterator()).thenReturn(iterator);
     }
-    
+
     public RouteTester spyController(final Object controller) {
         this.controller = spy(controller);
         return this;
     }
-    
+
     public RouteTester setController(final Object controller) {
         this.controller = controller;
         return this;
     }
-    
+
     private void setController(Route route) {
         controller = mockInvoker.setController(controller, route);
     }
-    
+
     public ErrorTarget getErrorTarget() {
         return mockInvoker.getErrorTarget();
     }
-    
+
     public StringWriter getStringWriter() {
         return mockRequest.getStringWriter();
     }
@@ -242,19 +244,15 @@ public class RouteTester {
     public RouteProcessor getRouteProcessor() {
         return spy(createRouteProcessor());
     }
-    
+
     static {
         InputStream inputStream = null;
-        try
-        {
+        try {
             inputStream = RouteTester.class.getResourceAsStream("/logging.properties");
             LogManager.getLogManager().readConfiguration(inputStream);
-        }
-        catch (final IOException e)
-        {
+        } catch (final IOException e) {
             Logger.getAnonymousLogger().severe("Could not load logging.properties file: " + e.getMessage());
-        }
-        finally {
+        } finally {
             if (inputStream != null) {
                 try {
                     inputStream.close();
