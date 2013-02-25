@@ -168,7 +168,7 @@ public class DefaultRoute implements Route {
     }
 
     private Set<MediaType> asSet(final MediaType[] types) {
-        return new HashSet<MediaType>(Arrays.asList(types));
+        return new LinkedHashSet<MediaType>(Arrays.asList(types));
     }
 
     private Set<String> asSet(final List<String> strings, final String defaultValue) {
