@@ -17,9 +17,9 @@
 
 package org.jboss.aerogear.controller.router.decorators;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.jboss.aerogear.controller.router.MediaType.JSON;
 import static org.jboss.aerogear.controller.router.MediaType.JSP;
-import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.never;
@@ -114,6 +114,23 @@ public class ErrorHandlerTest {
         verify(routeTester.jsonResponder()).respond(anyObject(), any(RouteContext.class));
         verify(processResult.getRouteContext().getResponse()).setStatus(HttpServletResponse.SC_NOT_FOUND);
         assertThat(routeTester.getStringWriter().toString()).isEqualTo("[]");
+    }
+    
+    @Test
+    public void testDefaultErrorRouteJsonRequested() throws Exception {
+        final RouteTester routeTester = RouteTester.from(new AbstractRoutingModule() {
+            @Override
+            public void configuration() throws Exception {
+                route()
+                        .from("/home")
+                        .on(RequestMethod.GET)
+                        .produces(JSON)
+                        .to(SampleController.class).throwIllegalStateException();
+            }
+        }).acceptHeader(JSON).spyController(new SampleController());
+        routeTester.processGetRequest("/home");
+        verify(routeTester.getErrorTarget()).error(any(SampleControllerException.class));
+        verify(routeTester.errorViewResponder()).respond(anyObject(), any(RouteContext.class));
     }
     
 }
