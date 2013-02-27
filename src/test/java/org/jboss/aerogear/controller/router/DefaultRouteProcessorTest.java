@@ -510,14 +510,16 @@ public class DefaultRouteProcessorTest {
     }    
     
     private class CustomResponder extends AbstractRestResponder {
-
-        public CustomResponder(String mediaType) {
-            super(new MediaType("application/custom", CustomResponder.class));
-        }
+        
+        private MediaType customMediaType = new MediaType("application/custom", CustomResponder.class); 
         
         @Override
         public void writeResponse(Object entity, RouteContext routeContext) throws Exception {
             // NoOp
+        }
+
+        public MediaType getMediaType() {
+            return customMediaType;
         }
 
     }

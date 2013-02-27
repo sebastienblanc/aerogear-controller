@@ -149,14 +149,16 @@ public class RoutesTest {
     }
 
     private class CustomResponder extends AbstractRestResponder {
-
-        public CustomResponder(String mediaType) {
-            super(new MediaType(mediaType, CustomResponder.class));
-        }
+        private MediaType mediaType = new MediaType("application/custom", CustomResponder.class);
 
         @Override
         public void writeResponse(Object entity, RouteContext routeContext) throws Exception {
             // NoOp
+        }
+
+        @Override
+        public MediaType getMediaType() {
+            return mediaType;
         }
 
     }

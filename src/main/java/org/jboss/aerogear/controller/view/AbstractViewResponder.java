@@ -53,7 +53,7 @@ public class AbstractViewResponder implements Responder {
     }
 
     @Override
-    public MediaType mediaType() {
+    public MediaType getMediaType() {
         return mediaType;
     }
 

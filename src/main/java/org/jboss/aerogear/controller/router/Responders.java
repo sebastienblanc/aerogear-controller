@@ -39,7 +39,7 @@ public class Responders {
     @Inject
     public Responders(final Instance<Responder> responders) {
         for (Responder responder : responders) {
-            this.responders.put(responder.mediaType(), responder);
+            this.responders.put(responder.getMediaType(), responder);
         }
     }
 
