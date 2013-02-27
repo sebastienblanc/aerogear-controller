@@ -23,9 +23,17 @@ import org.jboss.aerogear.controller.router.MediaType;
  * A Responder that "responds" to request by forwarding them to a {@link View}.
  */
 public class JspViewResponder extends AbstractViewResponder {
+    
+    private final JspViewResolver jspViewResolver = new JspViewResolver();
 
-    public JspViewResponder() {
-        super(new JspViewResolver(), MediaType.JSP);
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.JSP;
+    }
+
+    @Override
+    public ViewResolver getViewResolver() {
+        return jspViewResolver;
     }
 
 }

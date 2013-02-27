@@ -17,7 +17,6 @@
 
 package org.jboss.aerogear.controller.view;
 
-import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Responder;
 import org.jboss.aerogear.controller.router.RouteContext;
 
@@ -26,35 +25,24 @@ import org.jboss.aerogear.controller.router.RouteContext;
  * 
  * @see ViewResolver
  */
-public class AbstractViewResponder implements Responder {
+public abstract class AbstractViewResponder implements Responder {
 
-    private final ViewResolver viewResolver;
-    private final MediaType mediaType;
-
-    public AbstractViewResponder(final ViewResolver viewResolver, final MediaType mediaType) {
-        this.viewResolver = viewResolver;
-        this.mediaType = mediaType;
-    }
+    public abstract ViewResolver getViewResolver();
 
     @Override
     public boolean accepts(final String mediaType) {
-        return this.mediaType.getType().equals(mediaType);
+        return getMediaType().getType().equals(mediaType);
     }
 
     @Override
     public void respond(final Object entity, final RouteContext routeContext) throws Exception {
-        final String viewPath = viewResolver.resolveViewPathFor(routeContext.getRoute());
+        final String viewPath = getViewResolver().resolveViewPathFor(routeContext.getRoute());
         final View view = new View(viewPath, entity);
         if (view.hasModelData()) {
             routeContext.getRequest().setAttribute(view.getModelName(), view.getModel());
         }
         routeContext.getRequest().getRequestDispatcher(view.getViewPath())
                 .forward(routeContext.getRequest(), routeContext.getResponse());
-    }
-
-    @Override
-    public MediaType getMediaType() {
-        return mediaType;
     }
 
 }
