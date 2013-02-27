@@ -22,7 +22,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Responder;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
@@ -35,17 +34,9 @@ import org.jboss.aerogear.controller.router.RouteContext;
  */
 public abstract class AbstractRestResponder implements Responder {
 
-    private final MediaType mediaType;
-
-    /**
-     * Sole constructor that subclasses should call from tier no-args constructor
-     * 
-     * @param mediaType the media type that this responder accepts.
-     */
-    public AbstractRestResponder(final MediaType mediaType) {
-        this.mediaType = mediaType;
+    public AbstractRestResponder() {
     }
-
+    
     /**
      * Writes the passed-in entity to the {@link HttpServletResponse} enabling concrete implementation to add additional headers
      * of in other ways process the response.
@@ -58,13 +49,13 @@ public abstract class AbstractRestResponder implements Responder {
 
     @Override
     public boolean accepts(final String mediaType) {
-        return this.mediaType.getMediaType().equals(mediaType);
+        return getMediaType().getType().equals(mediaType);
     }
 
     @Override
     public void respond(final Object entity, final RouteContext routeContext) throws Exception {
         final HttpServletResponse response = routeContext.getResponse();
-        response.setContentType(mediaType.getMediaType());
+        response.setContentType(getMediaType().getType());
         response.setCharacterEncoding("UTF-8");
         if (entity instanceof ResponseHeaders) {
             final ResponseHeaders responseHeaders = (ResponseHeaders) entity;
@@ -74,11 +65,6 @@ public abstract class AbstractRestResponder implements Responder {
             }
         }
         writeResponse(entity, routeContext);
-    }
-
-    @Override
-    public MediaType mediaType() {
-        return mediaType;
     }
 
 }

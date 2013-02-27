@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.codehaus.jackson.map.DeserializationConfig.Feature;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.aerogear.controller.router.AeroGearException;
 import org.jboss.aerogear.controller.router.Consumer;
@@ -34,13 +35,14 @@ public class JsonConsumer implements Consumer {
 
     @Override
     public String mediaType() {
-        return MediaType.JSON.getMediaType();
+        return MediaType.JSON.getType();
     }
 
     @Override
     public <T> T unmarshall(final HttpServletRequest request, final Class<T> type) {
         try {
             final ObjectMapper om = new ObjectMapper();
+            om.configure(Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return om.readValue(request.getInputStream(), type);
         } catch (final IOException e) {
             throw new AeroGearException(e);

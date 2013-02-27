@@ -60,7 +60,7 @@ public class JsonResponderTest {
 
     @Test
     public void accepts() {
-        assertThat(new JsonResponder().accepts(MediaType.JSON.getMediaType())).isTrue();
+        assertThat(new JsonResponder().accepts(MediaType.JSON.getType())).isTrue();
     }
 
     @Test
@@ -83,7 +83,7 @@ public class JsonResponderTest {
         verify(response).getWriter();
         verify(response).setCharacterEncoding("UTF-8");
         assertThat(stringWriter.toString()).isEqualTo("{\"name\":\"Larry\",\"age\":38}");
-        verify(response).setContentType(MediaType.JSON.getMediaType());
+        verify(response).setContentType(MediaType.JSON.getType());
         verify(response).setHeader("Entity-Name", "Larry");
         verify(response).setHeader("Entity-Age", "38");
     }
@@ -102,7 +102,7 @@ public class JsonResponderTest {
         final ObjectMapper mapper = new ObjectMapper();
         final Map readValue = mapper.readValue(stringWriter.toString(), Map.class);
         assertThat(readValue.get("message")).isEqualTo("not found");
-        verify(response).setContentType(MediaType.JSON.getMediaType());
+        verify(response).setContentType(MediaType.JSON.getType());
     }
 
 }

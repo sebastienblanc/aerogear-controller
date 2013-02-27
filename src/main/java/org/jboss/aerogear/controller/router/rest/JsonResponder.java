@@ -31,7 +31,6 @@ public class JsonResponder extends AbstractRestResponder {
     private final ObjectMapper mapper;
 
     public JsonResponder() {
-        super(MediaType.JSON);
         mapper = new ObjectMapper();
     }
 
@@ -50,6 +49,14 @@ public class JsonResponder extends AbstractRestResponder {
 
     private void writeJsonResponse(final Object entity, final RouteContext routeContext) throws Exception {
         mapper.writeValue(routeContext.getResponse().getWriter(), entity);
+    }
+
+    /* (non-Javadoc)
+     * @see org.jboss.aerogear.controller.router.Responder#getMediaType()
+     */
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.JSON;
     }
 
 }

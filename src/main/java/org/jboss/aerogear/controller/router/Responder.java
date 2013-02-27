@@ -27,7 +27,7 @@ public interface Responder {
      * 
      * @return {@code MediaType} the media type.
      */
-    MediaType mediaType();
+    MediaType getMediaType();
 
     /**
      * Determines whether this responder can respond to the passed-in @{code mediaType}

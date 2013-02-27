@@ -79,7 +79,7 @@ public class MockRequest {
     }
 
     public MockRequest acceptHeader(final MediaType mediaType) {
-        this.acceptHeaders.add(mediaType.getMediaType());
+        this.acceptHeaders.add(mediaType.getType());
         return this;
     }
 

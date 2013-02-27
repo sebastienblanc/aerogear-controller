@@ -39,7 +39,7 @@ public class Responders {
     @Inject
     public Responders(final Instance<Responder> responders) {
         for (Responder responder : responders) {
-            this.responders.put(responder.mediaType(), responder);
+            this.responders.put(responder.getMediaType(), responder);
         }
     }
 
@@ -59,7 +59,7 @@ public class Responders {
         final Set<MediaType> routeMediaTypes = routeContext.getRoute().produces();
         for (String acceptHeader : acceptHeaders) {
             for (MediaType mediaType : routeMediaTypes) {
-                if (mediaType.getMediaType().equals(acceptHeader)) {
+                if (mediaType.getType().equals(acceptHeader)) {
                     if (respond(mediaType, result, routeContext)) {
                         return;
                     }

@@ -19,13 +19,21 @@ package org.jboss.aerogear.controller.router.error;
 import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.view.AbstractViewResponder;
 import org.jboss.aerogear.controller.view.HtmlViewResolver;
+import org.jboss.aerogear.controller.view.ViewResolver;
 
 public class ErrorViewResponder extends AbstractViewResponder {
 
     public static final MediaType MEDIA_TYPE = new MediaType("text/html", ErrorViewResponder.class);
+    private final HtmlViewResolver htmlViewResolver = new HtmlViewResolver();
 
-    public ErrorViewResponder() {
-        super(new ErrorViewResolver(new HtmlViewResolver()), MEDIA_TYPE);
+    @Override
+    public MediaType getMediaType() {
+        return MEDIA_TYPE;
+    }
+
+    @Override
+    public ViewResolver getViewResolver()  {
+        return htmlViewResolver;
     }
 
 }

@@ -47,7 +47,7 @@ public class JsonConsumerTest {
     @Test
     public void mediaType() {
         final JsonConsumer consumer = new JsonConsumer();
-        assertThat(consumer.mediaType()).isEqualTo(MediaType.JSON.getMediaType());
+        assertThat(consumer.mediaType()).isEqualTo(MediaType.JSON.getType());
     }
 
     @Test

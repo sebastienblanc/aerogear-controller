@@ -24,8 +24,16 @@ import org.jboss.aerogear.controller.router.MediaType;
  */
 public class HtmlViewResponder extends AbstractViewResponder {
 
-    public HtmlViewResponder() {
-        super(new HtmlViewResolver(), MediaType.HTML);
+    private final HtmlViewResolver htmlViewResolver = new HtmlViewResolver();
+    
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.HTML;
+    }
+
+    @Override
+    public ViewResolver getViewResolver() {
+        return htmlViewResolver;
     }
 
 }

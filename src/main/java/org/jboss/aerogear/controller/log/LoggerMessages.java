@@ -70,5 +70,9 @@ public interface LoggerMessages {
     @LogMessage(level = Logger.Level.ERROR)
     @Message(id = 13, value = "Invalid Paging Request: offset '%s', limit '%s'")
     PaginationRequestException invalidPagingRequest(long offset, long limit);
+    
+    @LogMessage(level = Logger.Level.ERROR)
+    @Message(id = 14, value = "The class '%s', does not have a no-args constructor which is required by CDI.")
+    RuntimeException responderDoesNotHaveNoArgsCtor(Class<?> javaClass);
 
 }

@@ -115,7 +115,7 @@ public class DefaultRouteTest {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/index").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
-        assertThat(route.matches(RequestMethod.GET, "/index", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
+        assertThat(route.matches(RequestMethod.GET, "/index", acceptHeaders(MediaType.HTML.getType()))).isTrue();
     }
 
     private Set<String> acceptHeaders(String... mediaTypes) {
@@ -127,11 +127,11 @@ public class DefaultRouteTest {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
-        assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
-        assertThat(route.matches(RequestMethod.GET, "/car", acceptHeaders(MediaType.HTML.getMediaType()))).isFalse();
-        assertThat(route.matches(RequestMethod.GET, "/c", acceptHeaders(MediaType.HTML.getMediaType()))).isFalse();
-        assertThat(route.matches(RequestMethod.GET, "/carss", acceptHeaders(MediaType.HTML.getMediaType()))).isFalse();
-        assertThat(route.matches(RequestMethod.GET, "/somelongpath", acceptHeaders(MediaType.HTML.getMediaType()))).isFalse();
+        assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders(MediaType.HTML.getType()))).isTrue();
+        assertThat(route.matches(RequestMethod.GET, "/car", acceptHeaders(MediaType.HTML.getType()))).isFalse();
+        assertThat(route.matches(RequestMethod.GET, "/c", acceptHeaders(MediaType.HTML.getType()))).isFalse();
+        assertThat(route.matches(RequestMethod.GET, "/carss", acceptHeaders(MediaType.HTML.getType()))).isFalse();
+        assertThat(route.matches(RequestMethod.GET, "/somelongpath", acceptHeaders(MediaType.HTML.getType()))).isFalse();
     }
 
     @Test
@@ -139,7 +139,7 @@ public class DefaultRouteTest {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).produces(MediaType.HTML).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
-        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType()));
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.getType()));
         assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isFalse();
     }
 
@@ -148,7 +148,7 @@ public class DefaultRouteTest {
         final RouteDescriptor rd = new RouteDescriptor();
         rd.setPath("/car/{id}").on(GET).produces(MediaType.HTML).to(SampleController.class).index();
         final Route route = new DefaultRoute(rd);
-        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.HTML.getMediaType()));
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.HTML.getType()));
         assertThat(route.matches(RequestMethod.GET, "/car/3", acceptHeaders)).isTrue();
     }
 

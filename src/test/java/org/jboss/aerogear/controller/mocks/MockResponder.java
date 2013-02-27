@@ -73,30 +73,30 @@ public class MockResponder {
     }
 
     public MockResponder addJspResponder() {
-        when(jspResponder.accepts(HTML.getMediaType())).thenReturn(true);
-        when(jspResponder.mediaType()).thenReturn(JSP);
+        when(jspResponder.accepts(HTML.getType())).thenReturn(true);
+        when(jspResponder.getMediaType()).thenReturn(JSP);
         when(jspResponder.accepts(ANY)).thenReturn(true);
         addResponder(jspResponder);
         return this;
     }
 
     public MockResponder addHtmlResponder() {
-        when(htmlResponder.accepts(HTML.getMediaType())).thenReturn(true);
-        when(htmlResponder.mediaType()).thenReturn(HTML);
+        when(htmlResponder.accepts(HTML.getType())).thenReturn(true);
+        when(htmlResponder.getMediaType()).thenReturn(HTML);
         addResponder(htmlResponder);
         return this;
     }
 
     public MockResponder addErrorResponder() {
-        when(errorViewResponder.accepts(HTML.getMediaType())).thenReturn(true);
-        when(errorViewResponder.mediaType()).thenReturn(ErrorViewResponder.MEDIA_TYPE);
+        when(errorViewResponder.accepts(HTML.getType())).thenReturn(true);
+        when(errorViewResponder.getMediaType()).thenReturn(ErrorViewResponder.MEDIA_TYPE);
         addResponder(errorViewResponder);
         return this;
     }
 
     public MockResponder addJsonResponder() {
-        when(jsonResponder.accepts(JSON.getMediaType())).thenReturn(true);
-        when(jsonResponder.mediaType()).thenReturn(JSON);
+        when(jsonResponder.accepts(JSON.getType())).thenReturn(true);
+        when(jsonResponder.getMediaType()).thenReturn(JSON);
         addResponder(jsonResponder);
         return this;
     }
