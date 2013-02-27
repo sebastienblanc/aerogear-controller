@@ -21,7 +21,7 @@
 
     <groupId>org.jboss.aerogear</groupId>
     <artifactId>aerogear-controller</artifactId>
-    <version>1.0.0.CR1-SNAPSHOT</version>
+    <version>1.0.0.CR1-27022012-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>aerogear-controller</name>
