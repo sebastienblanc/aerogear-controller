@@ -177,7 +177,7 @@ public class RouteDescriptor implements RouteBuilder.OnMethods, RouteBuilder.Tar
     private List<String> toStrings(MediaType... mediaTypes) {
         final List<String> strings = new LinkedList<String>();
         for (MediaType mediaType : mediaTypes) {
-            strings.add(mediaType.getMediaType());
+            strings.add(mediaType.getType());
         }
         return strings;
     }

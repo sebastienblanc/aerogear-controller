@@ -49,13 +49,13 @@ public abstract class AbstractRestResponder implements Responder {
 
     @Override
     public boolean accepts(final String mediaType) {
-        return getMediaType().getMediaType().equals(mediaType);
+        return getMediaType().getType().equals(mediaType);
     }
 
     @Override
     public void respond(final Object entity, final RouteContext routeContext) throws Exception {
         final HttpServletResponse response = routeContext.getResponse();
-        response.setContentType(getMediaType().getMediaType());
+        response.setContentType(getMediaType().getType());
         response.setCharacterEncoding("UTF-8");
         if (entity instanceof ResponseHeaders) {
             final ResponseHeaders responseHeaders = (ResponseHeaders) entity;

@@ -54,7 +54,7 @@ public class DefaultRoute implements Route {
         targetMethod = descriptor.getTargetMethod();
         targetClass = descriptor.getTargetClass();
         roles = asSet(firstNonNull(descriptor.getRoles(), new String[] {}));
-        consumes = asSet(descriptor.getConsumes(), MediaType.HTML.getMediaType());
+        consumes = asSet(descriptor.getConsumes(), MediaType.HTML.getType());
         parameters = firstNonNull(descriptor.getParameters(), Collections.<Parameter<?>> emptyList());
         produces = asSet(firstNonNull(descriptor.getProduces(), defaultMediaTypes()));
         throwables = firstNonNull(descriptor.getThrowables(), emptyThrowableSet());
@@ -85,7 +85,7 @@ public class DefaultRoute implements Route {
             return true;
         }
         for (MediaType mediaType : produces) {
-            if (acceptHeaders.contains(mediaType.getMediaType())) {
+            if (acceptHeaders.contains(mediaType.getType())) {
                 return true;
             }
         }

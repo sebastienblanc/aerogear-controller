@@ -38,7 +38,7 @@ public class AbstractViewResponder implements Responder {
 
     @Override
     public boolean accepts(final String mediaType) {
-        return this.mediaType.getMediaType().equals(mediaType);
+        return this.mediaType.getType().equals(mediaType);
     }
 
     @Override

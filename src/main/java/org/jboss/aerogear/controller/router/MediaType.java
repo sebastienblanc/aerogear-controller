@@ -24,7 +24,7 @@ import org.jboss.aerogear.controller.view.JspViewResponder;
 public class MediaType {
 
     public static final MediaType HTML = new MediaType("text/html", HtmlViewResponder.class);
-    public static final MediaType JSP = new MediaType(HTML.getMediaType(), JspViewResponder.class);
+    public static final MediaType JSP = new MediaType(HTML.getType(), JspViewResponder.class);
     public static final MediaType JSON = new MediaType("application/json", JsonResponder.class);
 
     public static final String ANY = "*/*";
@@ -37,7 +37,7 @@ public class MediaType {
         this.responderClass = responderClass;
     }
 
-    public String getMediaType() {
+    public String getType() {
         return mediaType;
     }
 

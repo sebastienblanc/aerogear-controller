@@ -34,7 +34,7 @@ public class JsonConsumer implements Consumer {
 
     @Override
     public String mediaType() {
-        return MediaType.JSON.getMediaType();
+        return MediaType.JSON.getType();
     }
 
     @Override

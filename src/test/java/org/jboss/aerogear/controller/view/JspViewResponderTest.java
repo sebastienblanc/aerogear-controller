@@ -61,7 +61,7 @@ public class JspViewResponderTest {
     @Test
     public void acceptsJspViewResolver() {
         final JspViewResponder responder = new JspViewResponder();
-        assertThat(responder.accepts(MediaType.HTML.getMediaType())).isTrue();
+        assertThat(responder.accepts(MediaType.HTML.getType())).isTrue();
         assertThat(responder.accepts(null)).isFalse();
     }
 

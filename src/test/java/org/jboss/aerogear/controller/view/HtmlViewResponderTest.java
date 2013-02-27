@@ -61,7 +61,7 @@ public class HtmlViewResponderTest {
     @Test
     public void accepts() {
         final HtmlViewResponder mvcResponder = new HtmlViewResponder();
-        assertThat(mvcResponder.accepts(MediaType.HTML.getMediaType())).isTrue();
+        assertThat(mvcResponder.accepts(MediaType.HTML.getType())).isTrue();
         assertThat(mvcResponder.accepts(null)).isFalse();
     }
 

@@ -44,7 +44,7 @@ public class RoutesTest {
                 route().from("/cars").on(POST).to(SampleController.class).save(param(Car.class));
             }
         }.build();
-        assertThat(routes.hasRouteFor(POST, "/cars", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
+        assertThat(routes.hasRouteFor(POST, "/cars", acceptHeaders(MediaType.HTML.getType()))).isTrue();
     }
 
     @Test
@@ -55,7 +55,7 @@ public class RoutesTest {
                 route().from("/admin").roles("manager").on(GET).to(SampleController.class).admin();
             }
         }.build();
-        assertThat(routes.hasRouteFor(GET, "/admin", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
+        assertThat(routes.hasRouteFor(GET, "/admin", acceptHeaders(MediaType.HTML.getType()))).isTrue();
     }
 
     @Test
@@ -66,7 +66,7 @@ public class RoutesTest {
                 route().from("/car/{id}").on(GET).to(SampleController.class).find(param("id"));
             }
         }.build();
-        assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders(MediaType.HTML.getMediaType()))).isTrue();
+        assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders(MediaType.HTML.getType()))).isTrue();
     }
 
     @Test
@@ -78,7 +78,7 @@ public class RoutesTest {
                 route().from("/car/{id}").on(GET).produces(MediaType.JSON, custom).to(SampleController.class).find(param("id"));
             }
         }.build();
-        final Route route = routes.routeFor(GET, "/car/1", acceptHeaders(MediaType.JSON.getMediaType(), "application/custom"));
+        final Route route = routes.routeFor(GET, "/car/1", acceptHeaders(MediaType.JSON.getType(), "application/custom"));
         assertThat(route.produces()).contains(MediaType.JSON, custom);
     }
 
@@ -90,7 +90,7 @@ public class RoutesTest {
                 route().from("/car/{id}").on(GET).produces(MediaType.JSON).to(SampleController.class).find(param("id"));
             }
         }.build();
-        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.getMediaType()));
+        final Set<String> acceptHeaders = new HashSet<String>(Arrays.asList(MediaType.JSON.getType()));
         assertThat(routes.hasRouteFor(GET, "/car/1", acceptHeaders)).isTrue();
     }
 
