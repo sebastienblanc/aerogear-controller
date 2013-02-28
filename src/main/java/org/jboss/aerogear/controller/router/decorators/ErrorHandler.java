@@ -22,9 +22,12 @@ import java.lang.reflect.Method;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.jboss.aerogear.controller.router.EndpointInvoker;
 import org.jboss.aerogear.controller.router.InvocationResult;
+import org.jboss.aerogear.controller.router.MediaType;
 import org.jboss.aerogear.controller.router.Route;
 import org.jboss.aerogear.controller.router.RouteContext;
 import org.jboss.aerogear.controller.router.RouteProcessor;
@@ -69,15 +72,34 @@ public class ErrorHandler implements RouteProcessor {
     private Object invokeErrorMethod(final RouteContext errorContext, final Throwable rootCause) throws Exception {
         return endpointInvoker.invoke(errorContext, getMethodArguments(errorContext, rootCause));
     }
-
-    private RouteContext errorContext(final Throwable rootCause, final RouteContext orgContext) {
-        final Route errorRoute = orgContext.getRoutes().routeFor(rootCause);
-        return new RouteContext(errorRoute, orgContext.getRequest(), orgContext.getResponse(), orgContext.getRoutes());
-    }
-
+    
     private Object[] getMethodArguments(final RouteContext routeContext, final Throwable t) {
         final Method targetMethod = routeContext.getRoute().getTargetMethod();
         return targetMethod.getParameterTypes().length == 0 ? new Object[] {} : new Object[] { t };
     }
+
+    private RouteContext errorContext(final Throwable rootCause, final RouteContext orgContext) {
+        final Route errorRoute = orgContext.getRoutes().routeFor(rootCause);
+        return new RouteContext(errorRoute, wrapRequest(orgContext), orgContext.getResponse(), orgContext.getRoutes());
+    }
+    
+    private HttpServletRequest wrapRequest(final RouteContext routeContext) {
+        final String acceptAny = appendAnyMediaTypeToAcceptHeader(routeContext.getRequest());
+        return new HttpServletRequestWrapper(routeContext.getRequest()) {
+            @Override
+            public String getHeader(final String name) {
+                if (name.equalsIgnoreCase("accept")) {
+                    return acceptAny;
+                }
+                return super.getHeader(name);
+            }
+        };
+    }
+    
+    private String appendAnyMediaTypeToAcceptHeader(final HttpServletRequest request) {
+        final String acceptHeader = request.getHeader("Accept");
+        return acceptHeader == null ? MediaType.ANY : acceptHeader + "," + MediaType.ANY;
+    }
+
 
 }
