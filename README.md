@@ -8,7 +8,7 @@ and the handling of the results, by either forwarding the data to a view, or ret
         <dependency>
             <groupId>org.jboss.aerogear</groupId>
             <artifactId>aerogear-controller</artifactId>
-            <version>1.0.0.M8</version>
+            <version>1.0.0.CR1</version>
             <scope>compile</scope>
         </dependency>
         
