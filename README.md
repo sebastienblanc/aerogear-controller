@@ -49,7 +49,7 @@ and the handling of the results, by either forwarding the data to a view, or ret
             </body>
         </html>
         
-For information about creating RESTful routes, please refer to the [user guide]((http://aergear.org/docs/guides/aerogear-controller/).
+For information about creating RESTful routes, please refer to the [user guide]((http://aerogear.org/docs/guides/aerogear-controller/).
         
 ### Populating parameters
 
@@ -81,7 +81,7 @@ All the intermediate objects are created automatically.
   
 
 ## Documentation
-* [User Guide](http://aergear.org/docs/guides/aerogear-controller/)
+* [User Guide](http://aerogear.org/docs/guides/aerogear-controller/)
 * [API](http://aerogear.org/docs/specs/aerogear-controller)
 * [REST API](http://aerogear.org/docs/specs/aerogear-rest-api)
 
